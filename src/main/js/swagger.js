@@ -50,7 +50,6 @@ function addMethod(app, cb, spec, method){
 		}
 	}
 
-	// no match, add new
 	var api = {
 		"path" : spec.path
 	};

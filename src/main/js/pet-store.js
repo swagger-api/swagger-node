@@ -5,25 +5,13 @@ var errors = require("./errors.js");
 
 var app = express.createServer();
 
-var param = {
-	"name" : "name",
-	"description" : "this is the id field you want to supply",
-	"dataType" : "string",
-	"required" : true,
-	"allowMultiple" : true,
-	"allowableValues" : "1,2,3,4",
-	"paramType" : "query"
-}
-
-var queryParam = swagger.queryParam("paramater name", "the description",
-		"string", true, true, "1,2,3,4");
-
 var resourceSpec = {
 	"rootResource" : "super.json",
 	"path" : "/foo",
 	"notes" : "gets foo",
 	"summary" : "summary",
-	"params" : new Array(queryParam),
+	"params" : new Array(swagger.queryParam("paramater name", "the description",
+			"string", true, true, "1,2,3,4")),
 	"outputModel" : {
 		"name" : "pet",
 		"responseClass" : myModels.petModel
