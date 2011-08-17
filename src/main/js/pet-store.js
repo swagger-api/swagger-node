@@ -7,11 +7,12 @@ var app = express.createServer();
 
 var getSpec = {
 	"rootResource" : "super.json",
-	"path" : "/foo",
+	"path" : "/foo/{name}",
 	"notes" : "gets foo",
 	"summary" : "summary",
-	"params" : new Array(swagger.queryParam("paramater name", "the description",
-			"string", true, true, "1,2,3,4")),
+	"params" : new Array(
+			swagger.queryParam("showDetails", "toggles whether or not details are returned", "boolean", false, false, "true,false"),
+			swagger.pathParam("name", "the name of foo to get", "string")),
 	"outputModel" : {
 		"name" : "pet",
 		"responseClass" : myModels.petModel
@@ -26,8 +27,7 @@ var postSpec = {
 	"path" : "/foo",
 	"notes" : "posts foo",
 	"summary" : "summary",
-	"params" : new Array(swagger.postParam("paramater name", "the description",
-			"string", "1,2,3,4")),
+	"params" : new Array(swagger.queryParam("replace", "toggles whether or not pet is replaced", "boolean", false, false, "true,false")),
 	"outputModel" : {
 		"name" : "pet",
 		"responseClass" : myModels.petModel
@@ -77,8 +77,8 @@ function callback(req, res) {
 
 swagger.addGet(app, callback, getSpec);
 swagger.addPost(app, callback, postSpec);
-swagger.addDelete(app, callback, deleteSpec);
-swagger.addPut(app, callback, putSpec);
+//swagger.addDelete(app, callback, deleteSpec);
+//swagger.addPut(app, callback, putSpec);
 swagger.configure(app, "http://localhost:3000", "0.1");
 
 app.get(swagger.resourcePath, swagger.resourceListing);

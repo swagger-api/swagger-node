@@ -43,8 +43,8 @@ function addMethod(app, cb, spec, method){
 		for ( var key in root.apis) {
 			var api = root.apis[key];
 			if (api && api.path == spec.path) {
-				// found matching path
-				appendToApi(api, spec, method);
+				// found matching path, add & return
+				appendToApi(root, api, spec);
 				return;
 			}
 		}
@@ -55,12 +55,13 @@ function addMethod(app, cb, spec, method){
 	};
 
 	if (!resources[spec.rootResource]) {
-		resources[spec.rootResource] = {
+		root = {
 			"apis" : new Array()
 		}
+		resources[spec.rootResource] = root;
 	}
-	resources[spec.rootResource].apis.push(api);
-	appendToApi(api, spec);
+	root.apis.push(api);
+	appendToApi(root, api, spec);
 	app.get(spec.rootResource + spec.path, cb);
 }
 
@@ -84,14 +85,39 @@ function addPut(app, cb, spec) {
 	addMethod(app,cb,spec);
 }
 
-function appendToApi(api, spec) {
+function appendToApi(rootResource, api, spec) {
 	api.description = "not here yet";
 
+	// validate params
+	var validationErrors = new Array();
+	for(var paramKey in spec.params){
+		var param = spec.params[paramKey];
+		switch(param.paramType){
+			case "path":{
+				if(api.path.indexOf("{"+param.name+"}")<0) validationErrors.push({"path":api.path,"name":param.name,"error":"invalid path"});
+				break;
+			}
+			case "query":{
+				break;
+			}
+			case "post":{
+				break;
+			}
+			default:{
+				validationErrors.push({"path":api.path,"name":param.name,"error":"invalid param type " + param.paramType});
+			}
+		}
+	}
+	
+	if(validationErrors.length > 0){
+		console.log(validationErrors);
+		console.log("######" + JSON.stringify(spec.params));
+		return;
+	}
 	if (!api.operations)
 		api.operations = new Array();
 
-	//	TODO: replace if existing operation in same api
-
+	// TODO: replace if existing HTTP operation in same api path
 	api.operations.push({
 		"parameters" : spec.params,
 		"httpMethod" : spec.method,
@@ -109,9 +135,25 @@ function appendToApi(api, spec) {
 			return;
 		}
 	}
-	if (!api.models)
-		api.models = new Array();
-	api.models.push(spec.outputModel);
+	if (!rootResource.models)
+		rootResource.models = new Array();
+	for(var key in rootResource.models){
+		//	don't add the model again
+		if(rootResource.models[key].name == spec.outputModel.name) return;
+	}
+	rootResource.models.push(spec.outputModel);
+}
+
+function createEnum(input) {
+	if(input && input.indexOf(",")>0){
+		//	TODO: stupid!
+		var output = new Array();
+		var array=input.split(",");
+		array.forEach(function(item){
+			output.push(item);
+		})
+		return output;
+	}
 }
 
 exports.queryParam = function(name, description, dataType, required, allowMultiple, allowableValues) {
@@ -121,8 +163,20 @@ exports.queryParam = function(name, description, dataType, required, allowMultip
 		"dataType":dataType,
 		"required":required,
 		"allowMultiple":allowMultiple,
-		"allowableValues":allowableValues,
+		"allowableValues":createEnum(allowableValues),
 		"paramType":"query"
+	};
+}
+
+exports.pathParam = function(name, description, dataType, allowableValues) {
+	return {
+		"name":name,
+		"description":description,
+		"dataType":dataType,
+		"required":true,
+		"allowMultiple":false,
+		"allowableValues":createEnum(allowableValues),
+		"paramType":"path"
 	};
 }
 
@@ -132,7 +186,7 @@ exports.postParam = function(name, description, dataType, allowableValues) {
 		"description":description,
 		"dataType":dataType,
 		"required":true,
-		"allowableValues":allowableValues,
+		"allowableValues":createEnum(allowableValues),
 		"paramType":"path"
 	};
 }
