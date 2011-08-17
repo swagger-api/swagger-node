@@ -13,7 +13,8 @@ function configure(app, bp, av) {
 function setResourceListingPaths(app){
 	for ( var key in resources) {
 		var r = resources[key];
-		app.get("/" + key, function(req,res){
+		app.get("/" + key.replace("\.\{format\}",".json"), function(req,res){
+			res.header('Access-Control-Allow-Origin', "*");
 			res.write(JSON.stringify(r));
 			res.end();
 		})
@@ -33,6 +34,7 @@ function resourceListing(request, response) {
 			"description" : "none"
 		})
 	}
+	response.header('Access-Control-Allow-Origin', "*");
 	response.write(JSON.stringify(r));
 	response.end();
 }
@@ -50,6 +52,10 @@ function addMethod(app, cb, spec, method){
 		}
 	}
 
+//	var path = spec.path;
+//	path = path.replace("\{",":");
+//	path = path.replace("\}","");
+//	console.log("path:" + path);
 	var api = {
 		"path" : spec.path
 	};
@@ -60,9 +66,10 @@ function addMethod(app, cb, spec, method){
 		}
 		resources[spec.rootResource] = root;
 	}
+
 	root.apis.push(api);
 	appendToApi(root, api, spec);
-	app.get(spec.rootResource + spec.path, cb);
+	app.get(spec.rootResource.replace("\.\{format\}",".json") + spec.path, cb);
 }
 
 function addGet(app, cb, spec) {
@@ -146,7 +153,7 @@ function appendToApi(rootResource, api, spec) {
 
 function createEnum(input) {
 	if(input && input.indexOf(",")>0){
-		//	TODO: stupid!
+		//	TODO: stupid!  handle escaped commas
 		var output = new Array();
 		var array=input.split(",");
 		array.forEach(function(item){

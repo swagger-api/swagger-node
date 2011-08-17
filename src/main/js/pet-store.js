@@ -6,7 +6,7 @@ var errors = require("./errors.js");
 var app = express.createServer();
 
 var getSpec = {
-	"rootResource" : "super.json",
+	"rootResource" : "super.{format}",
 	"path" : "/foo/{name}",
 	"notes" : "gets foo",
 	"summary" : "summary",
@@ -23,7 +23,7 @@ var getSpec = {
 }
 
 var postSpec = {
-	"rootResource" : "super.json",
+	"rootResource" : "super.{format}",
 	"path" : "/foo",
 	"notes" : "posts foo",
 	"summary" : "summary",
@@ -82,8 +82,5 @@ swagger.addPost(app, callback, postSpec);
 swagger.configure(app, "http://localhost:3000", "0.1");
 
 app.get(swagger.resourcePath, swagger.resourceListing);
-
-app.configure(function() {
-});
 
 app.listen(3000);
