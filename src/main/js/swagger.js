@@ -44,7 +44,7 @@ function addMethod(app, cb, spec, method){
 			var api = root.apis[key];
 			if (api && api.path == spec.path) {
 				// found matching path
-				appendToApi(api, spec);
+				appendToApi(api, spec, method);
 				return;
 			}
 		}
@@ -65,19 +65,23 @@ function addMethod(app, cb, spec, method){
 }
 
 function addGet(app, cb, spec) {
-	addMethod(app,cb,spec,"GET");
+	spec.method="GET";
+	addMethod(app,cb,spec);
 }
 
 function addPost(app, cb, spec) {
-	addMethod(app,cb,spec,"POST");
+	spec.method="POST";
+	addMethod(app,cb,spec);
 }
 
 function addDelete(app, cb, spec) {
-	addMethod(app,cb,spec,"DELETE");
+	spec.method="DELETE";
+	addMethod(app,cb,spec);
 }
 
 function addPut(app, cb, spec) {
-	addMethod(app,cb,spec,"PUT");
+	spec.method="PUT";
+	addMethod(app,cb,spec);
 }
 
 function appendToApi(api, spec) {
