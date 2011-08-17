@@ -16,5 +16,9 @@ node src/main/js/pet-store.js
 Then visit the server from your browser:
 
 <pre>
-http://localhost:3000/resources
+http://localhost:3000/resources.json
 </pre>
+
+### Current limitations
+
+<li> - Only JSON is supported </li>
