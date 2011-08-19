@@ -42,4 +42,4 @@ swagger.addValidator(
 swagger.configure(app, "http://localhost:8002", "0.1");
 
 //	start the server
-app.listen(3000);
+app.listen(8002);
