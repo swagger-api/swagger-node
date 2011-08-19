@@ -1,7 +1,7 @@
 /**
  * this is a JSON schema for the PetModel
  */
-exports.petModel = {
+exports.pet = {
 	"properties" : {
 		"tags" : {
 			"type" : "array",

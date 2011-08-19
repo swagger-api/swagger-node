@@ -57,11 +57,14 @@ function applyFilter(req, res, r) {
 			}
 		}
 	}
+	
+//	console.log("models: " + JSON.stringify(r.models));
 
 	//	only filter if there are paths to exclude
 	if (excludedPaths.length > 0) {
 		//	clone attributes if any
 		var output = shallowClone(r);
+//		console.log("r is " + JSON.stringify(r));
 		
 		//	clone models
 		var requiredModels = Array();
@@ -80,7 +83,9 @@ function applyFilter(req, res, r) {
 					break;
 				else{
 					clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-					if(operation.responseClass && requiredModels.indexOf(operation.responseClass)<0) requiredModels.push(operation.responseClass);
+					if(operation.responseClass && requiredModels.indexOf(operation.responseClass)<0) {
+						requiredModels.push(operation.responseClass);
+					}
 				}
 			}
 			if(clonedApi.operations.length>0){
@@ -279,12 +284,13 @@ function appendToApi(rootResource, api, spec) {
 		"summary" : spec.summary
 	};
 	if(spec.outputModel){
-		op.name = spec.outputModel.name;
+		op.responseClass = spec.outputModel.name;
 	}
 	api.operations.push(op);
 
 	// add model if not already in array by name
 	for ( var key in api.models) {
+		console.log("checking model " + key);
 		var model = api.models[key];
 		if (model.name == spec.outputModel.name) {
 			return;
