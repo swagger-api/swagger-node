@@ -1,0 +1,16 @@
+{
+    "name": "swagger",
+    "description": "Wordnik swagger implementation for the express framework",
+    "version": "1.0",
+    "homepage": "https://github.com/wordnik/swagger-node-express",
+    "directories": {
+        "lib": "./Common/node"
+    },
+    "engines": {
+        "node": ">= 0.4.1  <=0.4.99999"
+    },
+    "dependencies": {
+        "connect": "=1.1.4",
+        "express": "=2.1.0"
+    }
+}
