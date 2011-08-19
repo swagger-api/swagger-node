@@ -58,14 +58,11 @@ function applyFilter(req, res, r) {
 		}
 	}
 	
-//	console.log("models: " + JSON.stringify(r.models));
-
 	//	only filter if there are paths to exclude
 	if (excludedPaths.length > 0) {
 		//	clone attributes if any
 		var output = shallowClone(r);
-//		console.log("r is " + JSON.stringify(r));
-		
+
 		//	clone models
 		var requiredModels = Array();
 		
@@ -83,9 +80,7 @@ function applyFilter(req, res, r) {
 					break;
 				else{
 					clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-					if(operation.responseClass && requiredModels.indexOf(operation.responseClass)<0) {
-						requiredModels.push(operation.responseClass);
-					}
+					addModelsFromResponse(operation, requiredModels);
 				}
 			}
 			if(clonedApi.operations.length>0){
@@ -95,13 +90,53 @@ function applyFilter(req, res, r) {
 				//	add only required models
 				output.models = new Array();
 				for(var i in requiredModels){
-					output.models.push(r.models[i]);
+					var model = r.models[i];
+					output.models.push(model);
+				}
+				//	look in object graph
+				requiredModels = new Array();
+				for(var i in output.models){
+					var model = output.models[i];
+					if(model && model.responseClass.properties){
+						for(var key in model.responseClass.properties){
+							var t = model.responseClass.properties[key].type;
+							switch (t){
+							case "array":
+								if(model.responseClass.properties[key].items){
+									var ref = model.responseClass.properties[key].items.$ref;
+									if(ref && requiredModels.indexOf(ref)<0){
+										requiredModels.push(ref);
+									}
+								}
+								break;
+							case "string":
+							case "long":
+								break;
+							default:
+								if(requiredModels.indexOf(t)<0){
+									requiredModels.push(t);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
 		return output;
 	} else {
 		return r;
+	}
+}
+
+function addModelsFromResponse(operation, models){
+	var responseModel = operation.responseClass;
+	//	check response type
+	if(responseModel){
+		//	strip List[...] to locate the models
+		responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
+		if(models.indexOf(responseModel)<0){
+			models.push(responseModel);
+		}
 	}
 }
 
@@ -191,16 +226,80 @@ function addMethod(app, callback, spec) {
 	var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
 	switch(spec.method){
 		case "GET":
-			app.get(fullPath, callback);
+			app.get(fullPath, function(req,resp){
+				resp.header("Access-Control-Allow-Origin", "*");
+				resp.header("Content-Type", "application/json");
+				try{
+					callback(req,resp);
+				}
+				catch(ex){
+					if(ex.code && ex.description){
+						//	swagger exceptions
+						resp.send(JSON.stringify(ex), ex.code);
+					}
+					else{
+						//	all others go 500
+						resp.send(JSON.stringify({"description":"unknown error","code":500}))
+					}
+				}
+			});
 			break;
 		case "POST":
-			app.post(fullPath, callback);
+			app.post(fullPath, function(req,resp){
+				resp.header("Access-Control-Allow-Origin", "*");
+				resp.header("Content-Type", "application/json");
+				try{
+					callback(req,resp);
+				}
+				catch(ex){
+					if(ex.code && ex.description){
+						//	swagger exceptions
+						resp.send(JSON.stringify(ex), ex.code);
+					}
+					else{
+						//	all others go 500
+						resp.send(JSON.stringify({"description":"unknown error","code":500}))
+					}
+				}
+			});
 			break;
 		case "PUT":
-			app.put(fullPath, callback);
+			app.put(fullPath, function(req,resp){
+				resp.header("Access-Control-Allow-Origin", "*");
+				resp.header("Content-Type", "application/json");
+				try{
+					callback(req,resp);
+				}
+				catch(ex){
+					if(ex.code && ex.description){
+						//	swagger exceptions
+						resp.send(JSON.stringify(ex), ex.code);
+					}
+					else{
+						//	all others go 500
+						resp.send(JSON.stringify({"description":"unknown error","code":500}))
+					}
+				}
+			});
 			break;
 		case "DELETE":
-			app.delete(fullPath, callback);
+			app.delete(fullPath, function(req,resp){
+				resp.header("Access-Control-Allow-Origin", "*");
+				resp.header("Content-Type", "application/json");
+				try{
+					callback(req,resp);
+				}
+				catch(ex){
+					if(ex.code && ex.description){
+						//	swagger exceptions
+						resp.send(JSON.stringify(ex), ex.code);
+					}
+					else{
+						//	all others go 500
+						resp.send(JSON.stringify({"description":"unknown error","code":500}))
+					}
+				}
+			});
 			break;
 		default:
 			console.log("unknown method " + spec.method);
@@ -225,6 +324,10 @@ function addDelete(app, cb, spec) {
 function addPut(app, cb, spec) {
 	spec.method = "PUT";
 	addMethod(app, cb, spec);
+}
+
+function wrap(callback, req, resp){
+	callback(req,resp);
 }
 
 function appendToApi(rootResource, api, spec) {

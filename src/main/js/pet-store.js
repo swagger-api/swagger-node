@@ -1,8 +1,11 @@
 var express = require("express");
 var url = require("url");
+
+//	swagger core
 var swagger = require("./swagger.js");
+
+//	resources for the demo
 var petResources = require("./petResources.js");
-var petstoreModels = require("./models.js");
 
 var app = express.createServer();
 
@@ -13,12 +16,13 @@ function callback(req, res) {
 	}));
 }
 
-swagger.addGet(app, callback, petResources.findById);
-swagger.addGet(app, callback, petResources.findByStatus);
-swagger.addGet(app, callback, petResources.findByTags);
-swagger.addPost(app, callback, petResources.addPet);
-swagger.addDelete(app, callback, petResources.deletePet);
-swagger.addPut(app, callback, petResources.updatePet);
+swagger.addGet(app, petResources.findByStatus, petResources.findByStatusSpec);
+swagger.addGet(app, petResources.findByTags, petResources.findByTagsSpec);
+swagger.addGet(app, petResources.findById, petResources.findByIdSpec);
+
+swagger.addPost(app, callback, petResources.addPetSpec);
+swagger.addDelete(app, callback, petResources.deletePetSpec);
+swagger.addPut(app, callback, petResources.updatePetSpec);
 
 swagger.addValidator(
 	function validate(req, path, httpMethod) {
@@ -38,4 +42,5 @@ swagger.addValidator(
 //	configures the app
 swagger.configure(app, "http://localhost:3000", "0.1");
 
+//	start the server
 app.listen(3000);
