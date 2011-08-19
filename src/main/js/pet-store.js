@@ -12,7 +12,7 @@ var app = express.createServer();
 function callback(req, res) {
 	res.header('Access-Control-Allow-Origin', "*");
 	res.send(JSON.stringify({
-		"message" : "it works!"
+		"message" : "thanks for playing"
 	}));
 }
 
