@@ -26,6 +26,7 @@ The swagger.js file is included when configuring the express server.  There
 are a few additional steps to get the api to declare the swagger spec:
 
 <li> - Define your input/output models in JSON schema format
+
 <li> - Define a specification for operations against the API
 
 For the sample app, the models are defined here:
@@ -86,5 +87,7 @@ swagger.addValidator(
 ### Current limitations
 
 <li> - Only JSON is supported </li>
+
 <li> - Nested objects may not be declared in the models array </li>
+
 <li> - There are probably (many) others </li>
