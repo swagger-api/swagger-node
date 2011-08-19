@@ -3,6 +3,7 @@ var basePath = "/";
 var swaggerVersion = "1.0";
 var apiVersion = "0.0";
 var resources = new Object();
+var validators = Array();
 
 /**
  * sets the base path, api version
@@ -55,15 +56,16 @@ function applyFilter(req, res, r) {
 		}
 	}
 
+	//	only filter if there are paths to exclude
 	if (excludedPaths.length > 0) {
 		//	clone attributes if any
 		var output = shallowClone(r);
-		output.apis = new Array();
+		
 		//	clone models
 		var requiredModels = Array();
 		
-		output.models = JSON.parse(JSON.stringify(r.models));
 		//	clone methods that have access
+		output.apis = new Array();
 		var apis = JSON.parse(JSON.stringify(r.apis));
 		for(var i in apis){
 			var api = apis[i];
@@ -80,8 +82,14 @@ function applyFilter(req, res, r) {
 				}
 			}
 			if(clonedApi.operations.length>0){
+				//	only add cloned api if there are operations
 				output.apis.push(clonedApi);
-				console.log(requiredModels);
+
+				//	add only required models
+				output.models = new Array();
+				for(var i in requiredModels){
+					output.models.push(r.models[i]);
+				}
 			}
 		}
 		return output;
@@ -108,6 +116,11 @@ function shallowClone(obj) {
  * @returns {Boolean}
  */
 function canAccessResource(req, path, httpMethod) {
+	for(var i in validators){
+		if(!validators[i](req,path,httpMethod)){
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -206,9 +219,15 @@ function addPut(app, cb, spec) {
 
 function appendToApi(rootResource, api, spec) {
 	api.description = "not here yet";
-
-	// validate params
 	var validationErrors = new Array();
+
+	if(!spec.nickname || spec.nickname.indexOf(" ")>=0){
+		validationErrors.push({
+			"path" : api.path,
+			"error" : "invalid nickname '" + spec.nickname + "'"
+		});
+	} 
+	// validate params
 	for ( var paramKey in spec.params) {
 		var param = spec.params[paramKey];
 		switch (param.paramType) {
@@ -320,6 +339,11 @@ exports.postParam = function(name, description, dataType, allowableValues) {
 	};
 }
 
+function addValidator(v) {
+	validators.push(v);
+}
+
+exports.addValidator = addValidator
 exports.configure = configure
 exports.canAccessResource = canAccessResource
 exports.resourcePath = resourcePath
