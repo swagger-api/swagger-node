@@ -34,7 +34,7 @@ For the sample app, the models are defined here:
 ./src/main/js/models.js
 </pre>
 
-You could load this from a static file or generate them prammatically as in the
+You could load this from a static file or generate them programmatically as in the
 sample.
 
 The operations and the callback functions are defined in this file:
