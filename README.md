@@ -69,6 +69,20 @@ catch(ex){
 Also, the "Access-Control-Allow-Origin" is hard-coded to "*" to allow access from
 localhost.  This will become a configuraiton option at some point.
 
+#### Security
+You can secure the API by adding your own validator.  These methods can read the
+request object and extract cookies, headers, api-keys, etc.  They also have
+access to the HTTP method and path being requested.  You can then decide for
+yourself it the caller should have access to the resource.  See the petstore.js
+example:
+
+<pre>
+swagger.addValidator(
+	function validate(req, path, httpMethod) {
+		...
+</pre>
+
+
 ### Current limitations
 
 <li> - Only JSON is supported </li>
