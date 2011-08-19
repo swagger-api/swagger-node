@@ -1,27 +1,10 @@
 var express = require("express");
 var url = require("url");
 var swagger = require("./swagger.js");
-var myModels = require("./models.js");
-var errors = require("./errors.js");
+var petResources = require("./petResources.js");
+var petstoreModels = require("./models.js");
 
 var app = express.createServer();
-
-var getSpec = {
-	"rootResource" : "super.{format}",
-	"path" : "/foo/{name}",
-	"notes" : "gets foo",
-	"summary" : "summary",
-	"params" : new Array(
-			swagger.queryParam("showDetails", "toggles whether or not details are returned", "boolean", false, false, "true,false"),
-			swagger.pathParam("name", "the name of foo to get", "string")),
-	"outputModel" : {
-		"name" : "pet",
-		"responseClass" : myModels.petModel
-	},
-	"errorResponses" : new Array(errors.error(400, "invalid id"), errors.error(
-			404, "not found")),
-	"nickname" : "foo"
-}
 
 var postSpec = {
 	"rootResource" : "super.{format}",
@@ -31,9 +14,9 @@ var postSpec = {
 	"params" : new Array(swagger.queryParam("replace", "toggles whether or not pet is replaced", "boolean", false, false, "true,false")),
 	"outputModel" : {
 		"name" : "pet",
-		"responseClass" : myModels.petModel
+		"responseClass" : petstoreModels.pet
 	},
-	"errorResponses" : new Array(errors.error(400, "invalid id"), errors.error(
+	"errorResponses" : new Array(swagger.error(400, "invalid id"), swagger.error(
 			404, "not found")),
 	"nickname" : "updateFoo"
 }
@@ -47,9 +30,9 @@ var deleteSpec = {
 			"string", "1,2,3,4")),
 	"outputModel" : {
 		"name" : "pet",
-		"responseClass" : myModels.petModel
+		"responseClass" : petstoreModels.pet
 	},
-	"errorResponses" : new Array(errors.error(400, "invalid id"), errors.error(
+	"errorResponses" : new Array(swagger.error(400, "invalid id"), swagger.error(
 			404, "not found")),
 	"nickname" : "deleteFoo"
 }
@@ -63,23 +46,26 @@ var putSpec = {
 			"string", "1,2,3,4")),
 	"outputModel" : {
 		"name" : "pet",
-		"responseClass" : myModels.petModel
+		"responseClass" : petstoreModels.pet
 	},
-	"errorResponses" : new Array(errors.error(400, "invalid id"), errors.error(
+	"errorResponses" : new Array(swagger.error(400, "invalid id"), swagger.error(
 			404, "not found")),
 	"nickname" : "putFoo"
 }
 
 function callback(req, res) {
+	res.header('Access-Control-Allow-Origin', "*");
 	res.send(JSON.stringify({
 		"message" : "it works!"
 	}));
 }
 
-swagger.addGet(app, callback, getSpec);
-swagger.addPost(app, callback, postSpec);
-//swagger.addDelete(app, callback, deleteSpec);
-//swagger.addPut(app, callback, putSpec);
+swagger.addGet(app, callback, petResources.findById);
+swagger.addGet(app, callback, petResources.findByStatus);
+swagger.addGet(app, callback, petResources.findByTags);
+swagger.addPost(app, callback, petResources.addPet);
+swagger.addDelete(app, callback, petResources.deletePet);
+swagger.addPut(app, callback, petResources.updatePet);
 
 swagger.addValidator(
 	function validate(req, path, httpMethod) {
@@ -96,8 +82,7 @@ swagger.addValidator(
 	}
 );
 
+//	configures the app
 swagger.configure(app, "http://localhost:3000", "0.1");
-
-app.get(swagger.resourcePath, swagger.resourceListing);
 
 app.listen(3000);

@@ -5,6 +5,7 @@ var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
 
+
 /**
  * sets the base path, api version
  * 
@@ -16,6 +17,7 @@ function configure(app, bp, av) {
 	basePath = bp;
 	apiVersion = av;
 	setResourceListingPaths(app);
+	app.get(resourcePath, resourceListing);
 }
 
 /**
@@ -156,7 +158,9 @@ function resourceListing(request, response) {
  * @param spec
  */
 function addMethod(app, callback, spec) {
-	var root = resources[spec.rootResource];
+	var rootPath = spec.path.split("/")[1];
+	var root = resources[rootPath];
+	
 	if (root && root.apis) {
 		for ( var key in root.apis) {
 			var api = root.apis[key];
@@ -169,28 +173,29 @@ function addMethod(app, callback, spec) {
 	}
 
 	var api = {"path" : spec.path};
-	if (!resources[spec.rootResource]) {
+	if (!resources[rootPath]) {
 		root = {"apis" : new Array()};
-		resources[spec.rootResource] = root;
+		resources[rootPath] = root;
 	}
 
 	root.apis.push(api);
 	appendToApi(root, api, spec);
 
-	//	TODO: add some xml support
-	var root = spec.rootResource.replace("\.\{format\}", ".json");
+	//	TODO: add some XML support
+	//	convert .{format} to .json, make path params happy
+	var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
 	switch(spec.method){
 		case "GET":
-			app.get(root, callback);
+			app.get(fullPath, callback);
 			break;
 		case "POST":
-			app.post(root, callback);
+			app.post(fullPath, callback);
 			break;
 		case "PUT":
-			app.put(root, callback);
+			app.put(fullPath, callback);
 			break;
 		case "DELETE":
-			app.post(root, callback);
+			app.delete(fullPath, callback);
 			break;
 		default:
 			console.log("unknown method " + spec.method);
@@ -218,10 +223,11 @@ function addPut(app, cb, spec) {
 }
 
 function appendToApi(rootResource, api, spec) {
-	api.description = "not here yet";
+	if(!api.description) api.description = spec.description;
 	var validationErrors = new Array();
 
 	if(!spec.nickname || spec.nickname.indexOf(" ")>=0){
+		//	nicknames don't allow spaces
 		validationErrors.push({
 			"path" : api.path,
 			"error" : "invalid nickname '" + spec.nickname + "'"
@@ -243,7 +249,7 @@ function appendToApi(rootResource, api, spec) {
 			case "query": {
 				break;
 			}
-			case "post": {
+			case "body": {
 				break;
 			}
 			default: {
@@ -264,15 +270,18 @@ function appendToApi(rootResource, api, spec) {
 		api.operations = new Array();
 
 	// TODO: replace if existing HTTP operation in same api path
-	api.operations.push({
+	var op = {
 		"parameters" : spec.params,
 		"httpMethod" : spec.method,
 		"notes" : spec.notes,
 		"errorResponses" : spec.errorResponses,
 		"nickname" : spec.nickname,
-		"responseClass" : spec.outputModel.name,
 		"summary" : spec.summary
-	});
+	};
+	if(spec.outputModel){
+		op.name = spec.outputModel.name;
+	}
+	api.operations.push(op);
 
 	// add model if not already in array by name
 	for ( var key in api.models) {
@@ -285,7 +294,7 @@ function appendToApi(rootResource, api, spec) {
 		rootResource.models = new Array();
 	for ( var key in rootResource.models) {
 		// don't add the model again
-		if (rootResource.models[key].name == spec.outputModel.name)
+		if (spec.outputModel && rootResource.models[key].name == spec.outputModel.name)
 			return;
 	}
 	rootResource.models.push(spec.outputModel);
@@ -304,7 +313,7 @@ function createEnum(input) {
 }
 
 exports.queryParam = function(name, description, dataType, required,
-		allowMultiple, allowableValues) {
+		allowMultiple, allowableValues, defaultValue) {
 	return {
 		"name" : name,
 		"description" : description,
@@ -312,6 +321,7 @@ exports.queryParam = function(name, description, dataType, required,
 		"required" : required,
 		"allowMultiple" : allowMultiple,
 		"allowableValues" : createEnum(allowableValues),
+		"defaultValue" : defaultValue,
 		"paramType" : "query"
 	};
 }
@@ -328,14 +338,12 @@ exports.pathParam = function(name, description, dataType, allowableValues) {
 	};
 }
 
-exports.postParam = function(name, description, dataType, allowableValues) {
+exports.postParam = function(description, dataType) {
 	return {
-		"name" : name,
 		"description" : description,
 		"dataType" : dataType,
 		"required" : true,
-		"allowableValues" : createEnum(allowableValues),
-		"paramType" : "path"
+		"paramType" : "body"
 	};
 }
 
@@ -343,6 +351,14 @@ function addValidator(v) {
 	validators.push(v);
 }
 
+function error(code, description) {
+	return {
+		"description" : description,
+		"code" : code
+	};
+}
+
+exports.error = error
 exports.addValidator = addValidator
 exports.configure = configure
 exports.canAccessResource = canAccessResource
