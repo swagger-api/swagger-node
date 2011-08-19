@@ -19,9 +19,9 @@ Then visit the server from your browser:
 http://localhost:8002/resources.json
 </pre>
 
-or from a swagger UI
+or from a [swagger UI](https://github.com/wordnik/swagger-ui)
 
-![]https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png
+![swagger ui](https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png)
 
 ### How it works
 The swagger.js file is included when configuring the express server.  There
