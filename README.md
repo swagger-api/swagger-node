@@ -10,7 +10,7 @@ npm install express
 
 To run the sample server:
 <pre>
-node src/main/js/petstore.js
+node Apps/petstore/main.js
 </pre>
 
 Then visit the server from your browser:
@@ -34,16 +34,16 @@ are a few additional steps to get the api to declare the swagger spec:
 For the sample app, the models are defined here:
 
 <pre>
-./src/main/js/models.js
+Apps/petstore/models.js
 </pre>
 
-You could load this from a static file or generate them programmatically as in the
+You could load this from a static file or generate them programatically as in the
 sample.
 
 The operations and the callback functions are defined in this file:
 
 <pre>
-./src/main/js/petResources.js
+Apps/petstore/petResources.js
 </pre>
 
 Each spec defines input/output params with helper functions to generate the swagger
@@ -70,7 +70,7 @@ catch(ex){
 </pre>
 
 Also, the "Access-Control-Allow-Origin" is hard-coded to "*" to allow access from
-localhost.  This will become a configuraiton option at some point.
+localhost.  This will become a configuration option at some point.
 
 #### Security
 You can secure the API by adding your own validator.  These methods can read the
