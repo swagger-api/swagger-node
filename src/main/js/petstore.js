@@ -10,7 +10,6 @@ var petResources = require("./petResources.js");
 var app = express.createServer();
 
 function callback(req, res) {
-	res.header('Access-Control-Allow-Origin', "*");
 	res.send(JSON.stringify({
 		"message" : "thanks for playing"
 	}));
