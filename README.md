@@ -21,7 +21,7 @@ http://localhost:8002/resources.json
 
 or from a [swagger UI](https://github.com/wordnik/swagger-ui)
 
-![Swagger UI]https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png?raw=true
+![Swagger UI](https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png?raw=true)
 
 ### How it works
 The swagger.js file is included when configuring the express server.  There
