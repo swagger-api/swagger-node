@@ -21,6 +21,8 @@ http://localhost:8002/resources.json
 
 or from a swagger UI
 
+![]https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png
+
 ### How it works
 The swagger.js file is included when configuring the express server.  There
 are a few additional steps to get the api to declare the swagger spec:
