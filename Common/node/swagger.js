@@ -204,8 +204,8 @@ function addMethod(app, callback, spec) {
   if (root && root.apis) {
     for ( var key in root.apis) {
       var api = root.apis[key];
-      if (api && api.path == spec.path) {
-        // found matching path, add & return
+      if (api && api.path == spec.path && api.method == spec.method) {
+        // found matching path and method, add & return
         appendToApi(root, api, spec);
         return;
       }
@@ -228,7 +228,7 @@ function addMethod(app, callback, spec) {
     case "GET":
       app.get(fullPath, function(req,resp){
         resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json");
+        resp.header("Content-Type", "application/json; charset=utf-8");
         try{
           callback(req,resp);
         }
@@ -239,6 +239,7 @@ function addMethod(app, callback, spec) {
           }
           else{
             //  all others go 500
+			console.error("GET failed for path '" + fullPath + "': " + ex);
             resp.send(JSON.stringify({"description":"unknown error","code":500}))
           }
         }
@@ -247,7 +248,7 @@ function addMethod(app, callback, spec) {
     case "POST":
       app.post(fullPath, function(req,resp){
         resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json");
+        resp.header("Content-Type", "application/json; charset=utf-8");
         try{
           callback(req,resp);
         }
@@ -258,6 +259,7 @@ function addMethod(app, callback, spec) {
           }
           else{
             //  all others go 500
+			console.error("POST failed for path '" + fullPath + "': " + ex);
             resp.send(JSON.stringify({"description":"unknown error","code":500}))
           }
         }
@@ -266,7 +268,7 @@ function addMethod(app, callback, spec) {
     case "PUT":
       app.put(fullPath, function(req,resp){
         resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json");
+        resp.header("Content-Type", "application/json; charset=utf-8");
         try{
           callback(req,resp);
         }
@@ -277,6 +279,7 @@ function addMethod(app, callback, spec) {
           }
           else{
             //  all others go 500
+			console.error("PUT failed for path '" + fullPath + "': " + ex); 
             resp.send(JSON.stringify({"description":"unknown error","code":500}))
           }
         }
@@ -285,7 +288,7 @@ function addMethod(app, callback, spec) {
     case "DELETE":
       app.delete(fullPath, function(req,resp){
         resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json");
+        resp.header("Content-Type", "application/json; charset=utf-8");
         try{
           callback(req,resp);
         }
@@ -296,6 +299,7 @@ function addMethod(app, callback, spec) {
           }
           else{
             //  all others go 500
+			console.error("DELETE failed for path '" + fullPath + "': " + ex);
             resp.send(JSON.stringify({"description":"unknown error","code":500}))
           }
         }
