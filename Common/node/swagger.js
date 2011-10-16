@@ -45,7 +45,7 @@ function setResourceListingPaths(app) {
  * @returns
  */
 function applyFilter(req, res, r) {
-  var route = req.route.path;
+  var route = req.route;
   var excludedPaths = new Array();
   for ( var key in r.apis) {
     var api = r.apis[key];
