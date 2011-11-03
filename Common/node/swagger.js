@@ -27,10 +27,9 @@ function configure(app, bp, av) {
  */
 function setResourceListingPaths(app) {
   for ( var key in resources) {
-    var r = resources[key];
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       res.header('Access-Control-Allow-Origin', "*");
-      res.write(JSON.stringify(applyFilter(req, res, r)));
+      res.write(JSON.stringify(applyFilter(req, res, resources[req.url.substr(1).replace('.json', '.{format}')])));
       res.end();
     })
   }
