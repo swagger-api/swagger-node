@@ -29,6 +29,7 @@ function setResourceListingPaths(app) {
   for ( var key in resources) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       res.header('Access-Control-Allow-Origin', "*");
+      res.header("Content-Type", "application/json; charset=utf-8");
       res.write(JSON.stringify(applyFilter(req, res, resources[req.url.substr(1).replace('.json', '.{format}')])));
       res.end();
     })
@@ -46,6 +47,10 @@ function setResourceListingPaths(app) {
 function applyFilter(req, res, r) {
   var route = req.route;
   var excludedPaths = new Array();
+  
+  if (!r || !r.apis) {
+    return {"description": "internal error", "code": 400}; }
+  
   for ( var key in r.apis) {
     var api = r.apis[key];
     for ( var opKey in api.operations) {
@@ -185,6 +190,7 @@ function resourceListing(request, response) {
     })
   }
   response.header('Access-Control-Allow-Origin', "*");
+  response.header("Content-Type", "application/json; charset=utf-8");
   response.write(JSON.stringify(r));
   response.end();
 }
