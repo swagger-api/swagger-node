@@ -1,11 +1,11 @@
 var resourcePath = "/resources.json";
 var basePath = "/";
-var swaggerVersion = "1.0";
+var swaggerVersion = "1.1";
 var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
 var appHandler = null;
-
+var allowedMethods = ['get', 'post', 'put', 'delete'];
 
 /**
  * sets the base path, api version
@@ -229,7 +229,6 @@ function addMethod(app, callback, spec) {
   //  TODO: add some XML support
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
-  var allowedMethods = ['get', 'post', 'put', 'delete'];
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
 		app[currentMethod](fullPath, function(req,resp){
@@ -264,20 +263,34 @@ function addHandlers(type, handlers) {
   }
 }
 
+function discover(resource) {
+  for (var key in resource) {
+    if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
+      addMethod(appHandler, resource[key].action, resource[key].spec);
+    } else {
+      console.log('auto discover failed for: ' + key);
+    }
+  }
+}
+
 function addGet() {
   addHandlers('GET', arguments);
+  return this;
 }
 
 function addPost() {
   addHandlers('POST', arguments);
+  return this;
 }
 
 function addDelete() { 
   addHandlers('DELETE', arguments);
+  return this;
 }
 
 function addPut() {
   addHandlers('PUT', arguments);
+  return this;
 }
 
 function wrap(callback, req, resp){
@@ -431,3 +444,4 @@ exports.addPost = addPost
 exports.addPut = addPut
 exports.addDelete = addDelete
 exports.setAppHandler = setAppHandler;
+exports.discover = discover;
