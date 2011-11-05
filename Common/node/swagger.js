@@ -231,20 +231,20 @@ function addMethod(app, callback, spec) {
   var allowedMethods = ['get', 'post', 'put', 'delete'];
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
-	  app[spec.method.toLowerCase()](fullPath, function(req,resp){
-		resp.header("Access-Control-Allow-Origin", "*");
-		resp.header("Content-Type", "application/json; charset=utf-8");
-		try {
-		  callback(req,resp); }
-		catch(ex) {
-		  if (ex.code && ex.description){
-			resp.send(JSON.stringify(ex), ex.code); }
-		  else {
-			console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
-			resp.send(JSON.stringify({"description":"unknown error","code":500})) 
-		  }
-		}
-	  }); 
+		app[currentMethod](fullPath, function(req,resp){
+			resp.header("Access-Control-Allow-Origin", "*");
+			resp.header("Content-Type", "application/json; charset=utf-8");
+			try {
+				callback(req,resp); }
+			catch(ex) {
+				if (ex.code && ex.description){
+				resp.send(JSON.stringify(ex), ex.code); }
+				else {
+				console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+				resp.send(JSON.stringify({"description":"unknown error","code":500})) 
+				}
+			}
+		}); 
   } else {
   	console.log('unable to add ' + currentMethod.toUpperCase() + ' handler');  
   	return;
