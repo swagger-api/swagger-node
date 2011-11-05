@@ -273,6 +273,10 @@ function discover(resource) {
   }
 }
 
+function discoverFile(file) {
+  return discover(require(file));
+}
+
 function addGet() {
   addHandlers('GET', arguments);
   return this;
@@ -445,3 +449,4 @@ exports.addPut = addPut
 exports.addDelete = addDelete
 exports.setAppHandler = setAppHandler;
 exports.discover = discover;
+exports.discoverFile = discoverFile;
