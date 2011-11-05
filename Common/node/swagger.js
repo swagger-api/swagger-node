@@ -136,7 +136,6 @@ function applyFilter(req, res, r) {
 
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
-  //  check response type
   if (responseModel) {
     //  strip List[...] to locate the models
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
@@ -229,89 +228,26 @@ function addMethod(app, callback, spec) {
   //  TODO: add some XML support
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
-  switch(spec.method){
-    case "GET":
-      app.get(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("GET failed for path '" + fullPath + "': " + ex);
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    case "POST":
-      app.post(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("POST failed for path '" + fullPath + "': " + ex);
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    case "PUT":
-      app.put(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("PUT failed for path '" + fullPath + "': " + ex); 
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    case "DELETE":
-      app.delete(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("DELETE failed for path '" + fullPath + "': " + ex);
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    default:
-      console.log("unknown method " + spec.method);
+  var allowedMethods = ['get', 'post', 'put', 'delete'];
+  var currentMethod = spec.method.toLowerCase();
+  if (allowedMethods.indexOf(currentMethod)>-1) {
+	  app[spec.method.toLowerCase()](fullPath, function(req,resp){
+		resp.header("Access-Control-Allow-Origin", "*");
+		resp.header("Content-Type", "application/json; charset=utf-8");
+		try {
+		  callback(req,resp); }
+		catch(ex) {
+		  if (ex.code && ex.description){
+			resp.send(JSON.stringify(ex), ex.code); }
+		  else {
+			console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+			resp.send(JSON.stringify({"description":"unknown error","code":500})) 
+		  }
+		}
+	  }); 
+  } else {
+  	console.log('unable to add ' + currentMethod.toUpperCase() + ' handler');  
+  	return;
   }
 }
 
@@ -402,7 +338,6 @@ function appendToApi(rootResource, api, spec) {
 
   // add model if not already in array by name
   for ( var key in api.models) {
-    console.log("checking model " + key);
     var model = api.models[key];
     if (model.name == spec.outputModel.name) {
       return;
