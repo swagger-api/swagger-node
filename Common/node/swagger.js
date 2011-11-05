@@ -26,12 +26,15 @@ function configure(app, bp, av) {
  * @param app
  */
 function setResourceListingPaths(app) {
-  for ( var key in resources) {
+  for (var key in resources) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       res.header('Access-Control-Allow-Origin', "*");
       res.header("Content-Type", "application/json; charset=utf-8");
-      res.write(JSON.stringify(applyFilter(req, res, resources[req.url.substr(1).replace('.json', '.{format}')])));
-      res.end();
+      var data = applyFilter(req, res, resources[req.url.substr(1).replace('.json', '.{format}')]);
+      if (data.code) {
+        res.send(data, data.code); } 
+      else {      
+        res.send(JSON.stringify(data)); }
     })
   }
 }
@@ -49,16 +52,15 @@ function applyFilter(req, res, r) {
   var excludedPaths = new Array();
   
   if (!r || !r.apis) {
-    return {"description": "internal error", "code": 400}; }
+    return error(500, 'internal error'); }
   
-  for ( var key in r.apis) {
+  for (var key in r.apis) {
     var api = r.apis[key];
-    for ( var opKey in api.operations) {
+    for (var opKey in api.operations) {
       var op = api.operations[opKey];
       var path = api.path.replace(/{.*\}/, "*");
       if (!canAccessResource(req, route + path, op.httpMethod)) {
-        excludedPaths.push(op.httpMethod + ":" + api.path);
-      }
+        excludedPaths.push(op.httpMethod + ":" + api.path); }
     }
   }
   
@@ -73,53 +75,53 @@ function applyFilter(req, res, r) {
     //  clone methods that have access
     output.apis = new Array();
     var apis = JSON.parse(JSON.stringify(r.apis));
-    for(var i in apis){
+    for (var i in apis){
       var api = apis[i];
       var clonedApi = shallowClone(api);
       clonedApi.operations = new Array();
       var shouldAdd = true;
-      for(var o in api.operations){
+      for (var o in api.operations){
         var operation = api.operations[o];
-        if(excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0)
-          break;
-        else{
+        if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0) {
+          break; }
+        else {
           clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
           addModelsFromResponse(operation, requiredModels);
         }
       }
-      if(clonedApi.operations.length>0){
+      
+      if (clonedApi.operations.length > 0) {
         //  only add cloned api if there are operations
         output.apis.push(clonedApi);
 
         //  add only required models
         output.models = new Array();
-        for(var i in requiredModels){
+        for (var i in requiredModels){
           var model = r.models[i];
           output.models.push(model);
         }
         //  look in object graph
         requiredModels = new Array();
-        for(var i in output.models){
+        for (var i in output.models) {
           var model = output.models[i];
-          if(model && model.responseClass.properties){
-            for(var key in model.responseClass.properties){
+          if (model && model.responseClass.properties) {
+            for (var key in model.responseClass.properties) {
               var t = model.responseClass.properties[key].type;
               switch (t){
               case "array":
-                if(model.responseClass.properties[key].items){
+                if (model.responseClass.properties[key].items) {
                   var ref = model.responseClass.properties[key].items.$ref;
-                  if(ref && requiredModels.indexOf(ref)<0){
-                    requiredModels.push(ref);
-                  }
+                  if (ref && requiredModels.indexOf(ref) < 0) {
+                    requiredModels.push(ref); }
                 }
                 break;
               case "string":
               case "long":
                 break;
               default:
-                if(requiredModels.indexOf(t)<0){
-                  requiredModels.push(t);
-                }
+                if (requiredModels.indexOf(t) < 0) {
+                  requiredModels.push(t); }
+                break;
               }
             }
           }
@@ -135,20 +137,19 @@ function applyFilter(req, res, r) {
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
   //  check response type
-  if(responseModel){
+  if (responseModel) {
     //  strip List[...] to locate the models
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
-    if(models.indexOf(responseModel)<0){
-      models.push(responseModel);
-    }
+    if (models.indexOf(responseModel) < 0) {
+      models.push(responseModel); }
   }
 }
 
 function shallowClone(obj) {
   var cloned = new Object();
-  for ( var i in obj) {
-    if (typeof (obj[i]) != "object")
-      cloned[i] = obj[i];
+  for (var i in obj) {
+    if (typeof (obj[i]) != "object") {
+      cloned[i] = obj[i]; }
   }
   return cloned;
 }
@@ -162,10 +163,9 @@ function shallowClone(obj) {
  * @returns {Boolean}
  */
 function canAccessResource(req, path, httpMethod) {
-  for(var i in validators){
-    if(!validators[i](req,path,httpMethod)){
-      return false;
-    }
+  for (var i in validators) {
+    if (!validators[i](req,path,httpMethod)) {
+      return false; }
   }
   return true;
 }
@@ -183,11 +183,11 @@ function resourceListing(request, response) {
     "swaggerVersion" : swaggerVersion,
     "apiVersion" : apiVersion
   };
-  for ( var key in resources) {
+  for (var key in resources) {
     r.apis.push({
       "path" : "/" + key,
       "description" : "none"
-    })
+    });
   }
   response.header('Access-Control-Allow-Origin', "*");
   response.header("Content-Type", "application/json; charset=utf-8");
@@ -207,7 +207,7 @@ function addMethod(app, callback, spec) {
   var root = resources[rootPath];
   
   if (root && root.apis) {
-    for ( var key in root.apis) {
+    for (var key in root.apis) {
       var api = root.apis[key];
       if (api && api.path == spec.path && api.method == spec.method) {
         // found matching path and method, add & return
