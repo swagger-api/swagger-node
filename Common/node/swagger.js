@@ -237,11 +237,11 @@ function addMethod(app, callback, spec) {
 			try {
 				callback(req,resp); }
 			catch(ex) {
-				if (ex.code && ex.description){
-				resp.send(JSON.stringify(ex), ex.code); }
+				if (ex.code && ex.description) {
+					resp.send(JSON.stringify(ex), ex.code); }
 				else {
-				console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
-				resp.send(JSON.stringify({"description":"unknown error","code":500})) 
+					console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+					resp.send(JSON.stringify({"description":"unknown error","code":500})) 
 				}
 			}
 		}); 
