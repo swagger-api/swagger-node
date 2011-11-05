@@ -4,6 +4,7 @@ var swaggerVersion = "1.0";
 var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
+var appHandler = null;
 
 
 /**
@@ -251,24 +252,32 @@ function addMethod(app, callback, spec) {
   }
 }
 
-function addGet(app, cb, spec) {
-  spec.method = "GET";
-  addMethod(app, cb, spec);
+function setAppHandler(app) {
+  appHandler = app;
 }
 
-function addPost(app, cb, spec) {
-  spec.method = "POST";
-  addMethod(app, cb, spec);
+function addHandlers(type, handlers) {
+  for (var i = 0; i < handlers.length; i++) {
+    var handler = handlers[i];
+    handler.spec.method = type;
+    addMethod(appHandler, handler.action, handler.spec);
+  }
 }
 
-function addDelete(app, cb, spec) {
-  spec.method = "DELETE";
-  addMethod(app, cb, spec);
+function addGet() {
+  addHandlers('GET', arguments);
 }
 
-function addPut(app, cb, spec) {
-  spec.method = "PUT";
-  addMethod(app, cb, spec);
+function addPost() {
+  addHandlers('POST', arguments);
+}
+
+function addDelete() { 
+  addHandlers('DELETE', arguments);
+}
+
+function addPut() {
+  addHandlers('PUT', arguments);
 }
 
 function wrap(callback, req, resp){
@@ -421,3 +430,4 @@ exports.addGet = addGet
 exports.addPost = addPost
 exports.addPut = addPut
 exports.addDelete = addDelete
+exports.setAppHandler = setAppHandler;
