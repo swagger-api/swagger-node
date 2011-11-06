@@ -16,6 +16,9 @@ var Randomizer = {
   'int': function() {
     return this.intBetween(0, 10000);
   },
+  'long': function() {
+    return this.int();
+  },
   'double': function() {
     return Math.random()*1000000;
   },
@@ -48,6 +51,7 @@ var Randomizer = {
 exports.intBetween = Randomizer.intBetween;
 exports.string = Randomizer.string;
 exports.int = Randomizer.int;
+exports.long = Randomizer.long;
 exports.double = Randomizer.double;
 exports.boolean = Randomizer.boolean;
 exports.__date = Randomizer.__date;

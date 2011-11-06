@@ -51,19 +51,14 @@ exports.findByStatus = {
   },  
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
-    if(!statusString) throw swagger.error(400, "invalid status supplied");
+    if (!statusString) {
+      throw swagger.error(400, "invalid status supplied"); }
     
     var output = new Array();
-    var array = statusString.split(",");
-    var id = 1;
-    array.forEach(function(item){
-      id += 1;
-      output.push({
-        "id":id + 1,
-        "status":item,
-        "category":"furry"
-      })
-    });
+    for (var i = 0; i < swagger.Randomizer.intBetween(1,10); i++) {
+      output.push(swagger.containerByModel(petstoreModels.pet, {'status': statusString}, -1));
+    }
+
     res.send(JSON.stringify(output));
   }
 };
@@ -86,20 +81,14 @@ exports.findByTags = {
   },
   'action': function (req,res) {
     var tagsString = url.parse(req.url,true).query["tags"];
-    if(!tagsString) throw swagger.error(400, "invalid tags supplied");
+    if (!tagsString) {
+      throw swagger.error(400, "invalid tags supplied"); }
     
     var output = new Array();
-    var array = tagsString.split(",");
-    var id = 1;
-    array.forEach(function(item){
-      id += 1;
-      output.push({
-        "id":id + 1,
-        "status":"available",
-        "category":"furry",
-        "tags":new Array(item)
-      })
-    });
+    for (var i = 0; i < swagger.Randomizer.intBetween(1,10); i++) {
+      output.push(swagger.containerByModel(petstoreModels.pet, {'tags': tagsString.split(',')}, -1));
+    }
+
     res.send(JSON.stringify(output));
   }
 };

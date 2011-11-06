@@ -3,12 +3,6 @@
  */
 exports.pet = {
   "properties" : {
-    "tags" : {
-      "type" : "array",
-      "items" : {
-        "$ref" : "tag"
-      }
-    },
     "id" : {
       "type" : "long"
     },
@@ -20,6 +14,12 @@ exports.pet = {
     "name" : {
       "type" : "string"
     },
+    "tags" : {
+      "type" : "array",
+      "items" : {
+        "type" : "tag"
+      }
+    },    
     "photoUrls" : {
       "type" : "array",
       "items" : {

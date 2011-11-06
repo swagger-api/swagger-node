@@ -6,7 +6,7 @@ var resources = new Object();
 var validators = Array();
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
-var allowedDataTypes = ['string', 'int', 'double', 'boolean', 'date'];
+var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date'];
 var Randomizer = require(__dirname + '/randomizer.js');
 
 /**
@@ -60,6 +60,7 @@ function randomDataByType(type, withRandom) {
   type = type.toLowerCase();
   if (allowedDataTypes.indexOf(type)<0) {
     return null; }
+  console.log(Randomizer);
   return Randomizer[type]();
 }
 
@@ -107,7 +108,12 @@ function containerByModel(model, withData, withRandom) {
      * handle lists
      */
     if (curType == 'array') {
-      item[key] = [];
+      if (withData && withData[key]) {
+        item[key] = withData[key]; }
+      else {
+        item[key] = [];
+      }
+      
       continue;
     }
     
@@ -562,3 +568,4 @@ exports.setAppHandler = setAppHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.containerByModel = containerByModel;
+exports.Randomizer = Randomizer;
