@@ -58,14 +58,36 @@ function setResourceListingPaths(app) {
  */
 function randomDataByType(type, withRandom) {
   type = type.toLowerCase();
-  if (withRandom && withRandom != -1 && RandomStorage[type] && RandomStorage[type][withRandom]) {
-    return RandomStorage[type][withRandom];  }
   if (allowedDataTypes.indexOf(type)<0) {
     return null; }
-  var value = Randomizer[type]();
-  if (withRandom && withRandom != -1 && RandomStorage[type]) {
-    RandomStorage[type][withRandom] = value;  }
-  return value;
+  return Randomizer[type]();
+}
+
+/**
+ * Get cache for type and identifier
+ * @param type
+ * @param id
+ * @param key
+ * @return value
+ */
+function getCache(type, id, key) {
+  if (id && id != -1 && RandomStorage[type] && RandomStorage[type][key+id]) {
+    return RandomStorage[type][key + id]; }
+  else {
+    return null; }
+}
+
+/**
+ * Set cache for type and identifier
+ * @param type
+ * @param id
+ * @param key
+ * @param value
+ */
+function setCache(curType, id, key, value) {
+  if (id && id != -1 && RandomStorage[curType]) {
+    RandomStorage[curType][key + id] = value; 
+  }
 }
 
 /**
@@ -79,11 +101,35 @@ function randomDataByType(type, withRandom) {
 function containerByModel(model, withData, withRandom) {
   var item = {};
   for (key in model.properties) {
+    var curType = model.properties[key].type.toLowerCase();
+    
+    /**
+     * handle lists
+     */
+    if (curType == 'array') {
+      item[key] = [];
+      continue;
+    }
+    
+    /**
+     * Handle default and randomizable properties
+     */
     var value = '';
     if (withData && withData[key]) {
       value = withData[key]; }
-    if (value == '' && withRandom) {
-      value = randomDataByType(model.properties[key].type, withRandom)}
+    if (value == '' && withRandom) {  
+      var cache = getCache(curType, withRandom, key);
+      if (cache) {
+        value = cache;
+      } else {
+        if (model.properties[key].enum) {
+          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)];
+        } else {
+          value = randomDataByType(curType, withRandom);
+        }
+      }
+      setCache(curType, withRandom, key, value);
+    }
     item[key] = value;
   } 
   
