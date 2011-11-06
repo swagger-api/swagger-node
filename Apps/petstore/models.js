@@ -12,9 +12,6 @@ exports.pet = {
     "id" : {
       "type" : "long"
     },
-    "category" : {
-      "type" : "category"
-    },
     "status" : {
       "type" : "string",
       "description" : "pet status in the store",

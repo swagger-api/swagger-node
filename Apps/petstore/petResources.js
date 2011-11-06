@@ -2,38 +2,36 @@ var swagger = require("../../Common/node/swagger.js");
 var petstoreModels = require("./models.js");
 var url = require("url");
 
-exports.findByIdSpec = {
-  "description" : "Operations about pets",
-  "path" : "/pet.{format}/{petId}",
-  "notes" : "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions",
-  "summary" : "Find pet by ID",
-  "params" : new Array(
-    swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")),
-  "outputModel" : {
-    "name" : "pet",
-    "responseClass" : petstoreModels.pet
+exports.findById = {
+  'spec': {
+    "description" : "Operations about pets",
+    "path" : "/pet.{format}/{petId}",
+    "notes" : "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions",
+    "summary" : "Find pet by ID",
+    "params" : new Array(
+      swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")),
+    "outputModel" : {
+      "name" : "pet",
+      "responseClass" : petstoreModels.pet
+    },
+    "errorResponses" : new Array(
+      swagger.error(400, "invalid id"),
+      swagger.error(404, "Pet not found")),
+    "nickname" : "getPetById"
   },
-  "errorResponses" : new Array(
-    swagger.error(400, "invalid id"),
-    swagger.error(404, "Pet not found")),
-  "nickname" : "getPetById"
-}
+  'action': function (req,res) {
+    console.log("find by id");
+    if (!req.params.petId) {
+      throw swagger.error(400,"invalid id"); }
+    var id = parseInt(req.params.petId);
+    if (!id) {
+      throw swagger.error(400,"invalid id"); }
+    if (id > 10) { // custom error 
+      throw swagger.error(400,"id too big"); }
 
-exports.findById = function (req,res) {
-  console.log("find by id");
-  if(!req.params.petId){
-    throw swagger.error(400,"invalid id");
+    res.send(JSON.stringify(swagger.containerByModel(petstoreModels.pet, {'id': req.params.petId}, req.params.petId)));
   }
-  var id = parseInt(req.params.petId);
-  if(!id){
-    throw swagger.error(400,"invalid id");
-  }
-  if(id >10)
-    throw swagger.error(400,"id too big");
-  res.send(JSON.stringify({
-    "message" : "got pet " + req.params.petId
-  }));
-}
+};
 
 exports.findByStatusSpec = {
   "path" : "/pet.{format}/findByStatus",

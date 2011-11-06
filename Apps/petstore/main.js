@@ -8,6 +8,7 @@ var swagger = require("../../Common/node/swagger.js");
 var petResources = require("./petResources.js");
 
 var app = express.createServer();
+swagger.setAppHandler(app);
 
 function callback(req, res) {
   res.send(JSON.stringify({
@@ -15,6 +16,9 @@ function callback(req, res) {
   }));
 }
 
+swagger.addGet(petResources.findById);
+
+/**
 swagger.addGet(app, petResources.findByStatus, petResources.findByStatusSpec);
 swagger.addGet(app, petResources.findByTags, petResources.findByTagsSpec);
 swagger.addGet(app, petResources.findById, petResources.findByIdSpec);
@@ -22,7 +26,7 @@ swagger.addGet(app, petResources.findById, petResources.findByIdSpec);
 swagger.addPost(app, callback, petResources.addPetSpec);
 swagger.addDelete(app, callback, petResources.deletePetSpec);
 swagger.addPut(app, callback, petResources.updatePetSpec);
-
+*/
 swagger.addValidator(
   function validate(req, path, httpMethod) {
     
