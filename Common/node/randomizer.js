@@ -46,13 +46,12 @@ var Randomizer = {
 
     return h + ':' + m + ':' + s + '+01:00';
   },
-  'list': function(type, length) {
+  'array': function(type, length) {
     var out = new Array();
     if (!length) {
       length = this.intBetween(1, 5); }
     for (var i = 0; i < length; i++) {
-      out.push(this[type]());
-    }
+      out.push(this[type]()); }
     return out;
   }
 };
@@ -63,7 +62,7 @@ exports.int = Randomizer.int;
 exports.long = Randomizer.long;
 exports.double = Randomizer.double;
 exports.boolean = Randomizer.boolean;
-exports.list = Randomizer.list;
+exports.array = Randomizer.array;
 exports.__date = Randomizer.__date;
 exports.date = Randomizer.date;
 exports.__time = Randomizer.__time;

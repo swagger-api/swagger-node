@@ -6,7 +6,7 @@ exports.findById = {
   'spec': {
     "description" : "Operations about pets",
     "path" : "/pet.{format}/{petId}",
-    "notes" : "Returns a pet when ID < 10. ID > 10 or nonintegers will simulate API error conditions",
+    "notes" : "Returns a pet for IDs in 0 < ID < 10. ID > 10, negative numbers or nonintegers will simulate API error conditions",
     "summary" : "Find pet by ID",
     "params" : new Array(
       swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")),
@@ -26,8 +26,8 @@ exports.findById = {
     var id = parseInt(req.params.petId);
     if (!id) {
       throw swagger.error(400,"invalid id"); }
-    if (id > 10) { // custom error 
-      throw swagger.error(400,"id too big"); }
+    if (id > 10 || id < 0) { // custom error 
+      throw swagger.error(400,"id out of scope"); }
 
     res.send(JSON.stringify(swagger.containerByModel(petstoreModels.pet, {'id': req.params.petId}, req.params.petId)));
   }

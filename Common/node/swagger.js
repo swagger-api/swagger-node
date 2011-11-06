@@ -6,7 +6,7 @@ var resources = new Object();
 var validators = Array();
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
-var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date'];
+var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var Randomizer = require(__dirname + '/randomizer.js');
 
 /**
@@ -56,11 +56,11 @@ function setResourceListingPaths(app) {
  * @param withRandom fill with random data 
  * @return value
  */
-function randomDataByType(type, withRandom) {
+function randomDataByType(type, withRandom, subType) {
   type = type.toLowerCase();
   if (allowedDataTypes.indexOf(type)<0) {
     return null; }
-  return Randomizer[type]();
+  return Randomizer[type](subType);
 }
 
 /**
@@ -105,16 +105,21 @@ function containerByModel(model, withData, withRandom) {
     
     /**
      * handle lists
-     */
+
     if (curType == 'array') {
       if (withData && withData[key]) {
-        item[key] = withData[key]; }
-      else {
-        item[key] = Randomizer['list'](model.properties[key].items.type);
+        value = withData[key]; }
+      else if (withRandom) {
+        var cache = getCache(curType, withRandom, key);
+        if (cache) {
+        
+        }
+        value = Randomizer['list'](model.properties[key].items.type);
       }
       
+      item[key] = value;
       continue;
-    }
+    }     */
     
     /**
      * Handle default and randomizable properties
@@ -130,7 +135,10 @@ function containerByModel(model, withData, withRandom) {
         if (model.properties[key].enum) {
           value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)];
         } else {
-          value = randomDataByType(curType, withRandom);
+          var subType = false;
+          if (model.properties[key].items && model.properties[key].items.type) {
+            subType = model.properties[key].items.type; }
+          value = randomDataByType(curType, withRandom, subType);
         }
       }
       setCache(curType, withRandom, key, value);
