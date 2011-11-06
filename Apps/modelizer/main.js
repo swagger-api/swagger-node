@@ -8,7 +8,6 @@ var app = express.createServer();
 
 //  start the server
 app.use(express.bodyParser());
-app.use(express.logger('dev'));
 swagger.setAppHandler(app);
 
 /**

@@ -7,52 +7,11 @@ var validators = Array();
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'double', 'boolean', 'date'];
-var Randomizer = {
-  'intBetween': function(a, b) {
-    return Math.floor(Math.random()*(b-a+1)+a);
-  },
-  'string': function() {
-    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-    var string_length = 24;
-    var randomstring = '';
-    for (var i=0; i<string_length; i++) {
-      var rnum = Math.floor(Math.random() * chars.length);
-      randomstring += chars.substring(rnum,rnum+1);
-    }
+var Randomizer = require(__dirname + '/randomizer.js');
 
-    return randomstring;
-  },
-  'int': function() {
-    return this.intBetween(0, 10000);
-  },
-  'double': function() {
-    return Math.random()*1000000;
-  },
-  'boolean': function() {
-    return this.intBetween(1,2) == 1;
-  },
-  '__date': function() {
-    var m = this.intBetween(1, 12);
-    if (m < 10) { m = '0'+m; }
-    var d = this.intBetween(1, 28);
-    if (d < 10) { d = '0'+d; }
-
-    return this.intBetween(1800, 2015) + '-' +  m + '-' + d;
-  },
-  'date': function() {
-    return this.__date() + 'T' + this.__time();
-  },
-  '__time': function() {
-    var h = this.intBetween(0, 23);
-    if (h < 10) { h = '0'+h; }
-    var m = this.intBetween(0, 59);
-    if (m < 10) { m = '0'+m; }
-    var s = this.intBetween(0, 59);
-    if (s < 10) { s = '0'+s; }
-
-    return h + ':' + m + ':' + s + '+01:00';
-  }
-};
+/**
+ * Initialize Randomizer Caching
+ */
 var RandomStorage = {};
 for (var i = 0; i < allowedDataTypes.length; i++) {
   RandomStorage[allowedDataTypes[i]] = {}; }
@@ -100,12 +59,12 @@ function setResourceListingPaths(app) {
 function randomDataByType(type, withRandom) {
   type = type.toLowerCase();
   if (withRandom && withRandom != -1 && RandomStorage[type] && RandomStorage[type][withRandom]) {
-    console.log('delivering chache:' + type); return RandomStorage[type][withRandom];  }
+    return RandomStorage[type][withRandom];  }
   if (allowedDataTypes.indexOf(type)<0) {
     return null; }
   var value = Randomizer[type]();
   if (withRandom && withRandom != -1 && RandomStorage[type]) {
-    console.log(RandomStorage); RandomStorage[type][withRandom] = value;  }
+    RandomStorage[type][withRandom] = value;  }
   return value;
 }
 
@@ -323,7 +282,6 @@ function addMethod(app, callback, spec) {
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
 		app[currentMethod](fullPath, function(req,res){
-		  console.log(currentMethod.toUpperCase());
 			res.header("Access-Control-Allow-Origin", "*");
 			res.header("Content-Type", "application/json; charset=utf-8");
 			try {
@@ -343,10 +301,19 @@ function addMethod(app, callback, spec) {
   }
 }
 
+/**
+ * Set expressjs app handler
+ * @param app
+ */
 function setAppHandler(app) {
   appHandler = app;
 }
 
+/**
+ * Add swagger handlers to express 
+ * @param type http method
+ * @param handlers list of handlers to be added
+ */
 function addHandlers(type, handlers) {
   for (var i = 0; i < handlers.length; i++) {
     var handler = handlers[i];
@@ -355,6 +322,9 @@ function addHandlers(type, handlers) {
   }
 }
 
+/**
+ * Discover swagger handler from resource
+ */
 function discover(resource) {
   for (var key in resource) {
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
@@ -365,6 +335,9 @@ function discover(resource) {
   }
 }
 
+/**
+ * Discover swagger handler from resource file path
+ */
 function discoverFile(file) {
   return discover(require(file));
 }
