@@ -323,23 +323,23 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
-		app[currentMethod](fullPath, function(req,res){
-			res.header("Access-Control-Allow-Origin", "*");
-			res.header("Content-Type", "application/json; charset=utf-8");
-			try {
-				callback(req,res); }
-			catch(ex) {
-				if (ex.code && ex.description) {
-					res.send(JSON.stringify(ex), ex.code); }
-				else {
-					console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
-					res.send(JSON.stringify({"description":"unknown error","code":500})) 
-				}
-			}
-		}); 
+    app[currentMethod](fullPath, function(req,res){
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Content-Type", "application/json; charset=utf-8");
+      try {
+        callback(req,res); }
+      catch(ex) {
+        if (ex.code && ex.description) {
+          res.send(JSON.stringify(ex), ex.code); }
+        else {
+        console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+        res.send(JSON.stringify({"description":"unknown error","code":500})) 
+        }
+      }
+    }); 
   } else {
-  	console.log('unable to add ' + currentMethod.toUpperCase() + ' handler');  
-  	return;
+    console.log('unable to add ' + currentMethod.toUpperCase() + ' handler');  
+    return;
   }
 }
 
