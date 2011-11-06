@@ -4,29 +4,22 @@ var url = require("url");
 //  swagger core
 var swagger = require("../../Common/node/swagger.js");
 
-//  resources for the demo
-var petResources = require("./petResources.js");
-
 var app = express.createServer();
 
-function callback(req, res) {
-  res.send(JSON.stringify({
-    "message" : "thanks for playing"
-  }));
-}
+//  start the server
+app.use(express.bodyParser());
+app.use(express.logger('dev'));
+swagger.setAppHandler(app);
 
-swagger.addGet(app, petResources.findByStatus, petResources.findByStatusSpec);
-swagger.addGet(app, petResources.findByTags, petResources.findByTagsSpec);
-swagger.addGet(app, petResources.findById, petResources.findByIdSpec);
-
-swagger.addPost(app, callback, petResources.addPetSpec);
-swagger.addDelete(app, callback, petResources.deletePetSpec);
-swagger.addPut(app, callback, petResources.updatePetSpec);
+/**
+ * Randomizer and Model Checker actions
+ **/
+swagger.discover(require("./res.Randomizer.js"));
 
 swagger.addValidator(
   function validate(req, path, httpMethod) {
     //  example, only allow POST for api_key="special-key"
-    if("POST" == httpMethod){
+    if ("POST" == httpMethod) {
       //  validate by api_key in header or queryparam
       var apiKey = req.headers["api_key"];
       if(!apiKey) apiKey= url.parse(req.url,true).query["api_key"];
@@ -41,5 +34,4 @@ swagger.addValidator(
 //  configures the app
 swagger.configure(app, "http://localhost:8002", "0.1");
 
-//  start the server
 app.listen(8002);

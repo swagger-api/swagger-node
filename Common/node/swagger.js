@@ -6,6 +6,56 @@ var resources = new Object();
 var validators = Array();
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
+var allowedDataTypes = ['string', 'int', 'double', 'boolean', 'date'];
+var Randomizer = {
+  'intBetween': function(a, b) {
+    return Math.floor(Math.random()*(b-a+1)+a);
+  },
+  'string': function() {
+    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    var string_length = 24;
+    var randomstring = '';
+    for (var i=0; i<string_length; i++) {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum,rnum+1);
+    }
+
+    return randomstring;
+  },
+  'int': function() {
+    return this.intBetween(0, 10000);
+  },
+  'double': function() {
+    return Math.random()*1000000;
+  },
+  'boolean': function() {
+    return this.intBetween(1,2) == 1;
+  },
+  '__date': function() {
+    var m = this.intBetween(1, 12);
+    if (m < 10) { m = '0'+m; }
+    var d = this.intBetween(1, 28);
+    if (d < 10) { d = '0'+d; }
+
+    return this.intBetween(1800, 2015) + '-' +  m + '-' + d;
+  },
+  'date': function() {
+    return this.__date() + 'T' + this.__time();
+  },
+  '__time': function() {
+    var h = this.intBetween(0, 23);
+    if (h < 10) { h = '0'+h; }
+    var m = this.intBetween(0, 59);
+    if (m < 10) { m = '0'+m; }
+    var s = this.intBetween(0, 59);
+    if (s < 10) { s = '0'+s; }
+
+    return h + ':' + m + ':' + s + '+01:00';
+  }
+};
+var RandomStorage = {};
+for (var i = 0; i < allowedDataTypes.length; i++) {
+  RandomStorage[allowedDataTypes[i]] = {}; }
 
 /**
  * sets the base path, api version
@@ -38,6 +88,47 @@ function setResourceListingPaths(app) {
         res.send(JSON.stringify(data)); }
     })
   }
+}
+
+/**
+ * generate random date for type
+ * 
+ * @param type type of data (must be defined in allowedDataTypes)
+ * @param withRandom fill with random data 
+ * @return value
+ */
+function randomDataByType(type, withRandom) {
+  type = type.toLowerCase();
+  if (withRandom && withRandom != -1 && RandomStorage[type] && RandomStorage[type][withRandom]) {
+    console.log('delivering chache:' + type); return RandomStorage[type][withRandom];  }
+  if (allowedDataTypes.indexOf(type)<0) {
+    return null; }
+  var value = Randomizer[type]();
+  if (withRandom && withRandom != -1 && RandomStorage[type]) {
+    console.log(RandomStorage); RandomStorage[type][withRandom] = value;  }
+  return value;
+}
+
+/**
+ * try to generate object from model defintion
+ * 
+ * @param model
+ * @param withData fill model with data
+ * @param withRandom generate random values
+ * @return object
+ */
+function containerByModel(model, withData, withRandom) {
+  var item = {};
+  for (key in model.properties) {
+    var value = '';
+    if (withData && withData[key]) {
+      value = withData[key]; }
+    if (value == '' && withRandom) {
+      value = randomDataByType(model.properties[key].type, withRandom)}
+    item[key] = value;
+  } 
+  
+  return item;
 }
 
 /**
@@ -231,17 +322,18 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
-		app[currentMethod](fullPath, function(req,resp){
-			resp.header("Access-Control-Allow-Origin", "*");
-			resp.header("Content-Type", "application/json; charset=utf-8");
+		app[currentMethod](fullPath, function(req,res){
+		  console.log(currentMethod.toUpperCase());
+			res.header("Access-Control-Allow-Origin", "*");
+			res.header("Content-Type", "application/json; charset=utf-8");
 			try {
-				callback(req,resp); }
+				callback(req,res); }
 			catch(ex) {
 				if (ex.code && ex.description) {
-					resp.send(JSON.stringify(ex), ex.code); }
+					res.send(JSON.stringify(ex), ex.code); }
 				else {
 					console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
-					resp.send(JSON.stringify({"description":"unknown error","code":500})) 
+					res.send(JSON.stringify({"description":"unknown error","code":500})) 
 				}
 			}
 		}); 
@@ -450,3 +542,4 @@ exports.addDelete = addDelete
 exports.setAppHandler = setAppHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
+exports.containerByModel = containerByModel;
