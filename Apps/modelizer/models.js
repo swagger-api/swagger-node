@@ -22,6 +22,24 @@ exports.random = {
     },
     "int":{
       "type":"int"
+    },    
+    "visits" : {
+      "type" : "array",
+      "items" : {
+        "type" : "date"
+      }
+    },    
+    "scores" : {
+      "type" : "array",
+      "items" : {
+        "type" : "int"
+      }
+    },
+    "photos" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
     }
   }
 };

@@ -102,28 +102,7 @@ function containerByModel(model, withData, withRandom) {
   var item = {};
   for (key in model.properties) {
     var curType = model.properties[key].type.toLowerCase();
-    
-    /**
-     * handle lists
 
-    if (curType == 'array') {
-      if (withData && withData[key]) {
-        value = withData[key]; }
-      else if (withRandom) {
-        var cache = getCache(curType, withRandom, key);
-        if (cache) {
-        
-        }
-        value = Randomizer['list'](model.properties[key].items.type);
-      }
-      
-      item[key] = value;
-      continue;
-    }     */
-    
-    /**
-     * Handle default and randomizable properties
-     */
     var value = '';
     if (withData && withData[key]) {
       value = withData[key]; }
@@ -143,6 +122,10 @@ function containerByModel(model, withData, withRandom) {
       }
       setCache(curType, withRandom, key, value);
     }
+    
+    if (value == '' && curType == 'array') {
+      value = []; }
+    
     item[key] = value;
   } 
   
