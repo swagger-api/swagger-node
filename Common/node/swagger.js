@@ -1,10 +1,20 @@
 var resourcePath = "/resources.json";
 var basePath = "/";
-var swaggerVersion = "1.0";
+var swaggerVersion = "1.1";
 var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
+var appHandler = null;
+var allowedMethods = ['get', 'post', 'put', 'delete'];
+var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
+var Randomizer = require(__dirname + '/randomizer.js');
 
+/**
+ * Initialize Randomizer Caching
+ */
+var RandomStorage = {};
+for (var i = 0; i < allowedDataTypes.length; i++) {
+  RandomStorage[allowedDataTypes[i]] = {}; }
 
 /**
  * sets the base path, api version
@@ -26,14 +36,100 @@ function configure(app, bp, av) {
  * @param app
  */
 function setResourceListingPaths(app) {
-  for ( var key in resources) {
-    var r = resources[key];
+  for (var key in resources) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       res.header('Access-Control-Allow-Origin', "*");
-      res.write(JSON.stringify(applyFilter(req, res, r)));
-      res.end();
+      res.header("Content-Type", "application/json; charset=utf-8");
+      var data = applyFilter(req, res, resources[req.url.substr(1).replace('.json', '.{format}')]);
+      if (data.code) {
+        res.send(data, data.code); } 
+      else {      
+        res.send(JSON.stringify(data)); }
     })
   }
+}
+
+/**
+ * generate random date for type
+ * 
+ * @param type type of data (must be defined in allowedDataTypes)
+ * @param withRandom fill with random data 
+ * @return value
+ */
+function randomDataByType(type, withRandom, subType) {
+  type = type.toLowerCase();
+  if (allowedDataTypes.indexOf(type)<0) {
+    return null; }
+  return Randomizer[type](subType);
+}
+
+/**
+ * Get cache for type and identifier
+ * @param type
+ * @param id
+ * @param key
+ * @return value
+ */
+function getCache(type, id, key) {
+  if (id && id != -1 && RandomStorage[type] && RandomStorage[type][key+id]) {
+    return RandomStorage[type][key + id]; }
+  else {
+    return null; }
+}
+
+/**
+ * Set cache for type and identifier
+ * @param type
+ * @param id
+ * @param key
+ * @param value
+ */
+function setCache(curType, id, key, value) {
+  if (id && id != -1 && RandomStorage[curType]) {
+    RandomStorage[curType][key + id] = value; 
+  }
+}
+
+/**
+ * try to generate object from model defintion
+ * 
+ * @param model
+ * @param withData fill model with data
+ * @param withRandom generate random values
+ * @return object
+ */
+function containerByModel(model, withData, withRandom) {
+  var item = {};
+  for (key in model.properties) {
+    var curType = model.properties[key].type.toLowerCase();
+
+    var value = '';
+    if (withData && withData[key]) {
+      value = withData[key]; }
+    if (value == '' && withRandom) {  
+      var cache = getCache(curType, withRandom, key);
+      if (cache) {
+        value = cache;
+      } else {
+        if (model.properties[key].enum) {
+          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)];
+        } else {
+          var subType = false;
+          if (model.properties[key].items && model.properties[key].items.type) {
+            subType = model.properties[key].items.type; }
+          value = randomDataByType(curType, withRandom, subType);
+        }
+      }
+      setCache(curType, withRandom, key, value);
+    }
+    
+    if (value == '' && curType == 'array') {
+      value = []; }
+    
+    item[key] = value;
+  } 
+  
+  return item;
 }
 
 /**
@@ -47,14 +143,17 @@ function setResourceListingPaths(app) {
 function applyFilter(req, res, r) {
   var route = req.route;
   var excludedPaths = new Array();
-  for ( var key in r.apis) {
+  
+  if (!r || !r.apis) {
+    return error(500, 'internal error'); }
+  
+  for (var key in r.apis) {
     var api = r.apis[key];
-    for ( var opKey in api.operations) {
+    for (var opKey in api.operations) {
       var op = api.operations[opKey];
       var path = api.path.replace(/{.*\}/, "*");
       if (!canAccessResource(req, route + path, op.httpMethod)) {
-        excludedPaths.push(op.httpMethod + ":" + api.path);
-      }
+        excludedPaths.push(op.httpMethod + ":" + api.path); }
     }
   }
   
@@ -69,53 +168,53 @@ function applyFilter(req, res, r) {
     //  clone methods that have access
     output.apis = new Array();
     var apis = JSON.parse(JSON.stringify(r.apis));
-    for(var i in apis){
+    for (var i in apis){
       var api = apis[i];
       var clonedApi = shallowClone(api);
       clonedApi.operations = new Array();
       var shouldAdd = true;
-      for(var o in api.operations){
+      for (var o in api.operations){
         var operation = api.operations[o];
-        if(excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0)
-          break;
-        else{
+        if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0) {
+          break; }
+        else {
           clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
           addModelsFromResponse(operation, requiredModels);
         }
       }
-      if(clonedApi.operations.length>0){
+      
+      if (clonedApi.operations.length > 0) {
         //  only add cloned api if there are operations
         output.apis.push(clonedApi);
 
         //  add only required models
         output.models = new Array();
-        for(var i in requiredModels){
+        for (var i in requiredModels){
           var model = r.models[i];
           output.models.push(model);
         }
         //  look in object graph
         requiredModels = new Array();
-        for(var i in output.models){
+        for (var i in output.models) {
           var model = output.models[i];
-          if(model && model.responseClass.properties){
-            for(var key in model.responseClass.properties){
+          if (model && model.responseClass.properties) {
+            for (var key in model.responseClass.properties) {
               var t = model.responseClass.properties[key].type;
               switch (t){
               case "array":
-                if(model.responseClass.properties[key].items){
+                if (model.responseClass.properties[key].items) {
                   var ref = model.responseClass.properties[key].items.$ref;
-                  if(ref && requiredModels.indexOf(ref)<0){
-                    requiredModels.push(ref);
-                  }
+                  if (ref && requiredModels.indexOf(ref) < 0) {
+                    requiredModels.push(ref); }
                 }
                 break;
               case "string":
               case "long":
                 break;
               default:
-                if(requiredModels.indexOf(t)<0){
-                  requiredModels.push(t);
-                }
+                if (requiredModels.indexOf(t) < 0) {
+                  requiredModels.push(t); }
+                break;
               }
             }
           }
@@ -130,21 +229,19 @@ function applyFilter(req, res, r) {
 
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
-  //  check response type
-  if(responseModel){
+  if (responseModel) {
     //  strip List[...] to locate the models
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
-    if(models.indexOf(responseModel)<0){
-      models.push(responseModel);
-    }
+    if (models.indexOf(responseModel) < 0) {
+      models.push(responseModel); }
   }
 }
 
 function shallowClone(obj) {
   var cloned = new Object();
-  for ( var i in obj) {
-    if (typeof (obj[i]) != "object")
-      cloned[i] = obj[i];
+  for (var i in obj) {
+    if (typeof (obj[i]) != "object") {
+      cloned[i] = obj[i]; }
   }
   return cloned;
 }
@@ -158,10 +255,9 @@ function shallowClone(obj) {
  * @returns {Boolean}
  */
 function canAccessResource(req, path, httpMethod) {
-  for(var i in validators){
-    if(!validators[i](req,path,httpMethod)){
-      return false;
-    }
+  for (var i in validators) {
+    if (!validators[i](req,path,httpMethod)) {
+      return false; }
   }
   return true;
 }
@@ -179,13 +275,14 @@ function resourceListing(request, response) {
     "swaggerVersion" : swaggerVersion,
     "apiVersion" : apiVersion
   };
-  for ( var key in resources) {
+  for (var key in resources) {
     r.apis.push({
       "path" : "/" + key,
       "description" : "none"
-    })
+    });
   }
   response.header('Access-Control-Allow-Origin', "*");
+  response.header("Content-Type", "application/json; charset=utf-8");
   response.write(JSON.stringify(r));
   response.end();
 }
@@ -202,7 +299,7 @@ function addMethod(app, callback, spec) {
   var root = resources[rootPath];
   
   if (root && root.apis) {
-    for ( var key in root.apis) {
+    for (var key in root.apis) {
       var api = root.apis[key];
       if (api && api.path == spec.path && api.method == spec.method) {
         // found matching path and method, add & return
@@ -224,110 +321,87 @@ function addMethod(app, callback, spec) {
   //  TODO: add some XML support
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
-  switch(spec.method){
-    case "GET":
-      app.get(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
+  var currentMethod = spec.method.toLowerCase();
+  if (allowedMethods.indexOf(currentMethod)>-1) {
+    app[currentMethod](fullPath, function(req,res){
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Content-Type", "application/json; charset=utf-8");
+      try {
+        callback(req,res); }
+      catch(ex) {
+        if (ex.code && ex.description) {
+          res.send(JSON.stringify(ex), ex.code); }
+        else {
+          console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+          res.send(JSON.stringify({"description":"unknown error","code":500})) 
         }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("GET failed for path '" + fullPath + "': " + ex);
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    case "POST":
-      app.post(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("POST failed for path '" + fullPath + "': " + ex);
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    case "PUT":
-      app.put(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("PUT failed for path '" + fullPath + "': " + ex); 
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    case "DELETE":
-      app.delete(fullPath, function(req,resp){
-        resp.header("Access-Control-Allow-Origin", "*");
-        resp.header("Content-Type", "application/json; charset=utf-8");
-        try{
-          callback(req,resp);
-        }
-        catch(ex){
-          if(ex.code && ex.description){
-            //  swagger exceptions
-            resp.send(JSON.stringify(ex), ex.code);
-          }
-          else{
-            //  all others go 500
-			console.error("DELETE failed for path '" + fullPath + "': " + ex);
-            resp.send(JSON.stringify({"description":"unknown error","code":500}))
-          }
-        }
-      });
-      break;
-    default:
-      console.log("unknown method " + spec.method);
+      }
+    }); 
+  } else {
+    console.log('unable to add ' + currentMethod.toUpperCase() + ' handler');  
+    return;
   }
 }
 
-function addGet(app, cb, spec) {
-  spec.method = "GET";
-  addMethod(app, cb, spec);
+/**
+ * Set expressjs app handler
+ * @param app
+ */
+function setAppHandler(app) {
+  appHandler = app;
 }
 
-function addPost(app, cb, spec) {
-  spec.method = "POST";
-  addMethod(app, cb, spec);
+/**
+ * Add swagger handlers to express 
+ * @param type http method
+ * @param handlers list of handlers to be added
+ */
+function addHandlers(type, handlers) {
+  for (var i = 0; i < handlers.length; i++) {
+    var handler = handlers[i];
+    handler.spec.method = type;
+    addMethod(appHandler, handler.action, handler.spec);
+  }
 }
 
-function addDelete(app, cb, spec) {
-  spec.method = "DELETE";
-  addMethod(app, cb, spec);
+/**
+ * Discover swagger handler from resource
+ */
+function discover(resource) {
+  for (var key in resource) {
+    if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
+      addMethod(appHandler, resource[key].action, resource[key].spec);
+    } else {
+      console.log('auto discover failed for: ' + key);
+    }
+  }
 }
 
-function addPut(app, cb, spec) {
-  spec.method = "PUT";
-  addMethod(app, cb, spec);
+/**
+ * Discover swagger handler from resource file path
+ */
+function discoverFile(file) {
+  return discover(require(file));
+}
+
+function addGet() {
+  addHandlers('GET', arguments);
+  return this;
+}
+
+function addPost() {
+  addHandlers('POST', arguments);
+  return this;
+}
+
+function addDelete() { 
+  addHandlers('DELETE', arguments);
+  return this;
+}
+
+function addPut() {
+  addHandlers('PUT', arguments);
+  return this;
 }
 
 function wrap(callback, req, resp){
@@ -397,7 +471,6 @@ function appendToApi(rootResource, api, spec) {
 
   // add model if not already in array by name
   for ( var key in api.models) {
-    console.log("checking model " + key);
     var model = api.models[key];
     if (model.name == spec.outputModel.name) {
       return;
@@ -481,3 +554,8 @@ exports.addGet = addGet
 exports.addPost = addPost
 exports.addPut = addPut
 exports.addDelete = addDelete
+exports.setAppHandler = setAppHandler;
+exports.discover = discover;
+exports.discoverFile = discoverFile;
+exports.containerByModel = containerByModel;
+exports.Randomizer = Randomizer;
