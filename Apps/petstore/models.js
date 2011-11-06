@@ -17,10 +17,16 @@ exports.pet = {
     "tags" : {
       "type" : "array",
       "items" : {
-        "type" : "tag"
+        "type" : "string"
       }
     },    
-    "photoUrls" : {
+    "visits" : {
+      "type" : "array",
+      "items" : {
+        "type" : "date"
+      }
+    },
+    "photos" : {
       "type" : "array",
       "items" : {
         "type" : "string"

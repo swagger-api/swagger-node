@@ -60,7 +60,6 @@ function randomDataByType(type, withRandom) {
   type = type.toLowerCase();
   if (allowedDataTypes.indexOf(type)<0) {
     return null; }
-  console.log(Randomizer);
   return Randomizer[type]();
 }
 
@@ -111,7 +110,7 @@ function containerByModel(model, withData, withRandom) {
       if (withData && withData[key]) {
         item[key] = withData[key]; }
       else {
-        item[key] = [];
+        item[key] = Randomizer['list'](model.properties[key].items.type);
       }
       
       continue;
