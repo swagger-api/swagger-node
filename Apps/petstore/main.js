@@ -19,8 +19,6 @@ swagger.addGet(petResources.findByStatus)
 
 swagger.addValidator(
   function validate(req, path, httpMethod) {
-    
-    return true;
     //  example, only allow POST for api_key="special-key"
     if("POST" == httpMethod){
       //  validate by api_key in header or queryparam
