@@ -1,6 +1,6 @@
 var resourcePath = "/resources.json";
 var basePath = "/";
-var swaggerVersion = "1.1";
+var swaggerVersion = "1.1-SNAPSHOT.121026";
 var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
@@ -40,7 +40,8 @@ function setResourceListingPaths(app) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       res.header('Access-Control-Allow-Origin', "*");
       res.header("Content-Type", "application/json; charset=utf-8");
-      var data = applyFilter(req, res, resources[req.url.substr(1).replace('.json', '.{format}')]);
+      var key = req.url.substr(1).replace('.json', '.{format}').split('?')[0];
+      var data = applyFilter(req, res, resources[key]);
       if (data.code) {
         res.send(data, data.code); } 
       else {      
@@ -257,7 +258,8 @@ function shallowClone(obj) {
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
     if (!validators[i](req,path,httpMethod)) {
-      return false; }
+      return false;
+    }
   }
   return true;
 }
