@@ -23,11 +23,11 @@ for (var i = 0; i < allowedDataTypes.length; i++) {
  * @param bp
  * @param av
  */
-function configure(app, bp, av) {
+function configure(bp, av) {
   basePath = bp;
   apiVersion = av;
-  setResourceListingPaths(app);
-  app.get(resourcePath, resourceListing);
+  setResourceListingPaths(appHandler);
+  appHandler.get(resourcePath, resourceListing);
 }
 
 /**
@@ -37,16 +37,16 @@ function configure(app, bp, av) {
  */
 function setResourceListingPaths(app) {
   for (var key in resources) {
-    app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
-      res.header('Access-Control-Allow-Origin', "*");
-      res.header("Content-Type", "application/json; charset=utf-8");
-      var key = req.url.substr(1).replace('.json', '.{format}').split('?')[0];
-      var data = applyFilter(req, res, resources[key]);
-      if (data.code) {
-        res.send(data, data.code); } 
-      else {      
-        res.send(JSON.stringify(data)); }
-    })
+    app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res, next) {
+      var r = resources[req.url.substr(1).split('?')[0].replace('.json', '.{format}')];
+      if (!r) {
+        return stopWithError(res, {'description': 'internal error', 'code': 500});
+      } else {      
+        res.header('Access-Control-Allow-Origin', "*");
+        res.header("Content-Type", "application/json; charset=utf-8");
+        res.send(JSON.stringify(applyFilter(req, res, r))); 
+      }
+    });
   }
 }
 
@@ -93,7 +93,6 @@ function setCache(curType, id, key, value) {
 
 /**
  * try to generate object from model defintion
- * 
  * @param model
  * @param withData fill model with data
  * @param withRandom generate random values
@@ -146,7 +145,7 @@ function applyFilter(req, res, r) {
   var excludedPaths = new Array();
   
   if (!r || !r.apis) {
-    return error(500, 'internal error'); }
+    return stopWithError(res, {'description': 'internal error', 'code': 500}); }
   
   for (var key in r.apis) {
     var api = r.apis[key];
@@ -169,7 +168,7 @@ function applyFilter(req, res, r) {
     //  clone methods that have access
     output.apis = new Array();
     var apis = JSON.parse(JSON.stringify(r.apis));
-    for (var i in apis){
+    for (var i in apis) {
       var api = apis[i];
       var clonedApi = shallowClone(api);
       clonedApi.operations = new Array();
@@ -325,7 +324,7 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
-    app[currentMethod](fullPath, function(req,res){
+    app[currentMethod](fullPath, function(req,res) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Content-Type", "application/json; charset=utf-8");
       try {
@@ -546,16 +545,28 @@ function error(code, description) {
   };
 }
 
-exports.error = error
-exports.addValidator = addValidator
-exports.configure = configure
-exports.canAccessResource = canAccessResource
-exports.resourcePath = resourcePath
-exports.resourceListing = resourceListing
-exports.addGet = addGet
-exports.addPost = addPost
-exports.addPut = addPut
-exports.addDelete = addDelete
+function stopWithError(res, error) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header("Content-Type", "application/json; charset=utf-8");
+  
+  if (error && error.description && error.code) {
+    res.send(JSON.stringify(error), error.code);  
+  } else {
+    res.send(JSON.stringify({'description': 'authentication failed', 'code': 403}), 403);  
+  }
+}
+
+exports.error = error;
+exports.stopWithError = stopWithError;
+exports.addValidator = addValidator;
+exports.configure = configure;
+exports.canAccessResource = canAccessResource;
+exports.resourcePath = resourcePath;
+exports.resourceListing = resourceListing;
+exports.addGet = addGet;
+exports.addPost = addPost;
+exports.addPut = addPut;
+exports.addDelete = addDelete;
 exports.setAppHandler = setAppHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
