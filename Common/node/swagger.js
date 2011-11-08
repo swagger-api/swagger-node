@@ -93,7 +93,6 @@ function setCache(curType, id, key, value) {
 
 /**
  * try to generate object from model defintion
- * 
  * @param model
  * @param withData fill model with data
  * @param withRandom generate random values
