@@ -1,6 +1,6 @@
 var resourcePath = "/resources.json";
 var basePath = "/";
-var swaggerVersion = "1.1";
+var swaggerVersion = "1.1-SNAPSHOT.121026";
 var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
@@ -46,7 +46,7 @@ function setResourceListingPaths(app) {
         res.header("Content-Type", "application/json; charset=utf-8");
         res.send(JSON.stringify(applyFilter(req, res, r))); 
       }
-    })
+    });
   }
 }
 
@@ -258,7 +258,8 @@ function shallowClone(obj) {
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
     if (!validators[i](req,path,httpMethod)) {
-      return false; }
+      return false;
+    }
   }
   return true;
 }
