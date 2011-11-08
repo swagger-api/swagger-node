@@ -9,7 +9,7 @@ var app = express.createServer(
   /** Add authentication */
   function(req, res, next) { 
     /** 
-     * Example: All POST request need to be accessed with api_key 'special-key'
+     * Example: All POST requests need to be accessed with api_key 'special-key'
      */
     if (req.method == 'POST') {
       var apiKey = req.headers["api_key"] || require('url').parse(req.url,true).query["api_key"];
