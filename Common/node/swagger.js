@@ -23,11 +23,11 @@ for (var i = 0; i < allowedDataTypes.length; i++) {
  * @param bp
  * @param av
  */
-function configure(app, bp, av) {
+function configure(bp, av) {
   basePath = bp;
   apiVersion = av;
-  setResourceListingPaths(app);
-  app.get(resourcePath, resourceListing);
+  setResourceListingPaths(appHandler);
+  appHandler.get(resourcePath, resourceListing);
 }
 
 /**
@@ -546,6 +546,9 @@ function error(code, description) {
 }
 
 function stopWithError(res, error) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header("Content-Type", "application/json; charset=utf-8");
+  
   if (error && error.description && error.code) {
     res.send(JSON.stringify(error), error.code);  
   } else {
