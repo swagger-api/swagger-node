@@ -256,7 +256,6 @@ function shallowClone(obj) {
  * @returns {Boolean}
  */
 function canAccessResource(req, path, httpMethod) {
-  return true;
   for (var i in validators) {
     if (!validators[i](req,path,httpMethod)) {
       return false; }
