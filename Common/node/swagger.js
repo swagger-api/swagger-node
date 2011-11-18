@@ -65,7 +65,6 @@ function setModels() {
       } else if (currentModels[key]) {
         console.log('duplicate model definition for: ' + key);
       } else {
-        console.log(key);
         currentModels[key] = arguments[i][key];
       }
     }
