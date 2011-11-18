@@ -2,13 +2,14 @@ var resourcePath = "/resources.json";
 var basePath = "/";
 var swaggerVersion = "1.1-SNAPSHOT.121026";
 var apiVersion = "0.0";
-var resources = new Object();
-var validators = Array();
+var resources = {};
+var validators = [];
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var Randomizer = require(__dirname + '/randomizer.js');
-
+var currentModels = {};
+var paramTypes = require(__dirname + '/paramTypes.js');
 /**
  * Initialize Randomizer Caching
  */
@@ -51,6 +52,58 @@ function setResourceListingPaths(app) {
 }
 
 /**
+ * Set model directory
+ * @example swagger.setModels(require('./models/deprecated.js'), require('./models/main.js'));
+ */
+function setModels() {
+  for (var i = 0; i < arguments.length; i++) {
+    for (var key in arguments[i]) { 
+      if (key != arguments[i][key].id) {
+        console.log('error in model definition for: ' + key);
+      } else if (currentModels[key]) {
+        console.log('duplicate model definition for: ' + key);
+      } else {
+        currentModels[key] = arguments[i][key];
+      }
+    }
+  }
+}
+
+/* function defineGetters(type) {
+  if (currentModels[type]) {  
+    var modelAccess = {}, baseModel = type, model = currentModels[type];
+    var modelName = type.substr(0,1).toUpperCase() + type.substr(1);
+    for (var key in model.properties) {  
+      if (key.substr(0,1) == '_') {
+        continue; }
+      if (model.properties[key].type && allowedDataTypes.indexOf(model.properties[key].type.toLowerCase())>-1) {
+        var actionKey = key.substr(0,1).toUpperCase() + key.substr(1);
+        var obj = {
+        'spec': {
+          "description" : "Get " + modelName + ' by ' + actionKey,
+          "path" : "/" + baseModel + ".{format}/findBy" + actionKey,
+          "method": "GET",
+          "notes" : "Get " + type + ' by ' + actionKey,
+          "summary" : "Get " + type + ' by ' + actionKey,
+          "params" : new Array(
+            paramTypes.query("id", type + "ID", "string", true)),
+          "outputModel" : baseModel,
+          "nickname" : baseModel + "FindBy" + actionKey
+        },
+        'action': function(req, res) {
+          console.log('hi');
+          res.send(JSON.stringify([actionKey]));
+        }};
+        
+        modelAccess['findBy' + key] = obj;
+      }
+    }
+
+    discover(modelAccess);
+  }
+} */
+
+/**
  * generate random date for type
  * 
  * @param type type of data (must be defined in allowedDataTypes)
@@ -59,8 +112,13 @@ function setResourceListingPaths(app) {
  */
 function randomDataByType(type, withRandom, subType) {
   type = type.toLowerCase();
-  if (allowedDataTypes.indexOf(type)<0) {
-    return null; }
+  if (allowedDataTypes.indexOf(type) < 0) {
+    if (currentModels[type]) {
+      return containerByModel(currentModels[type].id, {}, withRandom);
+    } else {
+      return null; 
+    }
+  }
   return Randomizer[type](subType);
 }
 
@@ -98,8 +156,9 @@ function setCache(curType, id, key, value) {
  * @param withRandom generate random values
  * @return object
  */
-function containerByModel(model, withData, withRandom) {
-  var item = {};
+function containerByModel(modelId, withData, withRandom) {
+  var item = {}, model = currentModels[modelId];
+
   for (key in model.properties) {
     var curType = model.properties[key].type.toLowerCase();
 
@@ -117,7 +176,13 @@ function containerByModel(model, withData, withRandom) {
           var subType = false;
           if (model.properties[key].items && model.properties[key].items.type) {
             subType = model.properties[key].items.type; }
+            
+          /**
+           * OMG?
+           */
+          var curKey = key;
           value = randomDataByType(curType, withRandom, subType);
+          var key = curKey;
         }
       }
       setCache(curType, withRandom, key, value);
@@ -125,7 +190,7 @@ function containerByModel(model, withData, withRandom) {
     
     if (value == '' && curType == 'array') {
       value = []; }
-    
+
     item[key] = value;
   } 
   
@@ -197,13 +262,13 @@ function applyFilter(req, res, r) {
         requiredModels = new Array();
         for (var i in output.models) {
           var model = output.models[i];
-          if (model && model.responseClass.properties) {
-            for (var key in model.responseClass.properties) {
-              var t = model.responseClass.properties[key].type;
+          if (model && currentModels[model.name].properties) {
+            for (var key in currentModels[model.name].properties) {
+              var t = currentModels[model.name].properties[key].type;
               switch (t){
               case "array":
-                if (model.responseClass.properties[key].items) {
-                  var ref = model.responseClass.properties[key].items.$ref;
+                if (currentModels[model.name].properties[key].items) {
+                  var ref = currentModels[model.name].properties[key].items.$ref;
                   if (ref && requiredModels.indexOf(ref) < 0) {
                     requiredModels.push(ref); }
                 }
@@ -228,7 +293,7 @@ function applyFilter(req, res, r) {
 }
 
 function addModelsFromResponse(operation, models){
-  var responseModel = operation.responseClass;
+  var responseModel = currentModels[model.name];
   if (responseModel) {
     //  strip List[...] to locate the models
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
@@ -367,13 +432,17 @@ function addHandlers(type, handlers) {
 
 /**
  * Discover swagger handler from resource
+ * @example swagger.discover(require("./res.Lorem.js"), require("./res.Ipsum.js"));
  */
-function discover(resource) {
-  for (var key in resource) {
-    if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec);
-    } else {
-      console.log('auto discover failed for: ' + key);
+function discover() {
+  for (var i = 0; i < arguments.length; i++) {
+    resource = arguments[i];
+    for (var key in resource) {
+      if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
+        addMethod(appHandler, resource[key].action, resource[key].spec);
+      } else {
+        console.log('auto discover failed for: ' + key);
+      }
     }
   }
 }
@@ -466,14 +535,14 @@ function appendToApi(rootResource, api, spec) {
     "summary" : spec.summary
   };
   if(spec.outputModel){
-    op.responseClass = spec.outputModel.name;
+    op.responseClass = spec.outputModel;
   }
   api.operations.push(op);
 
   // add model if not already in array by name
   for ( var key in api.models) {
     var model = api.models[key];
-    if (model.name == spec.outputModel.name) {
+    if (model.name == spec.outputModel) {
       return;
     }
   }
@@ -481,57 +550,10 @@ function appendToApi(rootResource, api, spec) {
     rootResource.models = new Array();
   for ( var key in rootResource.models) {
     // don't add the model again
-    if (spec.outputModel && rootResource.models[key].name == spec.outputModel.name)
+    if (spec.outputModel && rootResource.models[key] == spec.outputModel)
       return;
   }
   rootResource.models.push(spec.outputModel);
-}
-
-function createEnum(input) {
-  if (input && input.indexOf(",") > 0) {
-    // TODO: stupid! handle escaped commas
-    var output = new Array();
-    var array = input.split(",");
-    array.forEach(function(item) {
-      output.push(item);
-    })
-    return output;
-  }
-}
-
-exports.queryParam = function(name, description, dataType, required,
-    allowMultiple, allowableValues, defaultValue) {
-  return {
-    "name" : name,
-    "description" : description,
-    "dataType" : dataType,
-    "required" : required,
-    "allowMultiple" : allowMultiple,
-    "allowableValues" : createEnum(allowableValues),
-    "defaultValue" : defaultValue,
-    "paramType" : "query"
-  };
-}
-
-exports.pathParam = function(name, description, dataType, allowableValues) {
-  return {
-    "name" : name,
-    "description" : description,
-    "dataType" : dataType,
-    "required" : true,
-    "allowMultiple" : false,
-    "allowableValues" : createEnum(allowableValues),
-    "paramType" : "path"
-  };
-}
-
-exports.postParam = function(description, dataType) {
-  return {
-    "description" : description,
-    "dataType" : dataType,
-    "required" : true,
-    "paramType" : "body"
-  };
 }
 
 function addValidator(v) {
@@ -556,6 +578,10 @@ function stopWithError(res, error) {
   }
 }
 
+function model(model) {
+  return currentModels[model];
+}
+
 exports.error = error;
 exports.stopWithError = stopWithError;
 exports.addValidator = addValidator;
@@ -572,3 +598,6 @@ exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.containerByModel = containerByModel;
 exports.Randomizer = Randomizer;
+exports.setModels = setModels;
+exports.model = model;
+// exports.defineGetters = defineGetters;
