@@ -10,6 +10,8 @@ var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'a
 var Randomizer = require(__dirname + '/randomizer.js');
 var currentModels = {};
 var paramTypes = require(__dirname + '/paramTypes.js');
+var params = require(__dirname + '/paramTypes.js');
+
 /**
  * Initialize Randomizer Caching
  */
@@ -176,7 +178,7 @@ function containerByModel(modelId, withData, withRandom) {
           var subType = false;
           if (model.properties[key].items && model.properties[key].items.type) {
             subType = model.properties[key].items.type; }
-            
+
           /**
            * OMG?
            */
@@ -386,7 +388,7 @@ function addMethod(app, callback, spec) {
 
   //  TODO: add some XML support
   //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
+  var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/g, "/:").replace(/\}/g,"");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
@@ -534,26 +536,15 @@ function appendToApi(rootResource, api, spec) {
     "nickname" : spec.nickname,
     "summary" : spec.summary
   };
-  if(spec.outputModel){
-    op.responseClass = spec.outputModel;
-  }
+  
+  if (spec.outputModel) {
+    op.responseClass = spec.outputModel.name; }
   api.operations.push(op);
 
-  // add model if not already in array by name
-  for ( var key in api.models) {
-    var model = api.models[key];
-    if (model.name == spec.outputModel) {
-      return;
-    }
-  }
-  if (!rootResource.models)
-    rootResource.models = new Array();
-  for ( var key in rootResource.models) {
-    // don't add the model again
-    if (spec.outputModel && rootResource.models[key] == spec.outputModel)
-      return;
-  }
-  rootResource.models.push(spec.outputModel);
+  if (!rootResource.models) {
+    rootResource.models = {}; }
+  if (!rootResource.models[spec.outputModel.responseClass.id]) {
+    rootResource.models[spec.outputModel.responseClass.id] = {'properties': spec.outputModel.responseClass.properties}; }
 }
 
 function addValidator(v) {
@@ -584,6 +575,7 @@ function model(model) {
 
 exports.error = error;
 exports.stopWithError = stopWithError;
+exports.stop = stopWithError;
 exports.addValidator = addValidator;
 exports.configure = configure;
 exports.canAccessResource = canAccessResource;
@@ -598,6 +590,11 @@ exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.containerByModel = containerByModel;
 exports.Randomizer = Randomizer;
+exports.pathParam = paramTypes.path;
+exports.postParam = paramTypes.post;
+exports.queryParam = paramTypes.query;
 exports.setModels = setModels;
 exports.model = model;
+exports.params = paramTypes;
 // exports.defineGetters = defineGetters;
+

@@ -21,7 +21,7 @@ exports.query = exports.q = function(name, description, dataType, required, allo
     "defaultValue" : defaultValue,
     "paramType" : "query"
   };
-}
+};
 
 exports.path = function(name, description, dataType, allowableValues) {
   return {
@@ -33,7 +33,7 @@ exports.path = function(name, description, dataType, allowableValues) {
     "allowableValues" : createEnum(allowableValues),
     "paramType" : "path"
   };
-}
+};
 
 exports.post = function(name, description) {
   return {
@@ -42,4 +42,5 @@ exports.post = function(name, description) {
     "required" : true,
     "paramType" : "body"
   };
-}
+};
+
