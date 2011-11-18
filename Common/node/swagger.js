@@ -1,6 +1,6 @@
 var resourcePath = "/resources.json";
 var basePath = "/";
-var swaggerVersion = "1.1";
+var swaggerVersion = "1.1-SNAPSHOT.121026";
 var apiVersion = "0.0";
 var resources = new Object();
 var validators = Array();
@@ -24,11 +24,11 @@ for (var i = 0; i < allowedDataTypes.length; i++) {
  * @param bp
  * @param av
  */
-function configure(app, bp, av) {
+function configure(bp, av) {
   basePath = bp;
   apiVersion = av;
-  setResourceListingPaths(app);
-  app.get(resourcePath, resourceListing);
+  setResourceListingPaths(appHandler);
+  appHandler.get(resourcePath, resourceListing);
 }
 
 /**
@@ -47,7 +47,7 @@ function setResourceListingPaths(app) {
         res.header("Content-Type", "application/json; charset=utf-8");
         res.send(JSON.stringify(applyFilter(req, res, r))); 
       }
-    })
+    });
   }
 }
 
@@ -94,7 +94,6 @@ function setCache(curType, id, key, value) {
 
 /**
  * try to generate object from model defintion
- * 
  * @param model
  * @param withData fill model with data
  * @param withRandom generate random values
@@ -261,7 +260,8 @@ function shallowClone(obj) {
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
     if (!validators[i](req,path,httpMethod)) {
-      return false; }
+      return false;
+    }
   }
   return true;
 }
@@ -544,6 +544,9 @@ function error(code, description) {
 }
 
 function stopWithError(res, error) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header("Content-Type", "application/json; charset=utf-8");
+  
   if (error && error.description && error.code) {
     res.send(JSON.stringify(error), error.code);  
   } else {
