@@ -35,11 +35,44 @@ exports.findById = {
   }
 };
 
+exports.findByStatus = {
+  'spec': {
+    "description" : "Operations about pets",  
+    "path" : "/pet.{format}/findByStatus",
+    "notes" : "Multiple status values can be provided with comma-separated strings",
+    "summary" : "Find pets by status",
+    "method": "GET",    
+    "params" : new Array(
+      swagger.queryParam("status", "Status (Values: available, pending, sold)", "string", true, true)), 
+    "outputModel" : {
+      "name" : "List[pet]",
+      "responseClass" : models.pet
+    },
+    "errorResponses" : new Array(
+      swagger.error(400, "invalid id"),
+      swagger.error(404, "Pet not found")),
+    "nickname" : "findPetsByStatus"
+  },  
+  'action': function (req,res) {
+    var statusString = url.parse(req.url,true).query["status"];
+    if (!statusString) {
+      throw swagger.error(400, "invalid status supplied"); }
+    
+    var output = new Array();
+    for (var i = 0; i < swagger.Randomizer.intBetween(1,10); i++) {
+      output.push(swagger.containerByModel(models.pet, {'status': statusString}, -1));
+    }
+
+    res.send(JSON.stringify(output));
+  }
+};
+
 exports.findByTags = {
   'spec': {
     "path" : "/pet.{format}/findByTags",
     "notes" : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
     "summary" : "Find pets by tags",
+    "method": "GET",    
     "params" : new Array(
       swagger.queryParam("tags", "Tags to filter by", "string", true, true)),
     "outputModel" : {
@@ -70,6 +103,7 @@ exports.addPet = {
     "path" : "/pet.{format}",
     "notes" : "adds a pet to the store",
     "summary" : "Add a new pet to the store",
+    "method": "PUT",
     "params" : new Array(
       swagger.postParam("Pet object that needs to be added to the store", "pet")
     ),
@@ -89,6 +123,7 @@ exports.updatePet = {
   'spec': {
     "path" : "/pet.{format}",
     "notes" : "updates a pet in the store",
+    "method": "POST",    
     "summary" : "Update an existing pet",
     "params" : new Array(
       swagger.postParam("Pet object that needs to be added to the store", "pet")
@@ -111,6 +146,7 @@ exports.deletePet = {
   'spec': {
     "path" : "/pet.{format}/{id}",
     "notes" : "removes a pet from the store",
+    "method": "DELETE",
     "summary" : "Remove an existing pet",
     "params" : new Array(
       swagger.pathParam("id", "ID of pet that needs to be removed", "string")
