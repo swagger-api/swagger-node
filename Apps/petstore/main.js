@@ -40,6 +40,7 @@ var app = express.createServer(
 );
 app.use(express.bodyParser());
 swagger.setAppHandler(app);  
+swagger.setModels(require('./models.js'));
 
 // resources for the demo
 var petResources = require("./petResources.js");

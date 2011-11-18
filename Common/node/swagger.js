@@ -65,6 +65,7 @@ function setModels() {
       } else if (currentModels[key]) {
         console.log('duplicate model definition for: ' + key);
       } else {
+        console.log(key);
         currentModels[key] = arguments[i][key];
       }
     }
@@ -159,8 +160,12 @@ function setCache(curType, id, key, value) {
  * @return object
  */
 function containerByModel(modelId, withData, withRandom) {
-  var item = {}, model = currentModels[modelId];
-
+  if (modelId.id) {
+    modelId = modelId.id; }
+  if (modelId.name) {
+    modelId = modelId.name; }    
+  var item = {}, model = currentModels[modelId];  
+  
   for (key in model.properties) {
     var curType = model.properties[key].type.toLowerCase();
 
@@ -394,13 +399,15 @@ function addMethod(app, callback, spec) {
     app[currentMethod](fullPath, function(req,res) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Content-Type", "application/json; charset=utf-8");
+      callback(req,res);
+      return;
       try {
         callback(req,res); }
       catch(ex) {
         if (ex.code && ex.description) {
           res.send(JSON.stringify(ex), ex.code); }
         else {
-          console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+          console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
           res.send(JSON.stringify({"description":"unknown error","code":500})) 
         }
       }
@@ -427,6 +434,8 @@ function setAppHandler(app) {
 function addHandlers(type, handlers) {
   for (var i = 0; i < handlers.length; i++) {
     var handler = handlers[i];
+    if (!handler) {
+      continue; }
     handler.spec.method = type;
     addMethod(appHandler, handler.action, handler.spec);
   }
@@ -537,8 +546,11 @@ function appendToApi(rootResource, api, spec) {
     "summary" : spec.summary
   };
   
-  if (spec.outputModel) {
-    op.responseClass = spec.outputModel.name; }
+  if (!spec.outputModel) {
+    return false; }
+  
+  op.responseClass = spec.outputModel.name;
+  
   api.operations.push(op);
 
   if (!rootResource.models) {

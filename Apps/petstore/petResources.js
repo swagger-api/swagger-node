@@ -1,5 +1,6 @@
 var swagger = require("../../Common/node/swagger.js");
-var petstoreModels = require("./models.js");
+var param = require("../../Common/node/paramTypes.js");
+var models = require("./models.js");
 var url = require("url");
 
 exports.findById = {
@@ -8,11 +9,12 @@ exports.findById = {
     "path" : "/pet.{format}/{petId}",
     "notes" : "Returns a pet for IDs in 0 < ID < 10. ID > 10, negative numbers or nonintegers will simulate API error conditions",
     "summary" : "Find pet by ID",
+    "method": "GET",
     "params" : new Array(
-      swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")),
+      param.path("petId", "ID of pet that needs to be fetched", "string")),
     "outputModel" : {
       "name" : "pet",
-      "responseClass" : petstoreModels.pet
+      "responseClass" : models.pet
     },
     "errorResponses" : new Array(
       swagger.error(400, "invalid id"),
@@ -29,37 +31,7 @@ exports.findById = {
     if (id > 10 || id < 0) { // custom error 
       throw swagger.error(400,"id out of scope"); }
 
-    res.send(JSON.stringify(swagger.containerByModel(petstoreModels.pet, {'id': req.params.petId}, req.params.petId)));
-  }
-};
-
-exports.findByStatus = {
-  'spec': {
-    "path" : "/pet.{format}/findByStatus",
-    "notes" : "Multiple status values can be provided with comma-separated strings",
-    "summary" : "Find pets by status",
-    "params" : new Array(
-      swagger.queryParam("status", "Status values that need to be considered for filter", "string", true, true, "available,pending,sold", "available")),
-    "outputModel" : {
-      "name" : "List[pet]",
-      "responseClass" : petstoreModels.pet
-    },
-    "errorResponses" : new Array(
-      swagger.error(400, "invalid id"),
-      swagger.error(404, "Pet not found")),
-    "nickname" : "findPetsByStatus"
-  },  
-  'action': function (req,res) {
-    var statusString = url.parse(req.url,true).query["status"];
-    if (!statusString) {
-      throw swagger.error(400, "invalid status supplied"); }
-    
-    var output = new Array();
-    for (var i = 0; i < swagger.Randomizer.intBetween(1,10); i++) {
-      output.push(swagger.containerByModel(petstoreModels.pet, {'status': statusString}, -1));
-    }
-
-    res.send(JSON.stringify(output));
+    res.send(JSON.stringify(swagger.containerByModel(models.pet, {'id': req.params.petId}, req.params.petId)));
   }
 };
 
@@ -72,7 +44,7 @@ exports.findByTags = {
       swagger.queryParam("tags", "Tags to filter by", "string", true, true)),
     "outputModel" : {
       "name" : "List[pet]",
-      "responseClass" : petstoreModels.pet
+      "responseClass" : models.pet
     },
     "errorResponses" : new Array(
       swagger.error(400, "Invalid tag value"),
@@ -86,7 +58,7 @@ exports.findByTags = {
     
     var output = new Array();
     for (var i = 0; i < swagger.Randomizer.intBetween(1,10); i++) {
-      output.push(swagger.containerByModel(petstoreModels.pet, {'tags': tagsString.split(',')}, -1));
+      output.push(swagger.containerByModel(models.pet, {'tags': tagsString.split(',')}, -1));
     }
 
     res.send(JSON.stringify(output));
