@@ -2,8 +2,8 @@ var resourcePath = "/resources.json";
 var basePath = "/";
 var swaggerVersion = "1.1-SNAPSHOT.121026";
 var apiVersion = "0.0";
-var resources = new Object();
-var validators = Array();
+var resources = {};
+var validators = [];
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
@@ -336,7 +336,7 @@ function addMethod(app, callback, spec) {
         if (ex.code && ex.description) {
           res.send(JSON.stringify(ex), ex.code); }
         else {
-          console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
+          console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
           res.send(JSON.stringify({"description":"unknown error","code":500})) 
         }
       }

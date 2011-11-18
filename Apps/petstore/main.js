@@ -4,9 +4,7 @@ var express = require("express")
  , db = false; // maybe define a global database handler if needed?
 
 var app = express.createServer(
-  /** Add global database handler to request data */
-  function(req, res, next) { if (req.db === undefined) { req.db = db; } next(); }
-);
+  function(req, res, next) { if (req.db === undefined) { req.db = db; } next(); });
 app.use(express.bodyParser());
 swagger.setAppHandler(app);  
 swagger.addValidator(
