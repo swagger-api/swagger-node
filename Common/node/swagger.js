@@ -8,6 +8,7 @@ var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var Randomizer = require(__dirname + '/randomizer.js');
+var params = require(__dirname + '/paramTypes.js');
 
 /**
  * Initialize Randomizer Caching
@@ -118,7 +119,9 @@ function containerByModel(model, withData, withRandom) {
           var subType = false;
           if (model.properties[key].items && model.properties[key].items.type) {
             subType = model.properties[key].items.type; }
+          var curKey = key;
           value = randomDataByType(curType, withRandom, subType);
+          var key = curKey;
         }
       }
       setCache(curType, withRandom, key, value);
@@ -477,14 +480,10 @@ function appendToApi(rootResource, api, spec) {
       return;
     }
   }
-  if (!rootResource.models)
-    rootResource.models = new Array();
-  for ( var key in rootResource.models) {
-    // don't add the model again
-    if (spec.outputModel && rootResource.models[key].name == spec.outputModel.name)
-      return;
-  }
-  rootResource.models.push(spec.outputModel);
+  if (!rootResource.models) {
+    rootResource.models = {}; }
+  if (!rootResource.models[spec.outputModel.responseClass.id]) {
+    rootResource.models[spec.outputModel.responseClass.id] = {'properties': spec.outputModel.responseClass.properties}; }
 }
 
 function createEnum(input) {
@@ -499,8 +498,7 @@ function createEnum(input) {
   }
 }
 
-exports.queryParam = function(name, description, dataType, required,
-    allowMultiple, allowableValues, defaultValue) {
+exports.queryParam = function(name, description, dataType, required, allowMultiple, allowableValues, defaultValue) {
   return {
     "name" : name,
     "description" : description,
@@ -555,6 +553,7 @@ function stopWithError(res, error) {
 
 exports.error = error;
 exports.stopWithError = stopWithError;
+exports.stop = stopWithError;
 exports.addValidator = addValidator;
 exports.configure = configure;
 exports.canAccessResource = canAccessResource;
@@ -569,3 +568,4 @@ exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.containerByModel = containerByModel;
 exports.Randomizer = Randomizer;
+exports.params = params;
