@@ -41,8 +41,8 @@ function setResourceListingPaths(app) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res, next) {
       var r = resources[req.url.substr(1).split('?')[0].replace('.json', '.{format}')];
       if (!r) {
-        return stopWithError(res, {'description': 'internal error', 'code': 500});
-      } else {      
+        return stopWithError(res, {'description': 'internal error', 'code': 500}); } 
+      else {      
         res.header('Access-Control-Allow-Origin', "*");
         res.header("Content-Type", "application/json; charset=utf-8");
         res.send(JSON.stringify(applyFilter(req, res, r))); 
@@ -88,8 +88,7 @@ function getCache(type, id, key) {
  */
 function setCache(curType, id, key, value) {
   if (id && id != -1 && RandomStorage[curType]) {
-    RandomStorage[curType][key + id] = value; 
-  }
+    RandomStorage[curType][key + id] = value; }
 }
 
 /**
@@ -110,11 +109,11 @@ function containerByModel(model, withData, withRandom) {
     if (value == '' && withRandom) {  
       var cache = getCache(curType, withRandom, key);
       if (cache) {
-        value = cache;
-      } else {
+        value = cache; } 
+      else {
         if (model.properties[key].enum) {
-          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)];
-        } else {
+          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)]; } 
+        else {
           var subType = false;
           if (model.properties[key].items && model.properties[key].items.type) {
             subType = model.properties[key].items.type; }
@@ -230,10 +229,14 @@ function applyFilter(req, res, r) {
   }
 }
 
+/**
+ * Add model to list and parse List[model] elements
+ * @param operation
+ * @param models
+ */
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
   if (responseModel) {
-    //  strip List[...] to locate the models
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
     if (models.indexOf(responseModel) < 0) {
       models.push(responseModel); }
@@ -260,8 +263,7 @@ function shallowClone(obj) {
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
     if (!validators[i](req,path,httpMethod)) {
-      return false;
-    }
+      return false; }
   }
   return true;
 }
@@ -273,18 +275,11 @@ function canAccessResource(req, path, httpMethod) {
  * @param response
  */
 function resourceListing(request, response) {
-  var r = {
-    "apis" : new Array(),
-    "basePath" : basePath,
-    "swaggerVersion" : swaggerVersion,
-    "apiVersion" : apiVersion
-  };
+  var r = {"apis": [], "basePath": basePath, "swaggerVersion": swaggerVersion, "apiVersion" : apiVersion};
+  
   for (var key in resources) {
-    r.apis.push({
-      "path" : "/" + key,
-      "description" : "none"
-    });
-  }
+    r.apis.push({"path": "/" + key, "description": "none"}); }
+    
   response.header('Access-Control-Allow-Origin', "*");
   response.header("Content-Type", "application/json; charset=utf-8");
   response.write(JSON.stringify(r));
@@ -315,7 +310,8 @@ function addMethod(app, callback, spec) {
 
   var api = {"path" : spec.path};
   if (!resources[rootPath]) {
-    root = {"apis" : new Array()};
+    if (!root) {
+      root = {"apis" : []}; }
     resources[rootPath] = root;
   }
 
@@ -332,7 +328,7 @@ function addMethod(app, callback, spec) {
       res.header("Content-Type", "application/json; charset=utf-8");
       try {
         callback(req,res); }
-      catch(ex) {
+      catch (ex) {
         if (ex.code && ex.description) {
           res.send(JSON.stringify(ex), ex.code); }
         else {
@@ -374,10 +370,9 @@ function addHandlers(type, handlers) {
 function discover(resource) {
   for (var key in resource) {
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec);
-    } else {
-      console.log('auto discover failed for: ' + key);
-    }
+      addMethod(appHandler, resource[key].action, resource[key].spec); } 
+    else {
+      console.log('auto discover failed for: ' + key); }
   }
 }
 
@@ -413,42 +408,29 @@ function wrap(callback, req, resp){
 }
 
 function appendToApi(rootResource, api, spec) {
-  if(!api.description) api.description = spec.description;
-  var validationErrors = new Array();
+  if (!api.description) {
+    api.description = spec.description; }
+  var validationErrors = [];
 
   if(!spec.nickname || spec.nickname.indexOf(" ")>=0){
     //  nicknames don't allow spaces
-    validationErrors.push({
-      "path" : api.path,
-      "error" : "invalid nickname '" + spec.nickname + "'"
-    });
+    validationErrors.push({"path": api.path, "error": "invalid nickname '" + spec.nickname + "'"});
   } 
   // validate params
   for ( var paramKey in spec.params) {
     var param = spec.params[paramKey];
     switch (param.paramType) {
-      case "path": {
-        if (api.path.indexOf("{" + param.name + "}") < 0)
-          validationErrors.push({
-            "path" : api.path,
-            "name" : param.name,
-            "error" : "invalid path"
-          });
+      case "path":
+        if (api.path.indexOf("{" + param.name + "}") < 0) {
+          validationErrors.push({"path": api.path, "name": param.name, "error": "invalid path"}); }
         break;
-      }
-      case "query": {
+      case "query":
         break;
-      }
-      case "body": {
+      case "body":
         break;
-      }
-      default: {
-        validationErrors.push({
-          "path" : api.path,
-          "name" : param.name,
-          "error" : "invalid param type " + param.paramType
-        });
-      }
+      default:
+        validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});
+        break;
     }
   }
 
@@ -456,8 +438,9 @@ function appendToApi(rootResource, api, spec) {
     console.log(validationErrors);
     return;
   }
-  if (!api.operations)
-    api.operations = new Array();
+  
+  if (!api.operations) {
+    api.operations = []; }
 
   // TODO: replace if existing HTTP operation in same api path
   var op = {
@@ -492,10 +475,9 @@ function stopWithError(res, error) {
   res.header("Content-Type", "application/json; charset=utf-8");
   
   if (error && error.description && error.code) {
-    res.send(JSON.stringify(error), error.code);  
-  } else {
-    res.send(JSON.stringify({'description': 'authentication failed', 'code': 403}), 403);  
-  }
+    res.send(JSON.stringify(error), error.code); } 
+  else {
+    res.send(JSON.stringify({'description': 'authentication failed', 'code': 403}), 403); }
 };
 
 exports.errors = {
