@@ -479,61 +479,12 @@ function appendToApi(rootResource, api, spec) {
     rootResource.models[spec.outputModel.responseClass.id] = {'properties': spec.outputModel.responseClass.properties}; }
 }
 
-function createEnum(input) {
-  if (input && input.indexOf(",") > 0) {
-    // TODO: stupid! handle escaped commas
-    var output = new Array();
-    var array = input.split(",");
-    array.forEach(function(item) {
-      output.push(item);
-    })
-    return output;
-  }
-}
-
-exports.queryParam = function(name, description, dataType, required, allowMultiple, allowableValues, defaultValue) {
-  return {
-    "name" : name,
-    "description" : description,
-    "dataType" : dataType,
-    "required" : required,
-    "allowMultiple" : allowMultiple,
-    "allowableValues" : allowableValues,
-    "defaultValue" : defaultValue,
-    "paramType" : "query"
-  };
-}
-
-exports.pathParam = function(name, description, dataType, allowableValues) {
-  return {
-    "name" : name,
-    "description" : description,
-    "dataType" : dataType,
-    "required" : true,
-    "allowMultiple" : false,
-    "allowableValues" : createEnum(allowableValues),
-    "paramType" : "path"
-  };
-}
-
-exports.postParam = function(description, dataType) {
-  return {
-    "description" : description,
-    "dataType" : dataType,
-    "required" : true,
-    "paramType" : "body"
-  };
-}
-
 function addValidator(v) {
   validators.push(v);
 }
 
 function error(code, description) {
-  return {
-    "description" : description,
-    "code" : code
-  };
+  return {"code" : code, "description" : description};
 }
 
 function stopWithError(res, error) {
@@ -545,22 +496,17 @@ function stopWithError(res, error) {
   } else {
     res.send(JSON.stringify({'description': 'authentication failed', 'code': 403}), 403);  
   }
-}
+};
 
 exports.errors = {
-  'notFound': function(field) {
-    return {
-      "description" : field + ' not found',
-      "code" : 404
-    };  
-  },
-  'invalid': function(field) {
-    return {
-      "description" : 'invalid ' + field,
-      "code" : 400
-    };    
-  }
-}
+  'notFound': function(field) { return {"code": 404, "description": field + ' not found'}; },
+  'invalid': function(field) { return {"code": 400, "description": 'invalid ' + field}; }
+};
+
+exports.params = params;
+exports.queryParam = exports.params.query;
+exports.pathParam = exports.params.path;
+exports.postParam = exports.params.post;
 
 exports.error = error;
 exports.stopWithError = stopWithError;
@@ -579,4 +525,3 @@ exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.containerByModel = containerByModel;
 exports.Randomizer = Randomizer;
-exports.params = params;
