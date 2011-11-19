@@ -10,11 +10,13 @@ swagger.setAppHandler(app);
 swagger.addValidator(
   function validate(req, path, httpMethod) {
     //  example, only allow POST for api_key="special-key"
-    if("POST" == httpMethod){
+    if ("POST" == httpMethod) {
       //  validate by api_key in header or queryparam
       var apiKey = req.headers["api_key"];
-      if(!apiKey) apiKey= url.parse(req.url,true).query["api_key"];
-      if("special-key" == apiKey) return true;
+      if (!apiKey) {
+        apiKey = url.parse(req.url,true).query["api_key"]; }
+      if ("special-key" == apiKey) {
+        return true; }
       return false;
     }
     //  allow everything else

@@ -547,6 +547,21 @@ function stopWithError(res, error) {
   }
 }
 
+exports.errors = {
+  'notFound': function(field) {
+    return {
+      "description" : field + ' not found',
+      "code" : 404
+    };  
+  },
+  'invalid': function(field) {
+    return {
+      "description" : 'invalid ' + field,
+      "code" : 400
+    };    
+  }
+}
+
 exports.error = error;
 exports.stopWithError = stopWithError;
 exports.stop = stopWithError;
