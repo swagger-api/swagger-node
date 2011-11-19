@@ -9,8 +9,7 @@ exports.randoms = {
     "method": "GET",
     "notes" : "Return object filled with random data. Provide an identifier to regenerate random data for testing etc.",
     "summary" : "Generate random data",
-    "params" : new Array(
-      swagger.queryParam("ID", "Random identifier for generating content")),    
+    "params" : [swagger.queryParam("ID", "Random identifier for generating content")],
     "outputModel" : {
       "name" : "random",
       "responseClass" : models.random

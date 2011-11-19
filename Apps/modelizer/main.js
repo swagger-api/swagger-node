@@ -8,7 +8,6 @@ var app = express.createServer();
 //  start the server
 app.use(express.bodyParser());
 swagger.setAppHandler(app);
-swagger.setModels(require('./models.js'));
 
 /**
  * Randomizer and Model Checker actions
