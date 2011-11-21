@@ -481,8 +481,18 @@ function stopWithError(res, error) {
 };
 
 exports.errors = {
-  'notFound': function(field) { return {"code": 404, "description": field + ' not found'}; },
-  'invalid': function(field) { return {"code": 400, "description": 'invalid ' + field}; }
+  'notFound': function(field, res) { 
+    if (!res) { 
+      return {"code": 404, "description": field + ' not found'}; } 
+    else { 
+      res.send({"code": 404, "description": field + ' not found'}, 404); } 
+  },
+  'invalid': function(field, res) { 
+    if (!res) { 
+      return {"code": 400, "description": 'invalid ' + field}; } 
+    else { 
+      res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
+  }
 };
 
 exports.params = params;
