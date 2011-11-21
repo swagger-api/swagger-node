@@ -148,7 +148,7 @@ function applyFilter(req, res, r) {
   
   if (!r || !r.apis) {
     return stopWithError(res, {'description': 'internal error', 'code': 500}); }
-  
+
   for (var key in r.apis) {
     var api = r.apis[key];
     for (var opKey in api.operations) {
@@ -325,15 +325,19 @@ function addMethod(app, callback, spec) {
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
       res.header("Access-Control-Allow-Origin", "*");
-      res.header("Content-Type", "application/json; charset=utf-8");
-      try {
-        callback(req,res); }
-      catch (ex) {
-        if (ex.code && ex.description) {
-          res.send(JSON.stringify(ex), ex.code); }
-        else {
-          console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
-          res.send(JSON.stringify({"description":"unknown error","code":500})) 
+      res.header("Content-Type", "application/json; charset=utf-8");    
+      if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
+        res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
+      } else {    
+        try {
+          callback(req,res); }
+        catch (ex) {
+          if (ex.code && ex.description) {
+            res.send(JSON.stringify(ex), ex.code); }
+          else {
+            console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
+            res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
+          }
         }
       }
     }); 
