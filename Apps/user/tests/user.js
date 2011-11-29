@@ -4,8 +4,6 @@ var apiHost = 'localhost';
 var apiPort = 8002;
 var apiKey = 'special-key';
 
-var user1 = {"name": "test1","password": "lorem123","mail":"lorem@example.com"};
-var user2 = {"name": "test2","password": "lorem123","mail":"lorem@example.com"};
 var gToken = null;
 
 function createUser(test, uName, uMail, uPass, resErr, resName) {
