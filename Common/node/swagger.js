@@ -470,10 +470,21 @@ function addValidator(v) {
   validators.push(v);
 }
 
+/**
+ * Create Error JSON by code and text
+ * @param int code
+ * @param string description
+ * @return obj
+ */
 function error(code, description) {
   return {"code" : code, "description" : description};
 }
 
+/**
+ * Stop express ressource with error code
+ * @param obj res expresso response
+ * @param obj error error object with code and description
+ */
 function stopWithError(res, error) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header("Content-Type", "application/json; charset=utf-8");
@@ -481,9 +492,12 @@ function stopWithError(res, error) {
   if (error && error.description && error.code) {
     res.send(JSON.stringify(error), error.code); } 
   else {
-    res.send(JSON.stringify({'description': 'authentication failed', 'code': 403}), 403); }
+    res.send(JSON.stringify({'description': 'internal error', 'code': 500}), 500); }
 };
 
+/**
+ * Export most needed error types for easier handling
+ */
 exports.errors = {
   'notFound': function(field, res) { 
     if (!res) { 
@@ -496,6 +510,12 @@ exports.errors = {
       return {"code": 400, "description": 'invalid ' + field}; } 
     else { 
       res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
+  },
+  'forbidden': function(res) {
+    if (!res) { 
+      return {"code": 403, "description": 'forbidden' }; } 
+    else { 
+      res.send({"code": 403, "description": 'forbidden'}, 403); }
   }
 };
 
