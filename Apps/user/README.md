@@ -20,6 +20,8 @@ Connection for MongoDB can be defined in `main.js` lines 7 to 9, if you are not 
 
     node /path/to/Apps/user/main.js
     
+All calls are secured with the `special-key` api_key, provide it when using swagger-ui or other clients…
+    
 ## Running UnitTests
 
     nodeunit /path/to/Apps/user/tests/
