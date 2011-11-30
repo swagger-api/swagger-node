@@ -2,6 +2,7 @@
  * this is a JSON schema for the PetModel
  */
 exports.pet = {
+  "id" : "pet",
   "properties" : {
     "id" : {
       "type" : "long"
@@ -32,7 +33,6 @@ exports.pet = {
         "type" : "string"
       }
     }
-  },
-  "id" : "pet"
+  }
 };
 

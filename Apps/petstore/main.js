@@ -1,39 +1,40 @@
-var express = require("express");
-var url = require("url");
+var express = require("express")
+ , url = require("url")
+ , swagger = require("../../Common/node/swagger.js")
+ , db = false; // maybe define a global database handler if needed?
 
-//  swagger core
-var swagger = require("../../Common/node/swagger.js");
-
-//  resources for the demo
-var petResources = require("./petResources.js");
-
-var app = express.createServer();
-swagger.setAppHandler(app);
-
-swagger.addGet(petResources.findByStatus)
-  .addGet(petResources.findByTags)
-  .addGet(petResources.findById)
-  .addPost(petResources.addPet)
-  .addDelete(petResources.deletePet)
-  .addPut(petResources.updatePet);
-
+var app = express.createServer(
+  function(req, res, next) { if (req.db === undefined) { req.db = db; } next(); });
+app.use(express.bodyParser());
+swagger.setAppHandler(app);  
 swagger.addValidator(
   function validate(req, path, httpMethod) {
     //  example, only allow POST for api_key="special-key"
-    if("POST" == httpMethod){
+    if ("POST" == httpMethod) {
       //  validate by api_key in header or queryparam
       var apiKey = req.headers["api_key"];
-      if(!apiKey) apiKey= url.parse(req.url,true).query["api_key"];
-      if("special-key" == apiKey) return true;
+      if (!apiKey) {
+        apiKey = url.parse(req.url,true).query["api_key"]; }
+      if ("special-key" == apiKey) {
+        return true; }
       return false;
     }
     //  allow everything else
     return true;
   }
 );
+// resources for the demo
+var petResources = require("./petResources.js");
 
-//  configures the app
-swagger.configure(app, "http://localhost:8002", "0.1");
+swagger.addGet(petResources.findByTags)
+  .addGet(petResources.findByStatus)
+  .addGet(petResources.findById)
+  .addPut(petResources.addPet)
+  .addPost(petResources.updatePet)
+  .addDelete(petResources.deletePet);
 
-//  start the server
+// configures the app
+swagger.configure("http://localhost:8002", "0.1");
+
+// start the server
 app.listen(8002);
