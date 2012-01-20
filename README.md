@@ -2,7 +2,7 @@ This is the Wordnik Swagger code for the express framework.  For more on Swagger
 
 ### To run
 
-You must first install the express module (see also http://expressjs.com/guide.html):
+You must first install the express module (see the [express framework site] (http://expressjs.com/guide.html):
 
 <pre>
 npm install express
