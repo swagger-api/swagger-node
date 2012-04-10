@@ -8,10 +8,10 @@
         "lib": "./Common/node"
     },
     "engines": {
-        "node": ">= 0.4.1  <=0.4.99999"
+        "node": ">= 0.6.x"
     },
     "dependencies": {
-        "connect": "=1.1.4",
-        "express": "=2.1.0"
+        "connect": ">= 1.8.x",
+        "express": ">= 2.5.x"
     }
 }
