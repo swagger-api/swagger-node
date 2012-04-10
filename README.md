@@ -19,7 +19,7 @@ Then visit the server from your browser:
 http://localhost:8002/resources.json
 </pre>
 
-or from [swagger UI], mounted at `/docs`: http://localhost:8002/docs.
+or from [swagger UI], mounted at `/docs`: [http://localhost:8002/docs](http://localhost:8002/docs).
 
 ![Swagger UI](https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png?raw=true)
 
