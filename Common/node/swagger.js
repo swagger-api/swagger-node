@@ -42,6 +42,7 @@ function setResourceListingPaths(app) {
       res.header("Content-Type", "application/json; charset=utf-8");
       var key = req.url.substr(1).replace('.json', '.{format}').split('?')[0];
       var data = applyFilter(req, res, resources[key]);
+      data.basePath = basePath;
       if (data.code) {
         res.send(data, data.code); } 
       else {      
