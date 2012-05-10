@@ -44,12 +44,12 @@ swagger.setAppHandler(app);
 // resources for the demo
 var petResources = require("./petResources.js");
 
-swagger.addGet(petResources.findByStatus)
+swagger.addGet(petResources.findById)
+  .addGet(petResources.findByStatus)
   .addGet(petResources.findByTags)
-  .addGet(petResources.findById)
-  .addPost(petResources.addPet)
-  .addDelete(petResources.deletePet)
-  .addPut(petResources.updatePet);
+//  .addPost(petResources.addPet)
+//  .addPut(petResources.updatePet)
+//  .addDelete(petResources.deletePet)
 
 // configures the app
 swagger.configure("http://localhost:8002", "0.1");
