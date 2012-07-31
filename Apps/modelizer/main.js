@@ -9,12 +9,11 @@ var app = express.createServer();
 app.use(express.bodyParser());
 swagger.setAppHandler(app);
 
-/**
- * Randomizer and Model Checker actions
- **/
+// Randomizer actions
 swagger.discover(require("./res.Randomizer.js"));
 
-//  configures the app
+// configures the app
 swagger.configure("http://localhost:8002", "0.1");
 
+// start the server
 app.listen(8002);

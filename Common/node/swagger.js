@@ -2,12 +2,13 @@ var resourcePath = "/resources.json";
 var basePath = "/";
 var swaggerVersion = "1.1-SNAPSHOT.121026";
 var apiVersion = "0.0";
-var resources = new Object();
-var validators = Array();
+var resources = {};
+var validators = [];
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var Randomizer = require(__dirname + '/randomizer.js');
+var params = require(__dirname + '/paramTypes.js');
 
 /**
  * Initialize Randomizer Caching
@@ -40,8 +41,8 @@ function setResourceListingPaths(app) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res, next) {
       var r = resources[req.url.substr(1).split('?')[0].replace('.json', '.{format}')];
       if (!r) {
-        return stopWithError(res, {'description': 'internal error', 'code': 500});
-      } else {      
+        return stopWithError(res, {'description': 'internal error', 'code': 500}); } 
+      else {      
         res.header('Access-Control-Allow-Origin', "*");
         res.header("Content-Type", "application/json; charset=utf-8");
         res.send(JSON.stringify(applyFilter(req, res, r))); 
@@ -87,8 +88,7 @@ function getCache(type, id, key) {
  */
 function setCache(curType, id, key, value) {
   if (id && id != -1 && RandomStorage[curType]) {
-    RandomStorage[curType][key + id] = value; 
-  }
+    RandomStorage[curType][key + id] = value; }
 }
 
 /**
@@ -109,15 +109,17 @@ function containerByModel(model, withData, withRandom) {
     if (value == '' && withRandom) {  
       var cache = getCache(curType, withRandom, key);
       if (cache) {
-        value = cache;
-      } else {
+        value = cache; } 
+      else {
         if (model.properties[key].enum) {
-          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)];
-        } else {
+          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)]; } 
+        else {
           var subType = false;
           if (model.properties[key].items && model.properties[key].items.type) {
             subType = model.properties[key].items.type; }
+          var curKey = key;
           value = randomDataByType(curType, withRandom, subType);
+          var key = curKey;
         }
       }
       setCache(curType, withRandom, key, value);
@@ -146,7 +148,7 @@ function applyFilter(req, res, r) {
   
   if (!r || !r.apis) {
     return stopWithError(res, {'description': 'internal error', 'code': 500}); }
-  
+
   for (var key in r.apis) {
     var api = r.apis[key];
     for (var opKey in api.operations) {
@@ -227,10 +229,14 @@ function applyFilter(req, res, r) {
   }
 }
 
+/**
+ * Add model to list and parse List[model] elements
+ * @param operation
+ * @param models
+ */
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
   if (responseModel) {
-    //  strip List[...] to locate the models
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
     if (models.indexOf(responseModel) < 0) {
       models.push(responseModel); }
@@ -257,8 +263,7 @@ function shallowClone(obj) {
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
     if (!validators[i](req,path,httpMethod)) {
-      return false;
-    }
+      return false; }
   }
   return true;
 }
@@ -270,18 +275,11 @@ function canAccessResource(req, path, httpMethod) {
  * @param response
  */
 function resourceListing(request, response) {
-  var r = {
-    "apis" : new Array(),
-    "basePath" : basePath,
-    "swaggerVersion" : swaggerVersion,
-    "apiVersion" : apiVersion
-  };
+  var r = {"apis": [], "basePath": basePath, "swaggerVersion": swaggerVersion, "apiVersion" : apiVersion};
+  
   for (var key in resources) {
-    r.apis.push({
-      "path" : "/" + key,
-      "description" : "none"
-    });
-  }
+    r.apis.push({"path": "/" + key, "description": "none"}); }
+    
   response.header('Access-Control-Allow-Origin', "*");
   response.header("Content-Type", "application/json; charset=utf-8");
   response.write(JSON.stringify(r));
@@ -312,7 +310,8 @@ function addMethod(app, callback, spec) {
 
   var api = {"path" : spec.path};
   if (!resources[rootPath]) {
-    root = {"apis" : new Array()};
+    if (!root) {
+      root = {"apis" : []}; }
     resources[rootPath] = root;
   }
 
@@ -321,20 +320,24 @@ function addMethod(app, callback, spec) {
 
   //  TODO: add some XML support
   //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/, "/:").replace("\}","");
+  var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/g, "/:").replace(/\}/g,"");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
       res.header("Access-Control-Allow-Origin", "*");
-      res.header("Content-Type", "application/json; charset=utf-8");
-      try {
-        callback(req,res); }
-      catch(ex) {
-        if (ex.code && ex.description) {
-          res.send(JSON.stringify(ex), ex.code); }
-        else {
-          console.error(spec.method + " failed for path '" + fullPath + "': " + ex);
-          res.send(JSON.stringify({"description":"unknown error","code":500})) 
+      res.header("Content-Type", "application/json; charset=utf-8");    
+      if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
+        res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
+      } else {    
+        try {
+          callback(req,res); }
+        catch (ex) {
+          if (ex.code && ex.description) {
+            res.send(JSON.stringify(ex), ex.code); }
+          else {
+            console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
+            res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
+          }
         }
       }
     }); 
@@ -371,10 +374,9 @@ function addHandlers(type, handlers) {
 function discover(resource) {
   for (var key in resource) {
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec);
-    } else {
-      console.log('auto discover failed for: ' + key);
-    }
+      addMethod(appHandler, resource[key].action, resource[key].spec); } 
+    else {
+      console.log('auto discover failed for: ' + key); }
   }
 }
 
@@ -410,42 +412,29 @@ function wrap(callback, req, resp){
 }
 
 function appendToApi(rootResource, api, spec) {
-  if(!api.description) api.description = spec.description;
-  var validationErrors = new Array();
+  if (!api.description) {
+    api.description = spec.description; }
+  var validationErrors = [];
 
   if(!spec.nickname || spec.nickname.indexOf(" ")>=0){
     //  nicknames don't allow spaces
-    validationErrors.push({
-      "path" : api.path,
-      "error" : "invalid nickname '" + spec.nickname + "'"
-    });
+    validationErrors.push({"path": api.path, "error": "invalid nickname '" + spec.nickname + "'"});
   } 
   // validate params
   for ( var paramKey in spec.params) {
     var param = spec.params[paramKey];
     switch (param.paramType) {
-      case "path": {
-        if (api.path.indexOf("{" + param.name + "}") < 0)
-          validationErrors.push({
-            "path" : api.path,
-            "name" : param.name,
-            "error" : "invalid path"
-          });
+      case "path":
+        if (api.path.indexOf("{" + param.name + "}") < 0) {
+          validationErrors.push({"path": api.path, "name": param.name, "error": "invalid path"}); }
         break;
-      }
-      case "query": {
+      case "query":
         break;
-      }
-      case "body": {
+      case "body":
         break;
-      }
-      default: {
-        validationErrors.push({
-          "path" : api.path,
-          "name" : param.name,
-          "error" : "invalid param type " + param.paramType
-        });
-      }
+      default:
+        validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});
+        break;
     }
   }
 
@@ -453,8 +442,9 @@ function appendToApi(rootResource, api, spec) {
     console.log(validationErrors);
     return;
   }
-  if (!api.operations)
-    api.operations = new Array();
+  
+  if (!api.operations) {
+    api.operations = []; }
 
   // TODO: replace if existing HTTP operation in same api path
   var op = {
@@ -465,99 +455,78 @@ function appendToApi(rootResource, api, spec) {
     "nickname" : spec.nickname,
     "summary" : spec.summary
   };
-  if(spec.outputModel){
-    op.responseClass = spec.outputModel.name;
-  }
+  
+  if (spec.outputModel) {
+    op.responseClass = spec.outputModel.name; }
   api.operations.push(op);
 
-  // add model if not already in array by name
-  for ( var key in api.models) {
-    var model = api.models[key];
-    if (model.name == spec.outputModel.name) {
-      return;
-    }
-  }
-  if (!rootResource.models)
-    rootResource.models = new Array();
-  for ( var key in rootResource.models) {
-    // don't add the model again
-    if (spec.outputModel && rootResource.models[key].name == spec.outputModel.name)
-      return;
-  }
-  rootResource.models.push(spec.outputModel);
-}
-
-function createEnum(input) {
-  if (input && input.indexOf(",") > 0) {
-    // TODO: stupid! handle escaped commas
-    var output = new Array();
-    var array = input.split(",");
-    array.forEach(function(item) {
-      output.push(item);
-    })
-    return output;
-  }
-}
-
-exports.queryParam = function(name, description, dataType, required,
-    allowMultiple, allowableValues, defaultValue) {
-  return {
-    "name" : name,
-    "description" : description,
-    "dataType" : dataType,
-    "required" : required,
-    "allowMultiple" : allowMultiple,
-    "allowableValues" : createEnum(allowableValues),
-    "defaultValue" : defaultValue,
-    "paramType" : "query"
-  };
-}
-
-exports.pathParam = function(name, description, dataType, allowableValues) {
-  return {
-    "name" : name,
-    "description" : description,
-    "dataType" : dataType,
-    "required" : true,
-    "allowMultiple" : false,
-    "allowableValues" : createEnum(allowableValues),
-    "paramType" : "path"
-  };
-}
-
-exports.postParam = function(description, dataType) {
-  return {
-    "description" : description,
-    "dataType" : dataType,
-    "required" : true,
-    "paramType" : "body"
-  };
+  if (!rootResource.models) {
+    rootResource.models = {}; }
+  if (spec.outputModel && !rootResource.models[spec.outputModel.responseClass.id]) {
+    rootResource.models[spec.outputModel.responseClass.id] = {'properties': spec.outputModel.responseClass.properties}; }
 }
 
 function addValidator(v) {
   validators.push(v);
 }
 
+/**
+ * Create Error JSON by code and text
+ * @param int code
+ * @param string description
+ * @return obj
+ */
 function error(code, description) {
-  return {
-    "description" : description,
-    "code" : code
-  };
+  return {"code" : code, "description" : description};
 }
 
+/**
+ * Stop express ressource with error code
+ * @param obj res expresso response
+ * @param obj error error object with code and description
+ */
 function stopWithError(res, error) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header("Content-Type", "application/json; charset=utf-8");
   
   if (error && error.description && error.code) {
-    res.send(JSON.stringify(error), error.code);  
-  } else {
-    res.send(JSON.stringify({'description': 'authentication failed', 'code': 403}), 403);  
+    res.send(JSON.stringify(error), error.code); } 
+  else {
+    res.send(JSON.stringify({'description': 'internal error', 'code': 500}), 500); }
+};
+
+/**
+ * Export most needed error types for easier handling
+ */
+exports.errors = {
+  'notFound': function(field, res) { 
+    if (!res) { 
+      return {"code": 404, "description": field + ' not found'}; } 
+    else { 
+      res.send({"code": 404, "description": field + ' not found'}, 404); } 
+  },
+  'invalid': function(field, res) { 
+    if (!res) { 
+      return {"code": 400, "description": 'invalid ' + field}; } 
+    else { 
+      res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
+  },
+  'forbidden': function(res) {
+    if (!res) { 
+      return {"code": 403, "description": 'forbidden' }; } 
+    else { 
+      res.send({"code": 403, "description": 'forbidden'}, 403); }
   }
-}
+};
+
+exports.params = params;
+exports.queryParam = exports.params.query;
+exports.pathParam = exports.params.path;
+exports.postParam = exports.params.post;
 
 exports.error = error;
 exports.stopWithError = stopWithError;
+exports.stop = stopWithError;
 exports.addValidator = addValidator;
 exports.configure = configure;
 exports.canAccessResource = canAccessResource;
