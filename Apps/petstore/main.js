@@ -4,55 +4,50 @@ var express = require("express")
  , db = false; // maybe define a global database handler if needed?
 
 var app = express.createServer(
-  /** Add global database handler to request data */
-  function(req, res, next) { if (req.db === undefined) { req.db = db; } next(); }, 
-  /** Add authentication */
-  function(req, res, next) { 
-    /** 
-     * Example: All POST requests need to be accessed with api_key 'special-key'
-     */
-    if (req.method == 'POST') {
-      var apiKey = req.headers["api_key"] || require('url').parse(req.url,true).query["api_key"];
-      if (!apiKey || apiKey != 'special-key' ) {
-        return swagger.stopWithError(res); }
-    }
-    
-    /**
-     * Accept request and call next action
-     */
-    next();
-    
-    /**
-     * ruff example for dynamic api_key handling with mongodb, needs of course some tweaking for your custom 
-     * settings and of course a working mongodb handler like https://github.com/christkv/node-mongodb-native 
-     *
-     * req.db.collection('Clients', function(err, c) {
-     *   c.find({'key': apiKey}).toArray(function(err, result) {
-     *     if (result.length == 1) {
-     *       next();
-     *     } else {
-     *       swagger.stopWithError(res);    
-     *     }
-     *   });
-     * });
-     **/
-  }
-);
+  function(req, res, next) { if (req.db === undefined) { req.db = db; } next(); });
 app.use(express.bodyParser());
 swagger.setAppHandler(app);  
-
+swagger.addValidator(
+  function validate(req, path, httpMethod) {
+    //  example, only allow POST for api_key="special-key"
+    if ("POST" == httpMethod) {
+      //  validate by api_key in header or queryparam
+      var apiKey = req.headers["api_key"];
+      if (!apiKey) {
+        apiKey = url.parse(req.url,true).query["api_key"]; }
+      if ("special-key" == apiKey) {
+        return true; }
+      return false;
+    }
+    //  allow everything else
+    return true;
+  }
+);
 // resources for the demo
 var petResources = require("./petResources.js");
 
-swagger.addGet(petResources.findById)
+swagger.addGet(petResources.findByTags)
   .addGet(petResources.findByStatus)
-  .addGet(petResources.findByTags)
-//  .addPost(petResources.addPet)
-//  .addPut(petResources.updatePet)
-//  .addDelete(petResources.deletePet)
+  .addGet(petResources.findById)
+  .addPut(petResources.addPet)
+  .addPost(petResources.updatePet)
+  .addDelete(petResources.deletePet);
 
 // configures the app
 swagger.configure("http://localhost:8002", "0.1");
 
-// start the server
+// serve up swagger ui at /docs
+var docs_handler = express.static(__dirname + '/../../swagger-ui/build/');
+app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
+  if (req.url === '/docs') { // express static barfs on root url w/o trailing slash
+    res.writeHead(302, { 'Location' : req.url + '/' });
+    res.end();
+    return;
+  }
+  // take off leading /docs so that connect locates file correctly
+  req.url = req.url.substr('/docs'.length);
+  return docs_handler(req, res, next);
+});
+
+//  start the server
 app.listen(8002);
