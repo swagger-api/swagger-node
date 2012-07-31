@@ -38,14 +38,23 @@ function configure(bp, av) {
  */
 function setResourceListingPaths(app) {
   for (var key in resources) {
-    app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res, next) {
+    app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       var r = resources[req.url.substr(1).split('?')[0].replace('.json', '.{format}')];
       if (!r) {
-        return stopWithError(res, {'description': 'internal error', 'code': 500}); } 
-      else {      
+        return stopWithError(res, {'description': 'internal error', 'code': 500}); }
+      else {
         res.header('Access-Control-Allow-Origin', "*");
         res.header("Content-Type", "application/json; charset=utf-8");
-        res.send(JSON.stringify(applyFilter(req, res, r))); 
+        var key = req.url.substr(1).replace('.json', '.{format}').split('?')[0];
+        var data = applyFilter(req, res, resources[key]);
+        data.basePath = basePath;
+        if (data.code) {
+          res.send(data, data.code); }
+        else {
+          res.header('Access-Control-Allow-Origin', "*");
+          res.header("Content-Type", "application/json; charset=utf-8");
+          res.send(JSON.stringify(applyFilter(req, res, r)));
+        }
       }
     });
   }
