@@ -33,18 +33,14 @@ are a few additional steps to get the api to declare the swagger spec:
 
 For the sample app, the models are defined here:
 
-<pre>
-Apps/petstore/models.js
-</pre>
+[Apps/petstore/models.js](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js)
 
 You could load this from a static file or generate them programatically as in the
 sample.
 
 The operations and the callback functions are defined in this file:
 
-<pre>
-Apps/petstore/petResources.js
-</pre>
+[Apps/petstore/petResources.js](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/petResources.js)
 
 Each spec defines input/output params with helper functions to generate the swagger
 metadata.
