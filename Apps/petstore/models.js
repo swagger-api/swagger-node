@@ -1,38 +1,63 @@
-/**
- * this is a JSON schema for the PetModel
- */
-exports.pet = {
-  "id" : "pet",
-  "properties" : {
-    "id" : {
-      "type" : "long"
-    },
-    "status" : {
-      "type" : "string",
-      "description" : "pet status in the store",
-      "enum" : [ "available", "pending", "sold" ]
-    },
-    "name" : {
-      "type" : "string"
-    },
-    "tags" : {
-      "type" : "array",
-      "items" : {
-        "type" : "string"
-      }
-    },    
-    "visits" : {
-      "type" : "array",
-      "items" : {
-        "type" : "date"
+exports.models = {
+    "Category":{
+      "id":"Category",
+      "properties":{
+        "id":{
+          "type":"long"
+        },
+        "name":{
+          "type":"string"
+        }
       }
     },
-    "photos" : {
-      "type" : "array",
-      "items" : {
-        "type" : "string"
+    "Pet":{
+      "id":"Pet",
+      "properties":{
+        "tags":{
+          "items":{
+            "$ref":"Tag"
+          },
+          "type":"Array"
+        },
+        "id":{
+          "type":"long"
+        },
+        "category":{
+          "type":"Category"
+        },
+        "status":{
+          "allowableValues":{
+            "valueType":"LIST",
+            "values":[
+              "available",
+              "pending",
+              "sold"
+            ],
+            "valueType":"LIST"
+          },
+          "description":"pet status in the store",
+          "type":"string"
+        },
+        "name":{
+          "type":"string"
+        },
+        "photoUrls":{
+          "items":{
+            "type":"string"
+          },
+          "type":"Array"
+        }
+      }
+    },
+    "Tag":{
+      "id":"Tag",
+      "properties":{
+        "id":{
+          "type":"long"
+        },
+        "name":{
+          "type":"string"
+        }
       }
     }
   }
-};
-

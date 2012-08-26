@@ -1,7 +1,6 @@
 function createEnum(input) {
   if (input && input.indexOf(",") > 0) {
-    // TODO: stupid! handle escaped commas
-    var output = new Array();
+    var output = [];
     var array = input.split(",");
     array.forEach(function(item) {
       output.push(item);

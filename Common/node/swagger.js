@@ -1,6 +1,6 @@
 var resourcePath = "/resources.json";
 var basePath = "/";
-var swaggerVersion = "1.1-SNAPSHOT.121026";
+var swaggerVersion = "1.1";
 var apiVersion = "0.0";
 var resources = {};
 var validators = [];
@@ -9,6 +9,7 @@ var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var Randomizer = require(__dirname + '/randomizer.js');
 var params = require(__dirname + '/paramTypes.js');
+var allModels = {};
 
 /**
  * Initialize Randomizer Caching
@@ -29,6 +30,12 @@ function configure(bp, av) {
   apiVersion = av;
   setResourceListingPaths(appHandler);
   appHandler.get(resourcePath, resourceListing);
+  // update resources if already configured
+  for(key in resources) {
+    var r = resources[key];
+    r.apiVersion = av;
+    r.basePath = bp;
+  }
 }
 
 /**
@@ -52,6 +59,8 @@ function setResourceListingPaths(app) {
           res.send(data, data.code); }
         else {
           res.header('Access-Control-Allow-Origin', "*");
+          res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+          res.header("Access-Control-Allow-Headers", "Content-Type");
           res.header("Content-Type", "application/json; charset=utf-8");
           res.send(JSON.stringify(applyFilter(req, res, r)));
         }
@@ -134,7 +143,7 @@ function containerByModel(model, withData, withRandom) {
       setCache(curType, withRandom, key, value);
     }
     
-    if (value == '' && curType == 'array') {
+    if (value == '' && curType == 'Array') {
       value = []; }
     
     item[key] = value;
@@ -153,7 +162,7 @@ function containerByModel(model, withData, withRandom) {
  */
 function applyFilter(req, res, r) {
   var route = req.route;
-  var excludedPaths = new Array();
+  var excludedPaths = [];
   
   if (!r || !r.apis) {
     return stopWithError(res, {'description': 'internal error', 'code': 500}); }
@@ -168,74 +177,83 @@ function applyFilter(req, res, r) {
     }
   }
   
-  //  only filter if there are paths to exclude
-  if (excludedPaths.length > 0) {
-    //  clone attributes if any
-    var output = shallowClone(r);
-
-    //  clone models
-    var requiredModels = Array();
-    
-    //  clone methods that have access
-    output.apis = new Array();
-    var apis = JSON.parse(JSON.stringify(r.apis));
-    for (var i in apis) {
-      var api = apis[i];
-      var clonedApi = shallowClone(api);
-      clonedApi.operations = new Array();
-      var shouldAdd = true;
-      for (var o in api.operations){
-        var operation = api.operations[o];
-        if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0) {
-          break; }
-        else {
-          clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-          addModelsFromResponse(operation, requiredModels);
-        }
-      }
-      
-      if (clonedApi.operations.length > 0) {
-        //  only add cloned api if there are operations
-        output.apis.push(clonedApi);
-
-        //  add only required models
-        output.models = new Array();
-        for (var i in requiredModels){
-          var model = r.models[i];
-          output.models.push(model);
-        }
-        //  look in object graph
-        requiredModels = new Array();
-        for (var i in output.models) {
-          var model = output.models[i];
-          if (model && model.responseClass.properties) {
-            for (var key in model.responseClass.properties) {
-              var t = model.responseClass.properties[key].type;
-              switch (t){
-              case "array":
-                if (model.responseClass.properties[key].items) {
-                  var ref = model.responseClass.properties[key].items.$ref;
-                  if (ref && requiredModels.indexOf(ref) < 0) {
-                    requiredModels.push(ref); }
-                }
-                break;
-              case "string":
-              case "long":
-                break;
-              default:
-                if (requiredModels.indexOf(t) < 0) {
-                  requiredModels.push(t); }
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
-    return output;
-  } else {
-    return r;
-  }
+	//  clone attributes if any
+	var output = shallowClone(r);
+	
+	//  clone models
+	var requiredModels = [];
+	
+	//  clone methods that have access
+	output.apis = new Array();
+	var apis = JSON.parse(JSON.stringify(r.apis));
+	for (var i in apis) {
+	  var api = apis[i];
+	  var clonedApi = shallowClone(api);
+	  
+	  clonedApi.operations = new Array();
+	  var shouldAdd = true;
+	  for (var o in api.operations){
+	    var operation = api.operations[o];
+	    if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0) {
+	      break; }
+	    else {
+	      clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
+	      addModelsFromResponse(operation, requiredModels);
+	    }
+	  }
+	  if (clonedApi.operations.length > 0) {
+	    //  only add cloned api if there are operations
+	    output.apis.push(clonedApi);
+	  }
+	}
+	
+		// add models to output
+		output.models = {};
+	for (var i in requiredModels){
+	  var modelName = requiredModels[i];
+	  var model = allModels.models[modelName];
+	  if(model){
+	    output.models[requiredModels[i]] = model;
+	  }
+	}
+		//  look in object graph
+		for (key in output.models) {
+		  var model = output.models[key];
+		  if (model && model.properties) {
+		    for (var key in model.properties) {
+		      var t = model.properties[key].type;
+	
+		      switch (t){
+		      case "Array":
+		        if (model.properties[key].items) {
+		          var ref = model.properties[key].items.$ref;
+		          if (ref && requiredModels.indexOf(ref) < 0) {
+		            requiredModels.push(ref);
+		          }
+		        }
+		        break;
+		      case "string":
+		      case "long":
+		        break;
+		      default:
+		        if (requiredModels.indexOf(t) < 0) {
+		          requiredModels.push(t);
+	        }
+		        break;
+		      }
+		    }
+		  }
+		}
+	for (var i in requiredModels){
+	  var modelName = requiredModels[i];
+	  if(!output[modelName]) {
+	    var model = allModels.models[modelName];
+	    if(model){
+	      output.models[requiredModels[i]] = model;
+	    }
+	  }
+	}
+	return output;
 }
 
 /**
@@ -248,9 +266,11 @@ function addModelsFromResponse(operation, models){
   if (responseModel) {
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
     if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); }
+      models.push(responseModel); 
+    }
   }
 }
+
 
 function shallowClone(obj) {
   var cloned = new Object();
@@ -284,13 +304,17 @@ function canAccessResource(req, path, httpMethod) {
  * @param response
  */
 function resourceListing(request, response) {
-  var r = {"apis": [], "basePath": basePath, "swaggerVersion": swaggerVersion, "apiVersion" : apiVersion};
-  
+  var r = {"apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "apis": []};
+
   for (var key in resources) {
-    r.apis.push({"path": "/" + key, "description": "none"}); }
-    
-  response.header('Access-Control-Allow-Origin', "*");
-  response.header("Content-Type", "application/json; charset=utf-8");
+    r.apis.push({"path": "/" + key, "description": "none"}); 
+  }
+
+	response.header('Access-Control-Allow-Origin', "*");
+	response.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+	response.header("Access-Control-Allow-Headers", "Content-Type");
+	response.header("Content-Type", "application/json; charset=utf-8");
+
   response.write(JSON.stringify(r));
   response.end();
 }
@@ -320,7 +344,10 @@ function addMethod(app, callback, spec) {
   var api = {"path" : spec.path};
   if (!resources[rootPath]) {
     if (!root) {
-      root = {"apis" : []}; }
+      root = {
+        "apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "apis": [], "models" : []
+      }; 
+    }
     resources[rootPath] = root;
   }
 
@@ -333,8 +360,12 @@ function addMethod(app, callback, spec) {
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Content-Type", "application/json; charset=utf-8");    
+	    res.header('Access-Control-Allow-Origin', "*");
+	    res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+	    res.header("Access-Control-Allow-Headers", "Content-Type");
+	    
+	    res.header("Content-Type", "application/json; charset=utf-8");
+
       if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
         res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
       } else {    
@@ -416,13 +447,19 @@ function addPut() {
   return this;
 }
 
+function addModels(models) {
+  allModels = models;
+  return this;
+}
+
 function wrap(callback, req, resp){
   callback(req,resp);
 }
 
 function appendToApi(rootResource, api, spec) {
   if (!api.description) {
-    api.description = spec.description; }
+    api.description = spec.description; 
+  }
   var validationErrors = [];
 
   if(!spec.nickname || spec.nickname.indexOf(" ")>=0){
@@ -465,14 +502,17 @@ function appendToApi(rootResource, api, spec) {
     "summary" : spec.summary
   };
   
-  if (spec.outputModel) {
-    op.responseClass = spec.outputModel.name; }
+  if (spec.responseClass) {
+    op.responseClass = spec.responseClass; 
+  }
+  else {
+    op.responseClass = "void";
+  }
   api.operations.push(op);
 
   if (!rootResource.models) {
-    rootResource.models = {}; }
-  if (spec.outputModel && !rootResource.models[spec.outputModel.responseClass.id]) {
-    rootResource.models[spec.outputModel.responseClass.id] = {'properties': spec.outputModel.responseClass.properties}; }
+    rootResource.models = {}; 
+  }
 }
 
 function addValidator(v) {
@@ -532,6 +572,7 @@ exports.params = params;
 exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
 exports.postParam = exports.params.post;
+exports.getModels = allModels;
 
 exports.error = error;
 exports.stopWithError = stopWithError;
@@ -545,6 +586,7 @@ exports.addGet = addGet;
 exports.addPost = addPost;
 exports.addPut = addPut;
 exports.addDelete = addDelete;
+exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;

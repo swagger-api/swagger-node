@@ -26,18 +26,21 @@ swagger.addValidator(
 // resources for the demo
 var petResources = require("./petResources.js");
 
-swagger.addGet(petResources.findByTags)
+swagger.addModels(petResources.models)
+  .addGet(petResources.findByTags)
   .addGet(petResources.findByStatus)
   .addGet(petResources.findById)
-  .addPut(petResources.addPet)
-  .addPost(petResources.updatePet)
+  .addPost(petResources.addPet)
+  .addPut(petResources.updatePet)
   .addDelete(petResources.deletePet);
 
 // configures the app
 swagger.configure("http://localhost:8002", "0.1");
 
 // serve up swagger ui at /docs
-var docs_handler = express.static(__dirname + '/../../swagger-ui/build/');
+console.log('dirname' + __dirname + '/../../../swagger-ui/swagger-ui-1.1.0/');
+
+var docs_handler = express.static(__dirname + '/../../../swagger-ui/swagger-ui-1.1.0/');
 app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   if (req.url === '/docs') { // express static barfs on root url w/o trailing slash
     res.writeHead(302, { 'Location' : req.url + '/' });

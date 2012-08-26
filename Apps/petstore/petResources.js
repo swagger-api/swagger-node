@@ -1,21 +1,31 @@
 var sw = require("../../Common/node/swagger.js");
 var param = require("../../Common/node/paramTypes.js");
-var models = require("./models.js");
 var url = require("url");
 var swe = sw.errors;
+
+var models = require("./models.js");
+var petData = require("./petData.js");
+
+function writeResponse (response, data) {
+	response.header('Access-Control-Allow-Origin', "*");
+	response.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  response.header("Access-Control-Allow-Headers", "Content-Type");
+
+	response.header("Content-Type", "application/json; charset=utf-8");
+  response.send(JSON.stringify(data));
+}
+
+exports.models = models;
 
 exports.findById = {
   'spec': {
     "description" : "Operations about pets",
     "path" : "/pet.{format}/{petId}",
-    "notes" : "Returns a pet for IDs in 0 < ID < 10. ID > 10, negative numbers or nonintegers will simulate API error conditions",
+    "notes" : "Returns a pet based on ID",
     "summary" : "Find pet by ID",
     "method": "GET",
     "params" : [param.path("petId", "ID of pet that needs to be fetched", "string")],
-    "outputModel" : {
-      "name" : "pet",
-      "responseClass" : models.pet
-    },
+    "responseClass" : "Pet",
     "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
     "nickname" : "getPetById"
   },
@@ -23,10 +33,10 @@ exports.findById = {
     if (!req.params.petId) {
       throw swe.invalid('id'); }
     var id = parseInt(req.params.petId);
-    if (!id || (id > 10 || id < 0)) {
-      throw swe.invalid('id'); }
+    var pet = petData.getPetById(id);
 
-    res.send(JSON.stringify(sw.containerByModel(models.pet, {'id': req.params.petId}, req.params.petId)));
+    if(pet) res.send(JSON.stringify(pet));
+    else throw swe.notFound('pet');
   }
 };
 
@@ -38,10 +48,7 @@ exports.findByStatus = {
     "summary" : "Find pets by status",
     "method": "GET",    
     "params" : [param.query("status", "Status (Values: available, pending, sold)", "string", true, true)], 
-    "outputModel" : {
-      "name" : "List[pet]",
-      "responseClass" : models.pet
-    },
+    "responseClass" : "List[Pet]",
     "errorResponses" : [swe.invalid('status')],
     "nickname" : "findPetsByStatus"
   },  
@@ -49,12 +56,8 @@ exports.findByStatus = {
     var statusString = url.parse(req.url,true).query["status"];
     if (!statusString) {
       throw swe.invalid('status'); }
-    
-    var output = new Array();
-    for (var i = 0; i < sw.Randomizer.intBetween(1,10); i++) {
-      output.push(sw.containerByModel(models.pet, {'status': statusString}, -1));
-    }
 
+    var output = petData.findPetByStatus(statusString);
     res.send(JSON.stringify(output));
   }
 };
@@ -66,10 +69,7 @@ exports.findByTags = {
     "summary" : "Find pets by tags",
     "method": "GET",    
     "params" : [param.query("tags", "Tags to filter by", "string", true, true)],
-    "outputModel" : {
-      "name" : "List[pet]",
-      "responseClass" : models.pet
-    },
+    "responseClass" : "List[Pet]",
     "errorResponses" : [swe.invalid('tag')],
     "nickname" : "findPetsByTags"
   },
@@ -77,13 +77,8 @@ exports.findByTags = {
     var tagsString = url.parse(req.url,true).query["tags"];
     if (!tagsString) {
       throw swe.invalid('tag'); }
-    
-    var output = new Array();
-    for (var i = 0; i < sw.Randomizer.intBetween(1,10); i++) {
-      output.push(sw.containerByModel(models.pet, {'tags': tagsString.split(',')}, -1));
-    }
-
-    res.send(JSON.stringify(output));
+    var output = petData.findPetByTags(tagsString);
+    writeResponse(res, output);
   }
 };
 
@@ -92,15 +87,20 @@ exports.addPet = {
     "path" : "/pet.{format}",
     "notes" : "adds a pet to the store",
     "summary" : "Add a new pet to the store",
-    "method": "PUT",
-    "params" : [param.post("Pet object that needs to be added to the store", "pet")],
+    "method": "POST",
+    "params" : [param.post("Pet object that needs to be added to the store", "Pet")],
     "errorResponses" : [swe.invalid('input')],
     "nickname" : "addPet"
   },  
   'action': function(req, res) {
-    res.send(JSON.stringify({
-      "message" : "thanks for playing"
-    }));
+    var body = req.body;
+    if(!body || !body.id){
+      throw swe.invalid('pet');
+    }
+    else{
+	    petData.addPet(body);
+	    res.send(200);
+	  }  
   }
 };
 
@@ -110,14 +110,19 @@ exports.updatePet = {
     "notes" : "updates a pet in the store",
     "method": "POST",    
     "summary" : "Update an existing pet",
-    "params" : [param.post("Pet object that needs to be added to the store", "pet")],
+    "params" : [param.post("Pet object that needs to be added to the store", "Pet")],
     "errorResponses" : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
-    "nickname" : "addPet"  
+    "nickname" : "addPet"
   },  
   'action': function(req, res) {
-    res.send(JSON.stringify({
-      "message" : "thanks for playing"
-    }));
+    var body = req.body;
+    if(!body || !body.id){
+      throw swe.invalid('pet');
+    }
+    else {
+	    petData.addPet(body);
+	    res.send(200);
+	  }
   }
 };
 
@@ -132,8 +137,8 @@ exports.deletePet = {
     "nickname" : "deletePet" 
   },  
   'action': function(req, res) {
-    res.send(JSON.stringify({
-      "message" : "thanks for playing"
-    }));
+    var id = parseInt(req.params.id);
+    petData.deletePet(id)
+    res.send(200);
   }
 };
