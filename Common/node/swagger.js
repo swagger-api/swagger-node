@@ -344,8 +344,9 @@ function addMethod(app, callback, spec) {
   var api = {"path" : spec.path};
   if (!resources[rootPath]) {
     if (!root) {
+	    var resourcePath = "/" + rootPath.replace("\.\{format\}", ""); 
       root = {
-        "apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "apis": [], "models" : []
+        "apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "resourcePath": resourcePath, "apis": [], "models" : []
       }; 
     }
     resources[rootPath] = root;
