@@ -1,5 +1,5 @@
 function createEnum(input) {
-  if (input && input.indexOf(",") > 0) {
+  if (input && input.toString().indexOf(",") > 0) {
     var output = [];
     var array = input.split(",");
     array.forEach(function(item) {
@@ -34,12 +34,23 @@ exports.path = function(name, description, dataType, allowableValues) {
   };
 };
 
-exports.post = function(name, description) {
+exports.post = function(dataType, description) {
   return {
     "description" : description,
-    "dataType" : name,
+    "dataType" : dataType,
     "required" : true,
     "paramType" : "body"
   };
 };
 
+exports.header = function(name, description, dataType, required) {
+  return {
+    "name" : name,
+    "description" : description,
+    "dataType" : dataType,
+    "required" : true,
+    "allowMultiple" : false,
+    "allowableValues" : createEnum(allowableValues),
+    "paramType" : "header"
+  };
+};
