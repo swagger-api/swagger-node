@@ -1,14 +1,3 @@
-function createEnum(input) {
-  if (input && input.toString().indexOf(",") > 0) {
-    var output = [];
-    var array = input.split(",");
-    array.forEach(function(item) {
-      output.push(item);
-    })
-    return output;
-  }
-}
-
 exports.query = exports.q = function(name, description, dataType, required, allowMultiple, allowableValues, defaultValue) {
   return {
     "name" : name,
@@ -16,7 +5,7 @@ exports.query = exports.q = function(name, description, dataType, required, allo
     "dataType" : dataType,
     "required" : required,
     "allowMultiple" : allowMultiple,
-    "allowableValues" : createEnum(allowableValues),
+    "allowableValues" : allowableValues,
     "defaultValue" : defaultValue,
     "paramType" : "query"
   };
@@ -29,7 +18,7 @@ exports.path = function(name, description, dataType, allowableValues) {
     "dataType" : dataType,
     "required" : true,
     "allowMultiple" : false,
-    "allowableValues" : createEnum(allowableValues),
+    "allowableValues" : allowableValues,
     "paramType" : "path"
   };
 };
@@ -50,7 +39,6 @@ exports.header = function(name, description, dataType, required) {
     "dataType" : dataType,
     "required" : true,
     "allowMultiple" : false,
-    "allowableValues" : createEnum(allowableValues),
     "paramType" : "header"
   };
 };
