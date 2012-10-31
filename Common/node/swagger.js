@@ -1,3 +1,4 @@
+
 var resourcePath = "/resources.json";
 var basePath = "/";
 var swaggerVersion = "1.1";
@@ -7,24 +8,11 @@ var validators = [];
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
-var Randomizer = require(__dirname + '/randomizer.js');
 var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
 
-/**
- * Initialize Randomizer Caching
- */
-var RandomStorage = {};
-for (var i = 0; i < allowedDataTypes.length; i++) {
-  RandomStorage[allowedDataTypes[i]] = {}; }
-
-/**
- * sets the base path, api version
- * 
- * @param app
- * @param bp
- * @param av
- */
+// Configuring swagger will set the basepath and api version for all
+// subdocuments.  It should only be done once, and during bootstrap of the app
 function configure(bp, av) {
   basePath = bp;
   apiVersion = av;
@@ -38,134 +26,45 @@ function configure(bp, av) {
   }
 }
 
-/**
- * creates declarations for each resource
- * 
- * @param app
- */
+// Convenience to set default headers in each response.
+function setHeaders(res) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  res.header("Access-Control-Allow-Headers", "Content-Type, api_key");
+  res.header("Content-Type", "application/json; charset=utf-8");
+}
+
+// creates declarations for each resource path.
 function setResourceListingPaths(app) {
   for (var key in resources) {
     app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
       var r = resources[req.url.substr(1).split('?')[0].replace('.json', '.{format}')];
-      if (!r) {
-        return stopWithError(res, {'description': 'internal error', 'code': 500}); }
+      if (!r)
+        return stopWithError(res, {'description': 'internal error', 'code': 500});
       else {
-        res.header('Access-Control-Allow-Origin', "*");
-        res.header("Content-Type", "application/json; charset=utf-8");
+        setHeaders(res);
         var key = req.url.substr(1).replace('.json', '.{format}').split('?')[0];
-        var data = applyFilter(req, res, resources[key]);
+        var data = filterApiListing(req, res, resources[key]);
         data.basePath = basePath;
         if (data.code) {
           res.send(data, data.code); }
         else {
-          res.header('Access-Control-Allow-Origin', "*");
-          res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-          res.header("Access-Control-Allow-Headers", "Content-Type");
-          res.header("Content-Type", "application/json; charset=utf-8");
-          res.send(JSON.stringify(applyFilter(req, res, r)));
+          res.send(JSON.stringify(filterApiListing(req, res, r)));
         }
       }
     });
   }
 }
 
-/**
- * generate random date for type
- * 
- * @param type type of data (must be defined in allowedDataTypes)
- * @param withRandom fill with random data 
- * @return value
- */
-function randomDataByType(type, withRandom, subType) {
-  type = type.toLowerCase();
-  if (allowedDataTypes.indexOf(type)<0) {
-    return null; }
-  return Randomizer[type](subType);
-}
-
-/**
- * Get cache for type and identifier
- * @param type
- * @param id
- * @param key
- * @return value
- */
-function getCache(type, id, key) {
-  if (id && id != -1 && RandomStorage[type] && RandomStorage[type][key+id]) {
-    return RandomStorage[type][key + id]; }
-  else {
-    return null; }
-}
-
-/**
- * Set cache for type and identifier
- * @param type
- * @param id
- * @param key
- * @param value
- */
-function setCache(curType, id, key, value) {
-  if (id && id != -1 && RandomStorage[curType]) {
-    RandomStorage[curType][key + id] = value; }
-}
-
-/**
- * try to generate object from model defintion
- * @param model
- * @param withData fill model with data
- * @param withRandom generate random values
- * @return object
- */
-function containerByModel(model, withData, withRandom) {
-  var item = {};
-  for (key in model.properties) {
-    var curType = model.properties[key].type.toLowerCase();
-
-    var value = '';
-    if (withData && withData[key]) {
-      value = withData[key]; }
-    if (value == '' && withRandom) {  
-      var cache = getCache(curType, withRandom, key);
-      if (cache) {
-        value = cache; } 
-      else {
-        if (model.properties[key].enum) {
-          value = model.properties[key].enum[Randomizer.intBetween(0, model.properties[key].enum.length-1)]; } 
-        else {
-          var subType = false;
-          if (model.properties[key].items && model.properties[key].items.type) {
-            subType = model.properties[key].items.type; }
-          var curKey = key;
-          value = randomDataByType(curType, withRandom, subType);
-          var key = curKey;
-        }
-      }
-      setCache(curType, withRandom, key, value);
-    }
-    
-    if (value == '' && curType == 'Array') {
-      value = []; }
-    
-    item[key] = value;
-  } 
-  
-  return item;
-}
-
-/**
- * filters resource listing by access
- *  
- * @param req
- * @param res
- * @param r
- * @returns
- */
-function applyFilter(req, res, r) {
+// Applies a filter to an api listing.  When done, the api listing will only contain
+// methods and models that the user actually has access to.
+function filterApiListing(req, res, r) {
   var route = req.route;
   var excludedPaths = [];
   
   if (!r || !r.apis) {
-    return stopWithError(res, {'description': 'internal error', 'code': 500}); }
+    return stopWithError(res, {'description': 'internal error', 'code': 500});
+  }
 
   for (var key in r.apis) {
     var api = r.apis[key];
@@ -176,91 +75,88 @@ function applyFilter(req, res, r) {
         excludedPaths.push(op.httpMethod + ":" + api.path); }
     }
   }
+
+  //  clone attributes in the resource
+  var output = shallowClone(r);
   
-    //  clone attributes if any
-    var output = shallowClone(r);
-    
-    //  clone models
-    var requiredModels = [];
-    
-    //  clone methods that have access
-    output.apis = new Array();
-    var apis = JSON.parse(JSON.stringify(r.apis));
-    for (var i in apis) {
-      var api = apis[i];
-      var clonedApi = shallowClone(api);
-      
-      clonedApi.operations = new Array();
-      var shouldAdd = true;
-      for (var o in api.operations){
-        var operation = api.operations[o];
-        if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path)>=0) {
-          break; }
-        else {
-          clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-          addModelsFromResponse(operation, requiredModels);
-        }
+  //  models required in the api listing
+  var requiredModels = [];
+  
+  //  clone methods that user can access
+  output.apis = [];
+  var apis = JSON.parse(JSON.stringify(r.apis));
+  for (var i in apis) {
+    var api = apis[i];
+    var clonedApi = shallowClone(api);
+
+    clonedApi.operations = [];
+    var shouldAdd = true;
+    for (var o in api.operations) {
+      var operation = api.operations[o];
+      if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
+        break;
       }
-      if (clonedApi.operations.length > 0) {
-        //  only add cloned api if there are operations
-        output.apis.push(clonedApi);
+      else {
+        clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
+        addModelsFromResponse(operation, requiredModels);
       }
     }
-    
-        // add models to output
-        output.models = {};
-    for (var i in requiredModels){
-      var modelName = requiredModels[i];
+    //  only add cloned api if there are operations
+    if (clonedApi.operations.length > 0) {
+      output.apis.push(clonedApi);
+    }
+  }
+
+  // add required models to output
+  output.models = {};
+  for (var i in requiredModels){
+    var modelName = requiredModels[i];
+    var model = allModels.models[modelName];
+    if(model){
+      output.models[requiredModels[i]] = model;
+    }
+  }
+  //  look in object graph
+  for (key in output.models) {
+    var model = output.models[key];
+    if (model && model.properties) {
+      for (var key in model.properties) {
+        var t = model.properties[key].type;
+
+        switch (t){
+        case "Array":
+          if (model.properties[key].items) {
+            var ref = model.properties[key].items.$ref;
+            if (ref && requiredModels.indexOf(ref) < 0) {
+              requiredModels.push(ref);
+            }
+          }
+          break;
+        case "string":
+        case "long":
+          break;
+        default:
+          if (requiredModels.indexOf(t) < 0) {
+            requiredModels.push(t);
+          }
+          break;
+        }
+      }
+    }
+  }
+  for (var i in requiredModels){
+    var modelName = requiredModels[i];
+    if(!output[modelName]) {
       var model = allModels.models[modelName];
       if(model){
         output.models[requiredModels[i]] = model;
       }
     }
-        //  look in object graph
-        for (key in output.models) {
-          var model = output.models[key];
-          if (model && model.properties) {
-            for (var key in model.properties) {
-              var t = model.properties[key].type;
-    
-              switch (t){
-              case "Array":
-                if (model.properties[key].items) {
-                  var ref = model.properties[key].items.$ref;
-                  if (ref && requiredModels.indexOf(ref) < 0) {
-                    requiredModels.push(ref);
-                  }
-                }
-                break;
-              case "string":
-              case "long":
-                break;
-              default:
-                if (requiredModels.indexOf(t) < 0) {
-                  requiredModels.push(t);
-            }
-                break;
-              }
-            }
-          }
-        }
-    for (var i in requiredModels){
-      var modelName = requiredModels[i];
-      if(!output[modelName]) {
-        var model = allModels.models[modelName];
-        if(model){
-          output.models[requiredModels[i]] = model;
-        }
-      }
-    }
-    return output;
+  }
+  return output;
 }
 
-/**
- * Add model to list and parse List[model] elements
- * @param operation
- * @param models
- */
+// Add model to list and parse List[model] elements
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
   if (responseModel) {
@@ -271,28 +167,23 @@ function addModelsFromResponse(operation, models){
   }
 }
 
-
+// clone anything but objects to avoid shared references
 function shallowClone(obj) {
-  var cloned = new Object();
+  var cloned = {};
   for (var i in obj) {
     if (typeof (obj[i]) != "object") {
-      cloned[i] = obj[i]; }
+      cloned[i] = obj[i];
+    }
   }
   return cloned;
 }
 
-/**
- * function for filtering a resource.  override this with your own implementation
- * 
- * @param req
- * @param path
- * @param httpMethod
- * @returns {Boolean}
- */
+// function for filtering a resource.  override this with your own implementation.
+// if consumer can access the resource, method returns true.
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
-    if (!validators[i](req,path,httpMethod)) {
-      return false; }
+    if (!validators[i](req,path,httpMethod))
+      return false;
   }
   return true;
 }
@@ -303,29 +194,23 @@ function canAccessResource(req, path, httpMethod) {
  * @param request
  * @param response
  */
-function resourceListing(request, response) {
-  var r = {"apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "apis": []};
+function resourceListing(req, res) {
+  var r = {
+    "apiVersion" : apiVersion, 
+    "swaggerVersion" : swaggerVersion, 
+    "basePath" : basePath, 
+    "apis" : []
+  };
 
-  for (var key in resources) {
+  for (var key in resources)
     r.apis.push({"path": "/" + key, "description": "none"}); 
-  }
 
-    response.header('Access-Control-Allow-Origin', "*");
-    response.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-    response.header("Access-Control-Allow-Headers", "Content-Type");
-    response.header("Content-Type", "application/json; charset=utf-8");
-
-  response.write(JSON.stringify(r));
-  response.end();
+  setHeaders(res);
+  res.write(JSON.stringify(r));
+  res.end();
 }
 
-/**
- * adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
- * 
- * @param app
- * @param callback
- * @param spec
- */
+// Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
 function addMethod(app, callback, spec) {
   var rootPath = spec.path.split("/")[1];
   var root = resources[rootPath];
@@ -334,7 +219,7 @@ function addMethod(app, callback, spec) {
     for (var key in root.apis) {
       var api = root.apis[key];
       if (api && api.path == spec.path && api.method == spec.method) {
-        // found matching path and method, add & return
+        // Add & return
         appendToApi(root, api, spec);
         return;
       }
@@ -344,10 +229,10 @@ function addMethod(app, callback, spec) {
   var api = {"path" : spec.path};
   if (!resources[rootPath]) {
     if (!root) {
-        var resourcePath = "/" + rootPath.replace("\.\{format\}", ""); 
+      var resourcePath = "/" + rootPath.replace("\.\{format\}", ""); 
       root = {
         "apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "resourcePath": resourcePath, "apis": [], "models" : []
-      }; 
+      };
     }
     resources[rootPath] = root;
   }
@@ -355,26 +240,22 @@ function addMethod(app, callback, spec) {
   root.apis.push(api);
   appendToApi(root, api, spec);
 
-  //  TODO: add some XML support
+  //  TODO: only supports json
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/g, "/:").replace(/\}/g,"");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
-        res.header('Access-Control-Allow-Origin', "*");
-        res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-        res.header("Access-Control-Allow-Headers", "Content-Type");
-        
-        res.header("Content-Type", "application/json; charset=utf-8");
-
+      setHeaders(res);
       if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
         res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
       } else {    
         try {
-          callback(req,res); }
+          callback(req,res); 
+        }
         catch (ex) {
-          if (ex.code && ex.description) {
-            res.send(JSON.stringify(ex), ex.code); }
+          if (ex.code && ex.description)
+            res.send(JSON.stringify(ex), ex.code); 
           else {
             console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
             res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
@@ -388,19 +269,12 @@ function addMethod(app, callback, spec) {
   }
 }
 
-/**
- * Set expressjs app handler
- * @param app
- */
+// Set expressjs app handler
 function setAppHandler(app) {
   appHandler = app;
 }
 
-/**
- * Add swagger handlers to express 
- * @param type http method
- * @param handlers list of handlers to be added
- */
+// Add swagger handlers to express 
 function addHandlers(type, handlers) {
   for (var i = 0; i < handlers.length; i++) {
     var handler = handlers[i];
@@ -409,45 +283,47 @@ function addHandlers(type, handlers) {
   }
 }
 
-/**
- * Discover swagger handler from resource
- */
+// Discover swagger handler from resource
 function discover(resource) {
   for (var key in resource) {
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec); } 
-    else {
-      console.log('auto discover failed for: ' + key); }
+      addMethod(appHandler, resource[key].action, resource[key].spec); 
+    } 
+    else
+      console.log('auto discover failed for: ' + key); 
   }
 }
 
-/**
- * Discover swagger handler from resource file path
- */
+// Discover swagger handler from resource file path
 function discoverFile(file) {
   return discover(require(file));
 }
 
+// adds get handler
 function addGet() {
   addHandlers('GET', arguments);
   return this;
 }
 
+// adds post handler
 function addPost() {
   addHandlers('POST', arguments);
   return this;
 }
 
+// adds delete handler
 function addDelete() { 
   addHandlers('DELETE', arguments);
   return this;
 }
 
+// adds put handler
 function addPut() {
   addHandlers('PUT', arguments);
   return this;
 }
 
+// adds models to swagger
 function addModels(models) {
   allModels = models;
   return this;
@@ -486,7 +362,8 @@ function appendToApi(rootResource, api, spec) {
     switch (param.paramType) {
       case "path":
         if (api.path.indexOf("{" + param.name + "}") < 0) {
-          validationErrors.push({"path": api.path, "name": param.name, "error": "invalid path"}); }
+          validationErrors.push({"path": api.path, "name": param.name, "error": "invalid path"});
+        }
         break;
       case "query":
         break;
@@ -533,34 +410,21 @@ function addValidator(v) {
   validators.push(v);
 }
 
-/**
- * Create Error JSON by code and text
- * @param int code
- * @param string description
- * @return obj
- */
+// Create Error JSON by code and text
 function error(code, description) {
   return {"code" : code, "description" : description};
 }
 
-/**
- * Stop express ressource with error code
- * @param obj res expresso response
- * @param obj error error object with code and description
- */
+// Stop express ressource with error code
 function stopWithError(res, error) {
-  res.header('Access-Control-Allow-Origin', "*");
-  res.header("Content-Type", "application/json; charset=utf-8");
-  
-  if (error && error.description && error.code) {
-    res.send(JSON.stringify(error), error.code); } 
-  else {
-    res.send(JSON.stringify({'description': 'internal error', 'code': 500}), 500); }
-};
+  setHeaders(res);
+  if (error && error.description && error.code)
+    res.send(JSON.stringify(error), error.code);
+  else
+    res.send(JSON.stringify({'description': 'internal error', 'code': 500}), 500);
+}
 
-/**
- * Export most needed error types for easier handling
- */
+// Export most needed error types for easier handling
 exports.errors = {
   'notFound': function(field, res) { 
     if (!res) { 
@@ -596,6 +460,7 @@ exports.configure = configure;
 exports.canAccessResource = canAccessResource;
 exports.resourcePath = resourcePath;
 exports.resourceListing = resourceListing;
+exports.setHeaders = setHeaders;
 exports.addGet = addGet;
 exports.addPost = addPost;
 exports.addPut = addPut;
@@ -608,5 +473,3 @@ exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
-exports.containerByModel = containerByModel;
-exports.Randomizer = Randomizer;

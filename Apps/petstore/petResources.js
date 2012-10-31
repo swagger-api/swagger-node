@@ -3,19 +3,14 @@ var param = require("../../Common/node/paramTypes.js");
 var url = require("url");
 var swe = sw.errors;
 
-var models = require("./models.js");
 var petData = require("./petData.js");
 
-function writeResponse (response, data) {
-	response.header('Access-Control-Allow-Origin', "*");
-	response.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-  response.header("Access-Control-Allow-Headers", "Content-Type");
-
-	response.header("Content-Type", "application/json; charset=utf-8");
-  response.send(JSON.stringify(data));
+function writeResponse (res, data) {
+	sw.setHeaders(res);
+  res.send(JSON.stringify(data));
 }
 
-exports.models = models;
+exports.models = require("./models.js");
 
 exports.findById = {
   'spec': {
