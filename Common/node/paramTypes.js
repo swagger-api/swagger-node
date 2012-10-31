@@ -23,12 +23,13 @@ exports.path = function(name, description, dataType, allowableValues) {
   };
 };
 
-exports.post = function(dataType, description) {
+exports.post = function(dataType, description, defaultValue) {
   return {
     "description" : description,
     "dataType" : dataType,
     "required" : true,
-    "paramType" : "body"
+    "paramType" : "body",
+    "defaultValue" : defaultValue
   };
 };
 
