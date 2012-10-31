@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "connect": ">= 1.8.x",
-        "express": "< 3.0.x"
+        "express": "3.x",
+	"docco": "0.4.x"
     }
 }
