@@ -42,7 +42,9 @@ exports.findByStatus = {
     "notes" : "Multiple status values can be provided with comma-separated strings",
     "summary" : "Find pets by status",
     "method": "GET",    
-    "params" : [param.query("status", "Status (Values: available, pending, sold)", "string", true, true)], 
+    "params" : [
+      param.query("status", "Status in the store", "string", true, true, "LIST[available,pending,sold]", "available")
+    ],
     "responseClass" : "List[Pet]",
     "errorResponses" : [swe.invalid('status')],
     "nickname" : "findPetsByStatus"
