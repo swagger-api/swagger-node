@@ -61,7 +61,7 @@ swagger.addModels(petResources.models)
 swagger.configure("http://localhost:8002", "0.1");
 
 // Serve up swagger ui at /docs via static route
-var docs_handler = express.static(__dirname + '/../../swagger-ui-1.1.1/');
+var docs_handler = express.static(__dirname + '/../../swagger-ui-1.1.7/');
 app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   if (req.url === '/docs') { // express static barfs on root url w/o trailing slash
     res.writeHead(302, { 'Location' : req.url + '/' });
