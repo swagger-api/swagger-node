@@ -433,19 +433,19 @@ function stopWithError(res, error) {
 exports.errors = {
   'notFound': function(field, res) { 
     if (!res) { 
-      return {"code": 404, "description": field + ' not found'}; } 
+      return {"code": 404, "reason": field + ' not found'}; } 
     else { 
       res.send({"code": 404, "description": field + ' not found'}, 404); } 
   },
   'invalid': function(field, res) { 
     if (!res) { 
-      return {"code": 400, "description": 'invalid ' + field}; } 
+      return {"code": 400, "reason": 'invalid ' + field}; } 
     else { 
       res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
   },
   'forbidden': function(res) {
     if (!res) { 
-      return {"code": 403, "description": 'forbidden' }; } 
+      return {"code": 403, "reason": 'forbidden' }; } 
     else { 
       res.send({"code": 403, "description": 'forbidden'}, 403); }
   }
