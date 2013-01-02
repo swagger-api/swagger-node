@@ -1,4 +1,3 @@
-
 var resourcePath = "/resources.json";
 var basePath = "/";
 var swaggerVersion = "1.1";
@@ -195,6 +194,12 @@ function canAccessResource(req, path, httpMethod) {
  * @param response
  */
 function resourceListing(req, res) {
+  if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
+    res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
+    res.end();
+    return
+  }
+
   var r = {
     "apiVersion" : apiVersion, 
     "swaggerVersion" : swaggerVersion, 
