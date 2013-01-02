@@ -1,3 +1,4 @@
+
 var resourcePath = "/resources.json";
 var basePath = "/";
 var swaggerVersion = "1.1";
