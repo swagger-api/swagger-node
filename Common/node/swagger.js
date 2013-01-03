@@ -362,7 +362,13 @@ function addPut() {
 
 // adds models to swagger
 function addModels(models) {
-  allModels = models;
+  if(!allModels['models']) {
+    allModels = models;
+  } else {
+    for(k in models['models']) {
+      allModels['models'][k] = models['models'][k];
+    }
+  }
   return this;
 }
 
