@@ -16,12 +16,10 @@ node Apps/petstore/main.js
 Then visit the server from your browser:
 
 <pre>
-http://localhost:8002/resources.json
+http://localhost:8002/api-docs.json
 </pre>
 
 or from [swagger UI], mounted at `/docs`: [http://localhost:8002/docs](http://localhost:8002/docs).
-
-![Swagger UI](https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png?raw=true)
 
 ### How it works
 The swagger.js file is included when configuring the express server.  There
@@ -60,7 +58,7 @@ try{
 catch(ex){
 	throw {
 		"code":401,
-		"description":"You forgot to log in!"
+		"reason":"You forgot to log in!"
 	}
 }
 </pre>
@@ -81,11 +79,51 @@ swagger.addValidator(
 		...
 </pre>
 
+### Other Configurations
+If you don't like the `.json` suffix `(.{format})`, you can configure it away.  In swagger.js,
+change the formatString (default is ".{format}"), resourcePath, and suffix for json as follows:
+
+```js
+var formatString = "";						// default is ".{format}"
+var resourcePath = "/api-docs";   // default is ".api-docs.{format}"
+var jsonSuffix = ""; 							// default is ".json"
+```
+
+Of course, in the petstore example, you'll want to change the paths in the petResource.js file to
+remove the `.{format}` suffix:
+
+```js
+// was:
+exports.findById = {
+  'spec': {
+    "description" : "Operations about pets",
+    "path" : "/pet.{format}/{petId}",
+    "notes" : "Returns a pet based on ID",
+    "summary" : "Find pet by ID",
+    "method": "GET",
+    "params" : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    "responseClass" : "Pet",
+    "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
+    "nickname" : "getPetById"
+  }
+
+// should be:
+exports.findById = {
+  'spec': {
+    "description" : "Operations about pets",
+    "path" : "/pet/{petId}",
+    "notes" : "Returns a pet based on ID",
+    "summary" : "Find pet by ID",
+    "method": "GET",
+    "params" : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    "responseClass" : "Pet",
+    "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
+    "nickname" : "getPetById"
+  }
+```
 
 ### Current limitations
 
 <li> - Only JSON is supported </li>
 
 <li> - Nested objects may not be declared in the models array </li>
-
-<li> - There are probably (many) others </li>
