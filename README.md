@@ -53,13 +53,13 @@ error response.  To take advantage of this, you can throw exceptions as follows:
 
 <pre>
 try{
-	//	some dangerous function
+  //  some dangerous function
 }
 catch(ex){
-	throw {
-		"code":401,
-		"reason":"You forgot to log in!"
-	}
+  throw {
+    "code":401,
+    "reason":"You forgot to log in!"
+  }
 }
 </pre>
 
@@ -75,8 +75,8 @@ example:
 
 <pre>
 swagger.addValidator(
-	function validate(req, path, httpMethod) {
-		...
+  function validate(req, path, httpMethod) {
+    ...
 </pre>
 
 ### Other Configurations
@@ -84,9 +84,9 @@ If you don't like the `.json` suffix `(.{format})`, you can configure it away.  
 change the formatString (default is ".{format}"), resourcePath, and suffix for json as follows:
 
 ```js
-var formatString = "";						// default is ".{format}"
+var formatString = "";            // default is ".{format}"
 var resourcePath = "/api-docs";   // default is ".api-docs.{format}"
-var jsonSuffix = ""; 							// default is ".json"
+var jsonSuffix = "";              // default is ".json"
 ```
 
 Of course, in the petstore example, you'll want to change the paths in the petResource.js file to
@@ -105,7 +105,7 @@ exports.findById = {
     "responseClass" : "Pet",
     "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
     "nickname" : "getPetById"
-  }
+  } ...
 
 // should be:
 exports.findById = {
@@ -119,7 +119,7 @@ exports.findById = {
     "responseClass" : "Pet",
     "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
     "nickname" : "getPetById"
-  }
+  } ...
 ```
 
 ### Current limitations
