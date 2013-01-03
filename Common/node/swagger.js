@@ -1,4 +1,12 @@
-var resourcePath = "/resources.json";
+var formatString = ".{format}";
+var resourcePath = "/api-docs" + formatString;
+var jsonSuffix = ".json";
+
+/*
+var formatString = "";
+var resourcePath = "/api-docs" + formatString;
+var jsonSuffix = "";
+*/
 var basePath = "/";
 var swaggerVersion = "1.1";
 var apiVersion = "0.0";
@@ -16,8 +24,11 @@ function configure(bp, av) {
   basePath = bp;
   apiVersion = av;
   setResourceListingPaths(appHandler);
-  appHandler.get(resourcePath, resourceListing);
+
+  // add the GET for resource listing
+  appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
   // update resources if already configured
+
   for(key in resources) {
     var r = resources[key];
     r.apiVersion = av;
@@ -36,14 +47,25 @@ function setHeaders(res) {
 // creates declarations for each resource path.
 function setResourceListingPaths(app) {
   for (var key in resources) {
-    app.get("/" + key.replace("\.\{format\}", ".json"), function(req, res) {
-      var r = resources[req.url.substr(1).split('?')[0].replace('.json', '.{format}')];
-      if (!r)
+
+    // pet.json => api-docs.json/pet
+    var path = baseApiFromPath(key);
+    app.get(path, function(req, res) {
+      // find the api base path from the request URL
+      // /api-docs.json/pet => /pet.json
+
+      var p = basePathFromApi(req.url.split('?')[0]);
+
+      // this handles the request
+      // api-docs.json/pet => pet.{format}
+      var r = resources[p];
+      if (!r) {
+        console.err("unable to find listing");
         return stopWithError(res, {'description': 'internal error', 'code': 500});
+      }
       else {
         setHeaders(res);
-        var key = req.url.substr(1).replace('.json', '.{format}').split('?')[0];
-        var data = filterApiListing(req, res, resources[key]);
+        var data = filterApiListing(req, res, r);
         data.basePath = basePath;
         if (data.code) {
           res.send(data, data.code); }
@@ -53,6 +75,17 @@ function setResourceListingPaths(app) {
       }
     });
   }
+}
+
+function basePathFromApi(path) {
+  var l = resourcePath.replace(formatString, jsonSuffix);
+  var p = path.substring(l.length + 1) + formatString;
+  return p;
+}
+
+function baseApiFromPath(path) {
+  var p = resourcePath.replace(formatString, jsonSuffix) + "/" + path.replace(formatString, "");
+  return p;
 }
 
 // Applies a filter to an api listing.  When done, the api listing will only contain
@@ -67,9 +100,11 @@ function filterApiListing(req, res, r) {
 
   for (var key in r.apis) {
     var api = r.apis[key];
+
     for (var opKey in api.operations) {
       var op = api.operations[opKey];
       var path = api.path.replace(/{.*\}/, "*");
+
       if (!canAccessResource(req, route + path, op.httpMethod)) {
         excludedPaths.push(op.httpMethod + ":" + api.path); }
     }
@@ -194,12 +229,6 @@ function canAccessResource(req, path, httpMethod) {
  * @param response
  */
 function resourceListing(req, res) {
-  if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
-    res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
-    res.end();
-    return
-  }
-
   var r = {
     "apiVersion" : apiVersion, 
     "swaggerVersion" : swaggerVersion, 
@@ -207,8 +236,10 @@ function resourceListing(req, res) {
     "apis" : []
   };
 
-  for (var key in resources)
-    r.apis.push({"path": "/" + key, "description": "none"}); 
+  for (var key in resources) {
+    var p = resourcePath + "/" + key.replace(formatString,"");
+    r.apis.push({"path": p, "description": "none"}); 
+  }
 
   setHeaders(res);
   res.write(JSON.stringify(r));
@@ -217,14 +248,15 @@ function resourceListing(req, res) {
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
 function addMethod(app, callback, spec) {
-  var rootPath = spec.path.split("/")[1];
-  var root = resources[rootPath];
-  
+  var apiRootPath = spec.path.split("/")[1];
+  var root = resources[apiRootPath];
+
   if (root && root.apis) {
+    // this path already exists in swagger resources
     for (var key in root.apis) {
       var api = root.apis[key];
       if (api && api.path == spec.path && api.method == spec.method) {
-        // Add & return
+        // add operation & return
         appendToApi(root, api, spec);
         return;
       }
@@ -232,22 +264,22 @@ function addMethod(app, callback, spec) {
   }
 
   var api = {"path" : spec.path};
-  if (!resources[rootPath]) {
+  if (!resources[apiRootPath]) {
     if (!root) {
-      var resourcePath = "/" + rootPath.replace("\.\{format\}", ""); 
+      // 
+      var resourcePath = "/" + apiRootPath.replace(formatString, ""); 
       root = {
         "apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "resourcePath": resourcePath, "apis": [], "models" : []
       };
     }
-    resources[rootPath] = root;
+    resources[apiRootPath] = root;
   }
 
   root.apis.push(api);
   appendToApi(root, api, spec);
 
-  //  TODO: only supports json
   //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace("\.\{format\}", ".json").replace(/\/{/g, "/:").replace(/\}/g,"");
+  var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g,"");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
@@ -269,7 +301,7 @@ function addMethod(app, callback, spec) {
       }
     }); 
   } else {
-    console.log('unable to add ' + currentMethod.toUpperCase() + ' handler');  
+    console.err('unable to add ' + currentMethod.toUpperCase() + ' handler');  
     return;
   }
 }
@@ -295,7 +327,7 @@ function discover(resource) {
       addMethod(appHandler, resource[key].action, resource[key].spec); 
     } 
     else
-      console.log('auto discover failed for: ' + key); 
+      console.error('auto discover failed for: ' + key); 
   }
 }
 
@@ -338,6 +370,7 @@ function wrap(callback, req, resp){
   callback(req,resp);
 }
 
+// appends a spec to an existing operation
 function appendToApi(rootResource, api, spec) {
   if (!api.description) {
     api.description = spec.description; 
@@ -381,7 +414,7 @@ function appendToApi(rootResource, api, spec) {
   }
 
   if (validationErrors.length > 0) {
-    console.log(validationErrors);
+    console.err(validationErrors);
     return;
   }
   
@@ -417,7 +450,7 @@ function addValidator(v) {
 
 // Create Error JSON by code and text
 function error(code, description) {
-  return {"code" : code, "description" : description};
+  return {"code" : code, "reason" : description};
 }
 
 // Stop express ressource with error code
@@ -435,19 +468,19 @@ exports.errors = {
     if (!res) { 
       return {"code": 404, "reason": field + ' not found'}; } 
     else { 
-      res.send({"code": 404, "description": field + ' not found'}, 404); } 
+      res.send({"code": 404, "reason": field + ' not found'}, 404); } 
   },
   'invalid': function(field, res) { 
     if (!res) { 
       return {"code": 400, "reason": 'invalid ' + field}; } 
     else { 
-      res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
+      res.send({"code": 400, "reason": 'invalid ' + field}, 404); } 
   },
   'forbidden': function(res) {
     if (!res) { 
       return {"code": 403, "reason": 'forbidden' }; } 
     else { 
-      res.send({"code": 403, "description": 'forbidden'}, 403); }
+      res.send({"code": 403, "reason": 'forbidden'}, 403); }
   }
 };
 
