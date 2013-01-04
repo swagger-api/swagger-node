@@ -310,7 +310,7 @@ function addMethod(app, callback, spec) {
           if (ex.code && ex.description)
             res.send(JSON.stringify(ex), ex.code); 
           else {
-            console.erroror(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
+            console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
             res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
           }
         }
@@ -343,7 +343,7 @@ function discover(resource) {
       addMethod(appHandler, resource[key].action, resource[key].spec); 
     } 
     else
-      console.erroror('auto discover failed for: ' + key); 
+      console.error('auto discover failed for: ' + key); 
   }
 }
 
