@@ -60,7 +60,7 @@ function setResourceListingPaths(app) {
       // api-docs.json/pet => pet.{format}
       var r = resources[p];
       if (!r) {
-        console.err("unable to find listing");
+        console.error("unable to find listing");
         return stopWithError(res, {'description': 'internal error', 'code': 500});
       }
       else {
@@ -294,14 +294,14 @@ function addMethod(app, callback, spec) {
           if (ex.code && ex.description)
             res.send(JSON.stringify(ex), ex.code); 
           else {
-            console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
+            console.erroror(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
             res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
           }
         }
       }
     }); 
   } else {
-    console.err('unable to add ' + currentMethod.toUpperCase() + ' handler');  
+    console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');  
     return;
   }
 }
@@ -327,7 +327,7 @@ function discover(resource) {
       addMethod(appHandler, resource[key].action, resource[key].spec); 
     } 
     else
-      console.error('auto discover failed for: ' + key); 
+      console.erroror('auto discover failed for: ' + key); 
   }
 }
 
@@ -420,7 +420,7 @@ function appendToApi(rootResource, api, spec) {
   }
 
   if (validationErrors.length > 0) {
-    console.err(validationErrors);
+    console.error(validationErrors);
     return;
   }
   
