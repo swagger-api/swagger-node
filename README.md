@@ -4,6 +4,12 @@ This is the Wordnik Swagger code for the express framework.  For more on Swagger
 
 See the (swagger website)[http://swagger.wordnik.com] or the (swagger-core wiki)[https://github.com/wordnik/swagger-core/wiki], which contains information about the swagger json spec.
 
+Try a sample!  The source for a functial sample is available on github:
+
+```
+https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md
+```
+
 ### Adding swagger to your express-based API
 
 Include swagger.js in your app and add express as the app handler:
