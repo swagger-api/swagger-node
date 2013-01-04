@@ -2,13 +2,11 @@ This is the Wordnik Swagger code for the express framework.  For more on Swagger
 
 ## READ MORE about swagger!
 
-See the (swagger website)[http://swagger.wordnik.com] or the (swagger-core wiki)[https://github.com/wordnik/swagger-core/wiki], which contains information about the swagger json spec.
+See the [swagger website](http://swagger.wordnik.com) or the [swagger-core wiki](https://github.com/wordnik/swagger-core/wiki), which contains information about the swagger json spec.
 
-Try a sample!  The source for a functial sample is available on github:
+Try a sample!  The source for a [functional sample](https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md) is available on github:
 
-```
-https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md
-```
+
 
 ### Adding swagger to your express-based API
 
@@ -48,7 +46,7 @@ swagger.addValidator(
 
 ```
 
-You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/wordnik/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see (here)[https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js] for an example), or you can add them as such:
+You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/wordnik/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see [here](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js) for an example), or you can add them as such:
 
 ```js
 swagger.addModels(models);
@@ -100,7 +98,7 @@ and the server can be started:
 app.listen(8002);
 ```
 
-Now you can open up a (swagger-ui)[https://github.com/wordnik/swagger-ui] and browse your API, generate a client with (swagger-codegen)[https://github.com/wordnik/swagger-codegen], and be happy.
+Now you can open up a [swagger-ui](https://github.com/wordnik/swagger-ui) and browse your API, generate a client with [swagger-codegen](https://github.com/wordnik/swagger-codegen), and be happy.
 
 
 ### Other Configurations
@@ -122,3 +120,17 @@ var findById = {
     "notes" : "Returns a pet based on ID",
     ...
 ```
+
+To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
+
+```js
+var app = express();
+var subpath = express();
+
+app.use(express.bodyParser());
+app.use("/v1", subpath);
+
+swagger.setAppHandler(subpath);
+```
+
+Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs.json`).
