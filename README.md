@@ -102,3 +102,23 @@ app.listen(8002);
 
 Now you can open up a (swagger-ui)[https://github.com/wordnik/swagger-ui] and browse your API, generate a client with (swagger-codegen)[https://github.com/wordnik/swagger-codegen], and be happy.
 
+
+### Other Configurations
+
+If you don't like the .{format} or .json suffix, you can override this before configuring swagger:
+
+```js
+swagger.configureSwaggerPaths("", "/api-docs", "");
+```
+
+That will put the resource listing under `/api-docs`, and ditch the `.{format}` on each of the apis you're adding to.  Make sure to set the paths correctly in your spec configuration though, like such:
+
+```js
+// note the .{format} is removed from the path!
+var findById = {
+  'spec': {
+    "description" : "Operations about pets",
+    "path" : "/pet/{petId}",
+    "notes" : "Returns a pet based on ID",
+    ...
+```
