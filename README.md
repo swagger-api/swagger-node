@@ -1,100 +1,59 @@
 This is the Wordnik Swagger code for the express framework.  For more on Swagger, please visit http://swagger.wordnik.com.  For more on express, please visit https://github.com/visionmedia/express
 
-### To run
+## READ MORE about swagger!
 
-You must first install the express module.  See the [express framework site](http://expressjs.com/guide.html) for a guide and quick start.
+See the (swagger website)[http://swagger.wordnik.com] or the (swagger-core wiki)[https://github.com/wordnik/swagger-core/wiki], which contains information about the swagger json spec.
 
-<pre>
-npm install express
-</pre>
+### Adding swagger to your express-based API
 
-To run the sample server:
-<pre>
-node Apps/petstore/main.js
-</pre>
-
-Then visit the server from your browser:
-
-<pre>
-http://localhost:8002/api-docs.json
-</pre>
-
-or from [swagger UI], mounted at `/docs`: [http://localhost:8002/docs](http://localhost:8002/docs).
-
-### How it works
-The swagger.js file is included when configuring the express server.  There
-are a few additional steps to get the api to declare the swagger spec:
-
-<li> - Define your input/output models in JSON schema format
-
-<li> - Define a specification for operations against the API
-
-For the sample app, the models are defined here:
-
-[Apps/petstore/models.js](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js)
-
-You could load this from a static file or generate them programatically as in the
-sample.
-
-The operations and the callback functions are defined in this file:
-
-[Apps/petstore/petResources.js](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/petResources.js)
-
-Each spec defines input/output params with helper functions to generate the swagger
-metadata.
-
-When the routes are added (see petstore.js: addGet, addPost...), the params
-are validated and added to the schema.  If they fail validation, the failure
-will be logged to the console and they will not be added to the server.
-
-### Other notes
-The swagger.js code wraps exceptions and turns them into the appropriate HTTP
-error response.  To take advantage of this, you can throw exceptions as follows:
-
-<pre>
-try{
-  //  some dangerous function
-}
-catch(ex){
-  throw {
-    "code":401,
-    "reason":"You forgot to log in!"
-  }
-}
-</pre>
-
-Also, the "Access-Control-Allow-Origin" is hard-coded to "*" to allow access from
-localhost.  This will become a configuration option at some point.
-
-#### Security
-You can secure the API by adding your own validator.  These methods can read the
-request object and extract cookies, headers, api-keys, etc.  They also have
-access to the HTTP method and path being requested.  You can then decide for
-yourself it the caller should have access to the resource.  See the petstore.js
-example:
-
-<pre>
-swagger.addValidator(
-  function validate(req, path, httpMethod) {
-    ...
-</pre>
-
-### Other Configurations
-If you don't like the `.json` suffix `(.{format})`, you can configure it away.  In swagger.js,
-change the formatString (default is ".{format}"), resourcePath, and suffix for json as follows:
+Include swagger.js in your app and add express as the app handler:
 
 ```js
-var formatString = "";            // default is ".{format}"
-var resourcePath = "/api-docs";   // default is ".api-docs.{format}"
-var jsonSuffix = "";              // default is ".json"
+var express = require("express")
+ , url = require("url")
+ , swagger = require("swagger.js");
+
+var app = express();
+app.use(express.bodyParser());
+
+swagger.setAppHandler(app);
 ```
 
-Of course, in the petstore example, you'll want to change the paths in the petResource.js file to
-remove the `.{format}` suffix:
+You can optionally add a validator function, which is used to filter the swagger json and request operations:
 
 ```js
-// was:
-exports.findById = {
+/* This is a sample validator.  It simply says that for _all_ POST, DELETE, PUT  methods, the header `api_key` OR query param `api_key` must be equal to the string literal `special-key`.  All other HTTP ops are A-OK */
+
+swagger.addValidator(
+  function validate(req, path, httpMethod) {
+    //  example, only allow POST for api_key="special-key"
+    if ("POST" == httpMethod || "DELETE" == httpMethod || "PUT" == httpMethod) {
+      var apiKey = req.headers["api_key"];
+      if (!apiKey) {
+        apiKey = url.parse(req.url,true).query["api_key"]; }
+      if ("special-key" == apiKey) {
+        return true; 
+      }
+      return false;
+    }
+    return true;
+  }
+);
+
+```
+
+You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/wordnik/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see (here)[https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js] for an example), or you can add them as such:
+
+```js
+swagger.addModels(models);
+
+```
+
+Next, add some resources.  Each resource contains a swagger spec as well as the action to execute when called.  The spec contains enough to describe the method, and adding the resource will do the rest.  For example:
+
+
+```js
+var findById = {
   'spec': {
     "description" : "Operations about pets",
     "path" : "/pet.{format}/{petId}",
@@ -105,25 +64,35 @@ exports.findById = {
     "responseClass" : "Pet",
     "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
     "nickname" : "getPetById"
-  } ...
+  },
+  'action': function (req,res) {
+    if (!req.params.petId) {
+      throw swe.invalid('id'); }
+    var id = parseInt(req.params.petId);
+    var pet = petData.getPetById(id);
 
-// should be:
-exports.findById = {
-  'spec': {
-    "description" : "Operations about pets",
-    "path" : "/pet/{petId}",
-    "notes" : "Returns a pet based on ID",
-    "summary" : "Find pet by ID",
-    "method": "GET",
-    "params" : [param.path("petId", "ID of pet that needs to be fetched", "string")],
-    "responseClass" : "Pet",
-    "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
-    "nickname" : "getPetById"
-  } ...
+    if(pet) res.send(JSON.stringify(pet));
+    else throw swe.notFound('pet');
+  }
+};
+
+swagger.addGet(findById);
+
 ```
 
-### Current limitations
+Adds an API route to express and provides all the necessary information to swagger.
 
-<li> - Only JSON is supported </li>
+Finally, configure swagger with a `public` URL and version:
 
-<li> - Nested objects may not be declared in the models array </li>
+```js
+swagger.configure("http://petstore.swagger.wordnik.com", "0.1");
+```
+
+and the server can be started:
+
+```js
+app.listen(8002);
+```
+
+Now you can open up a (swagger-ui)[https://github.com/wordnik/swagger-ui] and browse your API, generate a client with (swagger-codegen)[https://github.com/wordnik/swagger-codegen], and be happy.
+
