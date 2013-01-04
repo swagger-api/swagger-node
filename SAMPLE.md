@@ -21,8 +21,6 @@ http://localhost:8002/resources.json
 
 or from [swagger UI], mounted at `/docs`: [http://localhost:8002/docs](http://localhost:8002/docs).
 
-![Swagger UI](https://github.com/wordnik/swagger-node-express/blob/master/docs/swagger-config.png?raw=true)
-
 ### How it works
 
 The swagger.js file is included when configuring the express server.  There
