@@ -4,6 +4,8 @@ This is the Wordnik Swagger code for the express framework.  For more on Swagger
 
 See the (swagger website)[http://swagger.wordnik.com] or the (swagger-core wiki)[https://github.com/wordnik/swagger-core/wiki], which contains information about the swagger json spec.
 
+Also see source code and a (sample app here)[https://github.com/wordnik/swagger-node-express].
+
 ### Adding swagger to your express-based API
 
 Include swagger.js in your app and add express as the app handler:
@@ -11,7 +13,7 @@ Include swagger.js in your app and add express as the app handler:
 ```js
 var express = require("express")
  , url = require("url")
- , swagger = require("swagger.js");
+ , swagger = require("swagger-node-express");
 
 var app = express();
 app.use(express.bodyParser());
@@ -60,19 +62,19 @@ var findById = {
     "notes" : "Returns a pet based on ID",
     "summary" : "Find pet by ID",
     "method": "GET",
-    "params" : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    "params" : [swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")],
     "responseClass" : "Pet",
-    "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
+    "errorResponses" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
     "nickname" : "getPetById"
   },
   'action': function (req,res) {
     if (!req.params.petId) {
-      throw swe.invalid('id'); }
+      throw swagger.errors.invalid('id'); }
     var id = parseInt(req.params.petId);
     var pet = petData.getPetById(id);
 
     if(pet) res.send(JSON.stringify(pet));
-    else throw swe.notFound('pet');
+    else throw swagger.errors.notFound('pet');
   }
 };
 

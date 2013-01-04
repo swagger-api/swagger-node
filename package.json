@@ -1,9 +1,23 @@
 {
   "name": "swagger-node-express",
-  "description": "Wordnik swagger implementation for the express framework",
   "version": "1.2.0",
-  "homepage": "https://github.com/wordnik/swagger-node-express",
-  "main": "./Common/node/swagger.js",
+  "author": {
+    "name": "Tony Tam",
+    "email": "fehguy@gmail.com",
+    "url": "http://developer.wordnik.com"
+  },
+  "description": "Wordnik swagger implementation for the express framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wordnik/swagger-node-express"
+  },
+  "keywords": [
+    "http",
+    "rest",
+    "swagger",
+    "server"
+  ],
+  "main": "index.js",
   "directories": {
     "lib": "./Common/node"
   },
@@ -14,5 +28,6 @@
     "connect": ">= 1.8.x",
     "express": "3.x",
     "docco": "0.4.x"
-  }
+  },
+  "license": "apache 2.0"
 }
