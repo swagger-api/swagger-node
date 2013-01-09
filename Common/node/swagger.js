@@ -80,7 +80,7 @@ function setResourceListingPaths(app) {
         return stopWithError(res, {'description': 'internal error', 'code': 500});
       }
       else {
-        setHeaders(res);
+        exports.setHeaders(res);
         var data = filterApiListing(req, res, r);
         data.basePath = basePath;
         if (data.code) {
@@ -148,6 +148,7 @@ function filterApiListing(req, res, r) {
       }
       else {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
+        addModelsFromPost(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
       }
     }
@@ -207,6 +208,31 @@ function filterApiListing(req, res, r) {
 }
 
 // Add model to list and parse List[model] elements
+function addModelsFromPost(operation, models){
+  if(operation.parameters) {
+    for(var i in operation.parameters) {
+      var param = operation.parameters[i];
+      if(param.paramType == "body" && param.dataType) {
+        var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
+        if(models.indexOf(model) < 0) {
+          models.push(responseModel);
+        }
+        models.push(param.dataType);
+      }
+    }
+  }
+
+  var responseModel = operation.responseClass;
+  if (responseModel) {
+    responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
+    if (models.indexOf(responseModel) < 0) {
+      models.push(responseModel); 
+    }
+  }
+}
+
+
+// Add model to list and parse List[model] elements
 function addModelsFromResponse(operation, models){
   var responseModel = operation.responseClass;
   if (responseModel) {
@@ -257,7 +283,7 @@ function resourceListing(req, res) {
     r.apis.push({"path": p, "description": "none"}); 
   }
 
-  setHeaders(res);
+  exports.setHeaders(res);
   res.write(JSON.stringify(r));
   res.end();
 }
@@ -299,7 +325,7 @@ function addMethod(app, callback, spec) {
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
-      setHeaders(res);
+      exports.setHeaders(res);
       if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
         res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
       } else {    
@@ -477,7 +503,7 @@ function error(code, description) {
 
 // Stop express ressource with error code
 function stopWithError(res, error) {
-  setHeaders(res);
+  exports.setHeaders(res);
   if (error && error.description && error.code)
     res.send(JSON.stringify(error), error.code);
   else
@@ -534,3 +560,4 @@ exports.setAppHandler = setAppHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.configureSwaggerPaths = configureSwaggerPaths;
+exports.setHeaders = setHeaders;

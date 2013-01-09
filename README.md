@@ -26,7 +26,9 @@ swagger.setAppHandler(app);
 You can optionally add a validator function, which is used to filter the swagger json and request operations:
 
 ```js
-/* This is a sample validator.  It simply says that for _all_ POST, DELETE, PUT  methods, the header `api_key` OR query param `api_key` must be equal to the string literal `special-key`.  All other HTTP ops are A-OK */
+// This is a sample validator.  It simply says that for _all_ POST, DELETE, PUT  methods, 
+// the header api_key OR query param api_key must be equal to the string literal 
+// special-key.  All other HTTP ops are A-OK */
 
 swagger.addValidator(
   function validate(req, path, httpMethod) {
@@ -103,6 +105,8 @@ Now you can open up a [swagger-ui](https://github.com/wordnik/swagger-ui) and br
 
 ### Other Configurations
 
+#### .{format} suffix removal
+
 If you don't like the .{format} or .json suffix, you can override this before configuring swagger:
 
 ```js
@@ -121,6 +125,8 @@ var findById = {
     ...
 ```
 
+#### Mapping swagger to subpaths
+
 To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
 
 ```js
@@ -134,3 +140,17 @@ swagger.setAppHandler(subpath);
 ```
 
 Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs.json`).
+
+#### Allows-origin and special headers
+
+If you want to modify the default headers sent with every swagger-managed method, you can do so as follows:
+
+```js
+swagger.setHeaders = function setHeaders(res) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  res.header("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
+  res.header("Content-Type", "application/json; charset=utf-8");
+};
+```
+If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
