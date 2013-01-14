@@ -27,7 +27,7 @@ exports.query = exports.q = function(name, description, dataType, required, allo
   };
 };
 
-exports.path = function(name, description, dataType, allowableValues) {
+exports.path = function(name, description, dataType, allowableValues, defaultValue) {
   return {
     "name" : name,
     "description" : description,
@@ -35,7 +35,9 @@ exports.path = function(name, description, dataType, allowableValues) {
     "required" : true,
     "allowMultiple" : false,
     "allowableValues" : allowableValues,
-    "paramType" : "path"
+    "paramType" : "path",
+    "defaultValue" : defaultValue
+
   };
 };
 
