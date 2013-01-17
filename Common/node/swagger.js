@@ -119,9 +119,8 @@ function filterApiListing(req, res, r) {
 
     for (var opKey in api.operations) {
       var op = api.operations[opKey];
-      var path = api.path.replace(/{.*\}/, "*");
-
-      if (!canAccessResource(req, route + path, op.httpMethod)) {
+      var path = api.path.replace(formatString, "").replace(/{.*\}/, "*");
+      if (!canAccessResource(req, path, op.httpMethod)) {
         excludedPaths.push(op.httpMethod + ":" + api.path); }
     }
   }
@@ -326,7 +325,10 @@ function addMethod(app, callback, spec) {
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
       exports.setHeaders(res);
-      if (!canAccessResource(req, req.url.substr(1).split('?')[0].replace('.json', '.*'), req.method)) {
+
+      // todo: needs to do smarter matching against the defined paths
+      var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
+      if (!canAccessResource(req, path, req.method)) {
         res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
       } else {    
         try {
