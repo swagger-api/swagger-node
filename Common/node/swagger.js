@@ -500,7 +500,7 @@ function addValidator(v) {
 
 // Create Error JSON by code and text
 function error(code, description) {
-  return {"code" : code, "reason" : description};
+  return {"code" : code, "description" : description};
 }
 
 // Stop express ressource with error code
@@ -516,21 +516,21 @@ function stopWithError(res, error) {
 exports.errors = {
   'notFound': function(field, res) { 
     if (!res) { 
-      return {"code": 404, "reason": field + ' not found'}; } 
+      return {"code": 404, "description": field + ' not found'}; } 
     else { 
-      res.send({"code": 404, "reason": field + ' not found'}, 404); } 
+      res.send({"code": 404, "description": field + ' not found'}, 404); } 
   },
   'invalid': function(field, res) { 
     if (!res) { 
-      return {"code": 400, "reason": 'invalid ' + field}; } 
+      return {"code": 400, "description": 'invalid ' + field}; } 
     else { 
-      res.send({"code": 400, "reason": 'invalid ' + field}, 404); } 
+      res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
   },
   'forbidden': function(res) {
     if (!res) { 
-      return {"code": 403, "reason": 'forbidden' }; } 
+      return {"code": 403, "description": 'forbidden' }; } 
     else { 
-      res.send({"code": 403, "reason": 'forbidden'}, 403); }
+      res.send({"code": 403, "description": 'forbidden'}, 403); }
   }
 };
 
