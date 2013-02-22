@@ -23,7 +23,7 @@ var apiVersion = "0.0";
 var resources = {};
 var validators = [];
 var appHandler = null;
-var allowedMethods = ['get', 'post', 'put', 'delete'];
+var allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
@@ -55,7 +55,7 @@ function configure(bp, av) {
 // Convenience to set default headers in each response.
 function setHeaders(res) {
   res.header('Access-Control-Allow-Origin', "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, api_key");
   res.header("Content-Type", "application/json; charset=utf-8");
 }
@@ -404,6 +404,12 @@ function addPut() {
   return this;
 }
 
+// adds patch handler
+function addPatch() {
+  addHandlers('PATCH', arguments);
+  return this;
+}
+
 // adds models to swagger
 function addModels(models) {
   if(!allModels['models']) {
@@ -552,10 +558,12 @@ exports.setHeaders = setHeaders;
 exports.addGet = addGet;
 exports.addPost = addPost;
 exports.addPut = addPut;
+exports.addPatch = addPatch;
 exports.addDelete = addDelete;
 exports.addGET = addGet;
 exports.addPOST = addPost;
 exports.addPUT = addPut;
+exports.addPATCH = addPatch;
 exports.addDELETE = addDelete;
 exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
