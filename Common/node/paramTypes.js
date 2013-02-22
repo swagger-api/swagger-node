@@ -39,8 +39,9 @@ exports.path = function(name, description, dataType, allowableValues) {
   };
 };
 
-exports.body = function(dataType, description, required, defaultValue) {
+exports.body = function(name, description, dataType, required, defaultValue) {
   return {
+    "name" : name,
     "description" : description,
     "dataType" : dataType,
     "required" : required,
