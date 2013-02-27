@@ -19,7 +19,7 @@ Then visit the server directly from your browser:
 http://localhost:8002/resources.json
 ```
 
-or from [swagger UI], mounted at `/docs`: [http://localhost:8002/docs](http://localhost:8002/docs).
+or from [swagger UI](https://github.com/wordnik/swagger-ui), mounted at `/docs`: [http://localhost:8002/docs](http://localhost:8002/docs).
 
 ### How it works
 
@@ -30,16 +30,12 @@ are a few additional steps to get the api to declare the swagger spec:
 
 <li> Define a specification for operations against the API
 
-For the sample app, the models are defined here:
-
-(Apps/petstore/models.js)[https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js]
+For the sample app, the models are defined here: [Apps/petstore/models.js](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js)
 
 You could load this from a static file or generate them programatically as in the
 sample.
 
-The operations and the callback functions are defined in this file:
-
-(Apps/petstore/petResources.js)[https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/petResources.js]
+The operations and the callback functions are defined in this file: [Apps/petstore/petResources.js](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/petResources.js)
 
 Each spec defines input/output params with helper functions to generate the swagger
 metadata.
