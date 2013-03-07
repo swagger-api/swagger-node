@@ -39,12 +39,13 @@ exports.path = function(name, description, dataType, allowableValues) {
   };
 };
 
-exports.body = function(name, description, dataType, required, defaultValue) {
+exports.body = function(name, description, dataType, defaultValue) {
   return {
     "name" : name,
     "description" : description,
     "dataType" : dataType,
-    "required" : required,
+    "required" : true,
+    "allowMultiple" : false,
     "paramType" : "body",
     "defaultValue" : defaultValue
   };
