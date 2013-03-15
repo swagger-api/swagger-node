@@ -165,7 +165,7 @@ function filterApiListing(req, res, r) {
       }
       else {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-        addModelsFromPost(operation, requiredModels);
+        addModelsFromBody(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
       }
     }
@@ -188,7 +188,7 @@ function filterApiListing(req, res, r) {
     }
   }
   //  look in object graph
-  for (key in output.models) {
+  for (var key in output.models) {
     if (!output.models.hasOwnProperty(key)) {
       continue;
     }
@@ -240,7 +240,7 @@ function filterApiListing(req, res, r) {
 }
 
 // Add model to list and parse List[model] elements
-function addModelsFromPost(operation, models){
+function addModelsFromBody(operation, models){
   if(operation.parameters) {
     for(var i in operation.parameters) {
       if (!operation.parameters.hasOwnProperty(i)) {
@@ -249,19 +249,8 @@ function addModelsFromPost(operation, models){
       var param = operation.parameters[i];
       if(param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
-        if(models.indexOf(model) < 0) {
-          models.push(responseModel);
-        }
         models.push(param.dataType);
       }
-    }
-  }
-
-  var responseModel = operation.responseClass;
-  if (responseModel) {
-    responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
-    if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); 
     }
   }
 }
@@ -273,7 +262,7 @@ function addModelsFromResponse(operation, models){
   if (responseModel) {
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
     if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); 
+      models.push(responseModel);
     }
   }
 }
