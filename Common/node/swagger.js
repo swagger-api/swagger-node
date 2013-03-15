@@ -45,7 +45,7 @@ function configure(bp, av) {
   appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
   // update resources if already configured
 
-  for(key in resources) {
+  for(var key in resources) {
     if (!resources.hasOwnProperty(key)) {
       continue;
     }
@@ -188,25 +188,22 @@ function filterApiListing(req, res, r) {
     }
   }
   //  look in object graph
-  for (var key in output.models) {
-    if (!output.models.hasOwnProperty(key)) {
+  for (var mkey in output.models) {
+    if (!output.models.hasOwnProperty(mkey)) {
       continue;
     }
-    var model = output.models[key];
+    var model = output.models[mkey];
     if (model && model.properties) {
-      if (!model.properties.hasOwnProperty(model)) {
-        continue;
-      }
-      for (var key in model.properties) {
-        if (!model.properties.hasOwnProperty(key)) {
+      for (var pkey in model.properties) {
+        if (!model.properties.hasOwnProperty(pkey)) {
           continue;
         }
-        var t = model.properties[key].type;
+        var t = model.properties[pkey].type;
 
         switch (t){
         case "Array":
-          if (model.properties[key].items) {
-            var ref = model.properties[key].items.$ref;
+          if (model.properties[pkey].items) {
+            var ref = model.properties[pkey].items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
               requiredModels.push(ref);
             }
