@@ -77,7 +77,7 @@ function setResourceListingPaths(app) {
       var r = resources[p];
       if (!r) {
         console.error("unable to find listing");
-        return stopWithError(res, {'description': 'internal error', 'code': 500});
+        return stopWithError(res, {'reason': 'internal error', 'code': 500});
       }
       else {
         exports.setHeaders(res);
@@ -111,7 +111,7 @@ function filterApiListing(req, res, r) {
   var excludedPaths = [];
   
   if (!r || !r.apis) {
-    return stopWithError(res, {'description': 'internal error', 'code': 500});
+    return stopWithError(res, {'reason': 'internal error', 'code': 500});
   }
 
   for (var key in r.apis) {
@@ -279,7 +279,7 @@ function resourceListing(req, res) {
 
   for (var key in resources) {
     var p = resourcePath + "/" + key.replace(formatString,"");
-    r.apis.push({"path": p, "description": "none"}); 
+    r.apis.push({"path": p, "reason": "none"});
   }
 
   exports.setHeaders(res);
@@ -329,17 +329,17 @@ function addMethod(app, callback, spec) {
       // todo: needs to do smarter matching against the defined paths
       var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, req.method)) {
-        res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
+        res.send(JSON.stringify({"reason":"forbidden", "code":403}), 403);
       } else {    
         try {
           callback(req,res); 
         }
         catch (ex) {
-          if (ex.code && ex.description)
+          if (ex.code && ex.reason)
             res.send(JSON.stringify(ex), ex.code); 
           else {
             console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
-            res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
+            res.send(JSON.stringify({"reason":"unknown error","code":500}), 500);
           }
         }
       }
@@ -506,37 +506,37 @@ function addValidator(v) {
 
 // Create Error JSON by code and text
 function error(code, description) {
-  return {"code" : code, "description" : description};
+  return {"code" : code, "reason" : description};
 }
 
 // Stop express ressource with error code
 function stopWithError(res, error) {
   exports.setHeaders(res);
-  if (error && error.description && error.code)
+  if (error && error.reason && error.code)
     res.send(JSON.stringify(error), error.code);
   else
-    res.send(JSON.stringify({'description': 'internal error', 'code': 500}), 500);
+    res.send(JSON.stringify({'reason': 'internal error', 'code': 500}), 500);
 }
 
 // Export most needed error types for easier handling
 exports.errors = {
   'notFound': function(field, res) { 
     if (!res) { 
-      return {"code": 404, "description": field + ' not found'}; } 
+      return {"code": 404, "reason": field + ' not found'}; }
     else { 
-      res.send({"code": 404, "description": field + ' not found'}, 404); } 
+      res.send({"code": 404, "reason": field + ' not found'}, 404); }
   },
   'invalid': function(field, res) { 
     if (!res) { 
-      return {"code": 400, "description": 'invalid ' + field}; } 
+      return {"code": 400, "reason": 'invalid ' + field}; }
     else { 
-      res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
+      res.send({"code": 400, "reason": 'invalid ' + field}, 404); }
   },
   'forbidden': function(res) {
     if (!res) { 
-      return {"code": 403, "description": 'forbidden' }; } 
+      return {"code": 403, "reason": 'forbidden' }; }
     else { 
-      res.send({"code": 403, "description": 'forbidden'}, 403); }
+      res.send({"code": 403, "reason": 'forbidden'}, 403); }
   }
 };
 
