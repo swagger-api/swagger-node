@@ -510,6 +510,8 @@ function appendToApi(rootResource, api, spec) {
         break;
       case "body":
         break;
+      case "header":
+        break;
       default:
         validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});
         break;
