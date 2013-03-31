@@ -161,7 +161,7 @@ function filterApiListing(req, res, r) {
   output.models = {};
   for (var i in requiredModels){
     var modelName = requiredModels[i];
-    var model = allModels.models[modelName];
+    var model = allModels[modelName];
     if(model){
       output.models[requiredModels[i]] = model;
     }
@@ -197,7 +197,7 @@ function filterApiListing(req, res, r) {
   for (var i in requiredModels){
     var modelName = requiredModels[i];
     if(!output[modelName]) {
-      var model = allModels.models[modelName];
+      var model = allModels[modelName];
       if(model){
         output.models[requiredModels[i]] = model;
       }
@@ -412,12 +412,8 @@ function addPatch() {
 
 // adds models to swagger
 function addModels(models) {
-  if(!allModels['models']) {
-    allModels = models;
-  } else {
-    for(k in models['models']) {
-      allModels['models'][k] = models['models'][k];
-    }
+  for(var k in models) {
+    allModels[k] = models[k];
   }
   return this;
 }
