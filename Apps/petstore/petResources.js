@@ -10,7 +10,7 @@ function writeResponse (res, data) {
   res.send(JSON.stringify(data));
 }
 
-exports.models = require("./models.js");
+exports.models = require("./models.js").models;
 
 exports.findById = {
   'spec': {
