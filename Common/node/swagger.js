@@ -46,6 +46,9 @@ function configure(bp, av) {
   // update resources if already configured
 
   for(key in resources) {
+    if (!resources.hasOwnProperty(key)) {
+      continue;
+    }
     var r = resources[key];
     r.apiVersion = av;
     r.basePath = bp;
@@ -63,6 +66,9 @@ function setHeaders(res) {
 // creates declarations for each resource path.
 function setResourceListingPaths(app) {
   for (var key in resources) {
+    if (!resources.hasOwnProperty(key)) {
+      continue;
+    }
 
     // pet.json => api-docs.json/pet
     var path = baseApiFromPath(key);
@@ -115,9 +121,15 @@ function filterApiListing(req, res, r) {
   }
 
   for (var key in r.apis) {
+    if (!r.apis.hasOwnProperty(key)) {
+      continue;
+    }
     var api = r.apis[key];
 
     for (var opKey in api.operations) {
+      if (!api.operations.hasOwnProperty(opKey)) {
+        continue;
+      }
       var op = api.operations[opKey];
       var path = api.path.replace(formatString, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, op.httpMethod)) {
@@ -135,12 +147,18 @@ function filterApiListing(req, res, r) {
   output.apis = [];
   var apis = JSON.parse(JSON.stringify(r.apis));
   for (var i in apis) {
+    if (!apis.hasOwnProperty(i)) {
+      continue;
+    }
     var api = apis[i];
     var clonedApi = shallowClone(api);
 
     clonedApi.operations = [];
     var shouldAdd = true;
     for (var o in api.operations) {
+      if (!api.operations.hasOwnProperty(o)) {
+        continue;
+      }
       var operation = api.operations[o];
       if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
         break;
@@ -160,6 +178,9 @@ function filterApiListing(req, res, r) {
   // add required models to output
   output.models = {};
   for (var i in requiredModels){
+    if (!requiredModels.hasOwnProperty(i)) {
+      continue;
+    }
     var modelName = requiredModels[i];
     var model = allModels.models[modelName];
     if(model){
@@ -168,9 +189,18 @@ function filterApiListing(req, res, r) {
   }
   //  look in object graph
   for (key in output.models) {
+    if (!output.models.hasOwnProperty(key)) {
+      continue;
+    }
     var model = output.models[key];
     if (model && model.properties) {
+      if (!model.properties.hasOwnProperty(model)) {
+        continue;
+      }
       for (var key in model.properties) {
+        if (!model.properties.hasOwnProperty(key)) {
+          continue;
+        }
         var t = model.properties[key].type;
 
         switch (t){
@@ -195,6 +225,9 @@ function filterApiListing(req, res, r) {
     }
   }
   for (var i in requiredModels){
+    if (!requiredModels.hasOwnProperty(i)) {
+      continue;
+    }
     var modelName = requiredModels[i];
     if(!output[modelName]) {
       var model = allModels.models[modelName];
@@ -210,6 +243,9 @@ function filterApiListing(req, res, r) {
 function addModelsFromPost(operation, models){
   if(operation.parameters) {
     for(var i in operation.parameters) {
+      if (!operation.parameters.hasOwnProperty(i)) {
+        continue;
+      }
       var param = operation.parameters[i];
       if(param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
@@ -246,6 +282,9 @@ function addModelsFromResponse(operation, models){
 function shallowClone(obj) {
   var cloned = {};
   for (var i in obj) {
+    if (!obj.hasOwnProperty(i)) {
+      continue;
+    }
     if (typeof (obj[i]) != "object") {
       cloned[i] = obj[i];
     }
@@ -257,6 +296,9 @@ function shallowClone(obj) {
 // if consumer can access the resource, method returns true.
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
+    if (!validators.hasOwnProperty(i)) {
+      continue;
+    }
     if (!validators[i](req,path,httpMethod))
       return false;
   }
@@ -278,6 +320,9 @@ function resourceListing(req, res) {
   };
 
   for (var key in resources) {
+    if (!resources.hasOwnProperty(key)) {
+      continue;
+    }
     var p = resourcePath + "/" + key.replace(formatString,"");
     r.apis.push({"path": p, "description": "none"}); 
   }
@@ -295,6 +340,9 @@ function addMethod(app, callback, spec) {
   if (root && root.apis) {
     // this path already exists in swagger resources
     for (var key in root.apis) {
+      if (!root.apis.hasOwnProperty(key)) {
+        continue;
+      }
       var api = root.apis[key];
       if (api && api.path == spec.path && api.method == spec.method) {
         // add operation & return
@@ -358,6 +406,9 @@ function setAppHandler(app) {
 // Add swagger handlers to express 
 function addHandlers(type, handlers) {
   for (var i = 0; i < handlers.length; i++) {
+    if (!handlers.hasOwnProperty(i)) {
+      continue;
+    }
     var handler = handlers[i];
     handler.spec.method = type;
     addMethod(appHandler, handler.action, handler.spec);
@@ -367,6 +418,9 @@ function addHandlers(type, handlers) {
 // Discover swagger handler from resource
 function discover(resource) {
   for (var key in resource) {
+    if (!resource.hasOwnProperty(key)) {
+      continue;
+    }
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
       addMethod(appHandler, resource[key].action, resource[key].spec); 
     } 
@@ -416,6 +470,9 @@ function addModels(models) {
     allModels = models;
   } else {
     for(k in models['models']) {
+      if (!models['models'].hasOwnProperty(k)) {
+        continue;
+      }
       allModels['models'][k] = models['models'][k];
     }
   }
@@ -428,6 +485,7 @@ function wrap(callback, req, resp){
 
 // appends a spec to an existing operation
 function appendToApi(rootResource, api, spec) {
+
   if (!api.description) {
     api.description = spec.description; 
   }
@@ -439,6 +497,9 @@ function appendToApi(rootResource, api, spec) {
   } 
   // validate params
   for ( var paramKey in spec.params) {
+    if (!spec.params.hasOwnProperty(paramKey)) {
+      continue;
+    }
     var param = spec.params[paramKey];
     if(param.allowableValues) {
       var avs = param.allowableValues.toString();
