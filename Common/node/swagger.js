@@ -182,7 +182,7 @@ function filterApiListing(req, res, r) {
       continue;
     }
     var modelName = requiredModels[i];
-    var model = allModels.models[modelName];
+    var model = allModels[modelName];
     if(model){
       output.models[requiredModels[i]] = model;
     }
@@ -227,7 +227,7 @@ function filterApiListing(req, res, r) {
     }
     var modelName = requiredModels[i];
     if(!output[modelName]) {
-      var model = allModels.models[modelName];
+      var model = allModels[modelName];
       if(model){
         output.models[requiredModels[i]] = model;
       }
@@ -455,11 +455,11 @@ function addModels(models) {
   if(!allModels['models']) {
     allModels = models;
   } else {
-    for(k in models['models']) {
-      if (!models['models'].hasOwnProperty(k)) {
+    for(k in models) {
+      if (!models.hasOwnProperty(k)) {
         continue;
       }
-      allModels['models'][k] = models['models'][k];
+      allModels[k] = models[k];
     }
   }
   return this;
