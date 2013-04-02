@@ -45,7 +45,7 @@ function configure(bp, av) {
   appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
   // update resources if already configured
 
-  for(key in resources) {
+  for(var key in resources) {
     if (!resources.hasOwnProperty(key)) {
       continue;
     }
@@ -165,7 +165,7 @@ function filterApiListing(req, res, r) {
       }
       else {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-        addModelsFromPost(operation, requiredModels);
+        addModelsFromBody(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
       }
     }
@@ -188,25 +188,22 @@ function filterApiListing(req, res, r) {
     }
   }
   //  look in object graph
-  for (key in output.models) {
-    if (!output.models.hasOwnProperty(key)) {
+  for (var mkey in output.models) {
+    if (!output.models.hasOwnProperty(mkey)) {
       continue;
     }
-    var model = output.models[key];
+    var model = output.models[mkey];
     if (model && model.properties) {
-      if (!model.properties.hasOwnProperty(model)) {
-        continue;
-      }
-      for (var key in model.properties) {
-        if (!model.properties.hasOwnProperty(key)) {
+      for (var pkey in model.properties) {
+        if (!model.properties.hasOwnProperty(pkey)) {
           continue;
         }
-        var t = model.properties[key].type;
+        var t = model.properties[pkey].type;
 
         switch (t){
         case "Array":
-          if (model.properties[key].items) {
-            var ref = model.properties[key].items.$ref;
+          if (model.properties[pkey].items) {
+            var ref = model.properties[pkey].items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
               requiredModels.push(ref);
             }
@@ -240,7 +237,7 @@ function filterApiListing(req, res, r) {
 }
 
 // Add model to list and parse List[model] elements
-function addModelsFromPost(operation, models){
+function addModelsFromBody(operation, models){
   if(operation.parameters) {
     for(var i in operation.parameters) {
       if (!operation.parameters.hasOwnProperty(i)) {
@@ -249,19 +246,8 @@ function addModelsFromPost(operation, models){
       var param = operation.parameters[i];
       if(param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
-        if(models.indexOf(model) < 0) {
-          models.push(responseModel);
-        }
         models.push(param.dataType);
       }
-    }
-  }
-
-  var responseModel = operation.responseClass;
-  if (responseModel) {
-    responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
-    if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); 
     }
   }
 }
@@ -273,7 +259,7 @@ function addModelsFromResponse(operation, models){
   if (responseModel) {
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
     if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); 
+      models.push(responseModel);
     }
   }
 }
@@ -523,6 +509,8 @@ function appendToApi(rootResource, api, spec) {
       case "query":
         break;
       case "body":
+        break;
+      case "header":
         break;
       default:
         validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});

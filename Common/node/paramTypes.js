@@ -58,7 +58,7 @@ exports.header = function(name, description, dataType, required) {
     "name" : name,
     "description" : description,
     "dataType" : dataType,
-    "required" : true,
+    "required" : required,
     "allowMultiple" : false,
     "paramType" : "header"
   };
