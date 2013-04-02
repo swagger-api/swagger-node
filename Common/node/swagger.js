@@ -543,7 +543,7 @@ exports.errors = {
 exports.params = params;
 exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
-exports.postParam = exports.params.post;
+exports.bodyParam = exports.params.body;
 exports.getModels = allModels;
 
 exports.error = error;
