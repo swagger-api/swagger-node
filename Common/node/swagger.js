@@ -536,6 +536,13 @@ function appendToApi(rootResource, api, spec) {
     "summary" : spec.summary
   };
   
+	// Add custom fields.
+	for (var propertyName in spec) {
+    if (!(propertyName in op)) {
+      op[propertyName] = spec[propertyName];          
+    }
+	}
+	
   if (spec.responseClass) {
     op.responseClass = spec.responseClass; 
   }
