@@ -488,11 +488,13 @@ function appendToApi(rootResource, api, spec) {
   };
   
 	// Add custom fields.
+	var customFields = {};
 	for (var propertyName in spec) {
     if (!(propertyName in op)) {
-      op[propertyName] = spec[propertyName];          
+      customFields[propertyName] = spec[propertyName];          
     }
 	}
+	op.customFields = customFields;
 	
   if (spec.responseClass) {
     op.responseClass = spec.responseClass; 
