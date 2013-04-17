@@ -550,15 +550,11 @@ function appendToApi(rootResource, api, spec) {
   };
   
 	// Add custom fields.
-	var customFields = [];
 	for (var propertyName in spec) {
     if (!(propertyName in op)) {
-			// Handlebars can't iterate over objects, but it can iterate over arrays.
-			// So, we are giving it an array of pair objects.			
-      customFields.push({name: propertyName, value: spec[propertyName]});
+			 op[propertyName] = spec[propertyName];
     }
 	}
-	op.customFields = customFields;
 	
   if (spec.responseClass) {
     op.responseClass = spec.responseClass; 
