@@ -10,7 +10,7 @@ function writeResponse (res, data) {
   res.send(JSON.stringify(data));
 }
 
-exports.models = require("./models.js");
+exports.models = require("./models.js").models;
 
 exports.findById = {
   'spec': {
@@ -85,7 +85,7 @@ exports.addPet = {
     "notes" : "adds a pet to the store",
     "summary" : "Add a new pet to the store",
     "method": "POST",
-    "params" : [param.post("Pet", "Pet object that needs to be added to the store")],
+    "params" : [param.body("Pet", "Pet object that needs to be added to the store", "Pet")],
     "errorResponses" : [swe.invalid('input')],
     "nickname" : "addPet"
   },  
@@ -107,7 +107,7 @@ exports.updatePet = {
     "notes" : "updates a pet in the store",
     "method": "PUT",    
     "summary" : "Update an existing pet",
-    "params" : [param.post("Pet", "Pet object that needs to be updated in the store", "{\n  \"id\": 3,\n  \"category\": {\n    \"id\": 2,\n    \"name\": \"Cats\"\n  },\n  \"name\": \"Cat 3\",\n  \"urls\": [\n    \"url1\",\n    \"url2\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 3,\n      \"name\": \"tag3\"\n    },\n    {\n      \"id\": 4,\n      \"name\": \"tag4\"\n    }\n  ],\n  \"status\": \"available\"\n}")],
+    "params" : [param.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
     "errorResponses" : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
     "nickname" : "addPet"
   },  

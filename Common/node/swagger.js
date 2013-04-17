@@ -45,7 +45,10 @@ function configure(bp, av) {
   appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
   // update resources if already configured
 
-  for(key in resources) {
+  for(var key in resources) {
+    if (!resources.hasOwnProperty(key)) {
+      continue;
+    }
     var r = resources[key];
     r.apiVersion = av;
     r.basePath = bp;
@@ -63,6 +66,9 @@ function setHeaders(res) {
 // creates declarations for each resource path.
 function setResourceListingPaths(app) {
   for (var key in resources) {
+    if (!resources.hasOwnProperty(key)) {
+      continue;
+    }
 
     // pet.json => api-docs.json/pet
     var path = baseApiFromPath(key);
@@ -77,7 +83,7 @@ function setResourceListingPaths(app) {
       var r = resources[p];
       if (!r) {
         console.error("unable to find listing");
-        return stopWithError(res, {'description': 'internal error', 'code': 500});
+        return stopWithError(res, {'reason': 'internal error', 'code': 500});
       }
       else {
         exports.setHeaders(res);
@@ -111,13 +117,19 @@ function filterApiListing(req, res, r) {
   var excludedPaths = [];
   
   if (!r || !r.apis) {
-    return stopWithError(res, {'description': 'internal error', 'code': 500});
+    return stopWithError(res, {'reason': 'internal error', 'code': 500});
   }
 
   for (var key in r.apis) {
+    if (!r.apis.hasOwnProperty(key)) {
+      continue;
+    }
     var api = r.apis[key];
 
     for (var opKey in api.operations) {
+      if (!api.operations.hasOwnProperty(opKey)) {
+        continue;
+      }
       var op = api.operations[opKey];
       var path = api.path.replace(formatString, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, op.httpMethod)) {
@@ -135,19 +147,25 @@ function filterApiListing(req, res, r) {
   output.apis = [];
   var apis = JSON.parse(JSON.stringify(r.apis));
   for (var i in apis) {
+    if (!apis.hasOwnProperty(i)) {
+      continue;
+    }
     var api = apis[i];
     var clonedApi = shallowClone(api);
 
     clonedApi.operations = [];
     var shouldAdd = true;
     for (var o in api.operations) {
+      if (!api.operations.hasOwnProperty(o)) {
+        continue;
+      }
       var operation = api.operations[o];
       if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
         break;
       }
       else {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-        addModelsFromPost(operation, requiredModels);
+        addModelsFromBody(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
       }
     }
@@ -160,23 +178,32 @@ function filterApiListing(req, res, r) {
   // add required models to output
   output.models = {};
   for (var i in requiredModels){
+    if (!requiredModels.hasOwnProperty(i)) {
+      continue;
+    }
     var modelName = requiredModels[i];
-    var model = allModels.models[modelName];
+    var model = allModels[modelName];
     if(model){
       output.models[requiredModels[i]] = model;
     }
   }
   //  look in object graph
-  for (key in output.models) {
-    var model = output.models[key];
+  for (var mkey in output.models) {
+    if (!output.models.hasOwnProperty(mkey)) {
+      continue;
+    }
+    var model = output.models[mkey];
     if (model && model.properties) {
-      for (var key in model.properties) {
-        var t = model.properties[key].type;
+      for (var pkey in model.properties) {
+        if (!model.properties.hasOwnProperty(pkey)) {
+          continue;
+        }
+        var t = model.properties[pkey].type;
 
         switch (t){
         case "Array":
-          if (model.properties[key].items) {
-            var ref = model.properties[key].items.$ref;
+          if (model.properties[pkey].items) {
+            var ref = model.properties[pkey].items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
               requiredModels.push(ref);
             }
@@ -195,9 +222,12 @@ function filterApiListing(req, res, r) {
     }
   }
   for (var i in requiredModels){
+    if (!requiredModels.hasOwnProperty(i)) {
+      continue;
+    }
     var modelName = requiredModels[i];
     if(!output[modelName]) {
-      var model = allModels.models[modelName];
+      var model = allModels[modelName];
       if(model){
         output.models[requiredModels[i]] = model;
       }
@@ -207,25 +237,17 @@ function filterApiListing(req, res, r) {
 }
 
 // Add model to list and parse List[model] elements
-function addModelsFromPost(operation, models){
+function addModelsFromBody(operation, models){
   if(operation.parameters) {
     for(var i in operation.parameters) {
+      if (!operation.parameters.hasOwnProperty(i)) {
+        continue;
+      }
       var param = operation.parameters[i];
       if(param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
-        if(models.indexOf(model) < 0) {
-          models.push(responseModel);
-        }
         models.push(param.dataType);
       }
-    }
-  }
-
-  var responseModel = operation.responseClass;
-  if (responseModel) {
-    responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
-    if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); 
     }
   }
 }
@@ -237,7 +259,7 @@ function addModelsFromResponse(operation, models){
   if (responseModel) {
     responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
     if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel); 
+      models.push(responseModel);
     }
   }
 }
@@ -246,6 +268,9 @@ function addModelsFromResponse(operation, models){
 function shallowClone(obj) {
   var cloned = {};
   for (var i in obj) {
+    if (!obj.hasOwnProperty(i)) {
+      continue;
+    }
     if (typeof (obj[i]) != "object") {
       cloned[i] = obj[i];
     }
@@ -257,6 +282,9 @@ function shallowClone(obj) {
 // if consumer can access the resource, method returns true.
 function canAccessResource(req, path, httpMethod) {
   for (var i in validators) {
+    if (!validators.hasOwnProperty(i)) {
+      continue;
+    }
     if (!validators[i](req,path,httpMethod))
       return false;
   }
@@ -278,8 +306,11 @@ function resourceListing(req, res) {
   };
 
   for (var key in resources) {
+    if (!resources.hasOwnProperty(key)) {
+      continue;
+    }
     var p = resourcePath + "/" + key.replace(formatString,"");
-    r.apis.push({"path": p, "description": "none"}); 
+    r.apis.push({"path": p, "reason": "none"});
   }
 
   exports.setHeaders(res);
@@ -295,6 +326,9 @@ function addMethod(app, callback, spec) {
   if (root && root.apis) {
     // this path already exists in swagger resources
     for (var key in root.apis) {
+      if (!root.apis.hasOwnProperty(key)) {
+        continue;
+      }
       var api = root.apis[key];
       if (api && api.path == spec.path && api.method == spec.method) {
         // add operation & return
@@ -330,17 +364,17 @@ function addMethod(app, callback, spec) {
       // todo: needs to do smarter matching against the defined paths
       var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, req.method)) {
-        res.send(JSON.stringify({"description":"forbidden", "code":403}), 403);
+        res.send(JSON.stringify({"reason":"forbidden", "code":403}), 403);
       } else {    
         try {
           callback(req,res); 
         }
         catch (ex) {
-          if (ex.code && ex.description)
+          if (ex.code && ex.reason)
             res.send(JSON.stringify(ex), ex.code); 
           else {
             console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
-            res.send(JSON.stringify({"description":"unknown error","code":500}), 500);
+            res.send(JSON.stringify({"reason":"unknown error","code":500}), 500);
           }
         }
       }
@@ -371,6 +405,9 @@ function setAppHandler(app) {
 // Add swagger handlers to express 
 function addHandlers(type, handlers) {
   for (var i = 0; i < handlers.length; i++) {
+    if (!handlers.hasOwnProperty(i)) {
+      continue;
+    }
     var handler = handlers[i];
     handler.spec.method = type;
     addMethod(appHandler, handler.action, handler.spec);
@@ -380,6 +417,9 @@ function addHandlers(type, handlers) {
 // Discover swagger handler from resource
 function discover(resource) {
   for (var key in resource) {
+    if (!resource.hasOwnProperty(key)) {
+      continue;
+    }
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
       addMethod(appHandler, resource[key].action, resource[key].spec); 
     } 
@@ -428,8 +468,11 @@ function addModels(models) {
   if(!allModels['models']) {
     allModels = models;
   } else {
-    for(k in models['models']) {
-      allModels['models'][k] = models['models'][k];
+    for(k in models) {
+      if (!models.hasOwnProperty(k)) {
+        continue;
+      }
+      allModels[k] = models[k];
     }
   }
   return this;
@@ -441,6 +484,7 @@ function wrap(callback, req, resp){
 
 // appends a spec to an existing operation
 function appendToApi(rootResource, api, spec) {
+
   if (!api.description) {
     api.description = spec.description; 
   }
@@ -452,6 +496,9 @@ function appendToApi(rootResource, api, spec) {
   } 
   // validate params
   for ( var paramKey in spec.params) {
+    if (!spec.params.hasOwnProperty(paramKey)) {
+      continue;
+    }
     var param = spec.params[paramKey];
     if(param.allowableValues) {
       var avs = param.allowableValues.toString();
@@ -475,6 +522,8 @@ function appendToApi(rootResource, api, spec) {
       case "query":
         break;
       case "body":
+        break;
+      case "header":
         break;
       default:
         validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});
@@ -530,44 +579,44 @@ function addValidator(v) {
 
 // Create Error JSON by code and text
 function error(code, description) {
-  return {"code" : code, "description" : description};
+  return {"code" : code, "reason" : description};
 }
 
 // Stop express ressource with error code
 function stopWithError(res, error) {
   exports.setHeaders(res);
-  if (error && error.description && error.code)
+  if (error && error.reason && error.code)
     res.send(JSON.stringify(error), error.code);
   else
-    res.send(JSON.stringify({'description': 'internal error', 'code': 500}), 500);
+    res.send(JSON.stringify({'reason': 'internal error', 'code': 500}), 500);
 }
 
 // Export most needed error types for easier handling
 exports.errors = {
   'notFound': function(field, res) { 
     if (!res) { 
-      return {"code": 404, "description": field + ' not found'}; } 
+      return {"code": 404, "reason": field + ' not found'}; }
     else { 
-      res.send({"code": 404, "description": field + ' not found'}, 404); } 
+      res.send({"code": 404, "reason": field + ' not found'}, 404); }
   },
   'invalid': function(field, res) { 
     if (!res) { 
-      return {"code": 400, "description": 'invalid ' + field}; } 
+      return {"code": 400, "reason": 'invalid ' + field}; }
     else { 
-      res.send({"code": 400, "description": 'invalid ' + field}, 404); } 
+      res.send({"code": 400, "reason": 'invalid ' + field}, 404); }
   },
   'forbidden': function(res) {
     if (!res) { 
-      return {"code": 403, "description": 'forbidden' }; } 
+      return {"code": 403, "reason": 'forbidden' }; }
     else { 
-      res.send({"code": 403, "description": 'forbidden'}, 403); }
+      res.send({"code": 403, "reason": 'forbidden'}, 403); }
   }
 };
 
 exports.params = params;
 exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
-exports.postParam = exports.params.post;
+exports.bodyParam = exports.params.body;
 exports.getModels = allModels;
 
 exports.error = error;

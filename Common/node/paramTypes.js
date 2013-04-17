@@ -41,11 +41,13 @@ exports.path = function(name, description, dataType, allowableValues, defaultVal
   };
 };
 
-exports.post = function(dataType, description, defaultValue) {
+exports.body = function(name, description, dataType, defaultValue) {
   return {
+    "name" : name,
     "description" : description,
     "dataType" : dataType,
     "required" : true,
+    "allowMultiple" : false,
     "paramType" : "body",
     "defaultValue" : defaultValue
   };
@@ -56,7 +58,7 @@ exports.header = function(name, description, dataType, required) {
     "name" : name,
     "description" : description,
     "dataType" : dataType,
-    "required" : true,
+    "required" : required,
     "allowMultiple" : false,
     "paramType" : "header"
   };
