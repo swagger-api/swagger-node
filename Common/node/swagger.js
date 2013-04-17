@@ -323,7 +323,8 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g,"");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
-    app[currentMethod](fullPath, function(req,res) {
+		
+		function apiCallback(req, res) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
@@ -343,8 +344,20 @@ function addMethod(app, callback, spec) {
           }
         }
       }
-    }); 
-  } else {
+    };
+		
+		// Pass the preliminary callbacks in addition to the API callback for this 
+		// route.
+		var callbacks = [];
+		if (Array.isArray(spec.preliminaryCallbacks)) {
+			callbacks = spec.preliminaryCallbacks.concat(apiCallback);
+		}
+		else {
+			callbacks.push(apiCallback);
+		}		
+    app[currentMethod](fullPath, callbacks); 
+  } 
+	else {
     console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');  
     return;
   }
