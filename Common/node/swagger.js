@@ -353,8 +353,8 @@ function addMethod(app, callback, spec) {
   root.apis.push(api);
   appendToApi(root, api, spec);
 
-  //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g,"");
+  var fullPath = spec.path.replace(/{/g, ":").replace(/\}/g,"");
+
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
