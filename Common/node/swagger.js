@@ -320,7 +320,7 @@ function resourceListing(req, res) {
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
 function addMethod(app, callback, spec) {
-  var apiRootPath = spec.path.split("/")[1];
+  var apiRootPath = spec.path.split("/")[1].replace(formatString, "");
   var root = resources[apiRootPath];
 
   if (root && root.apis) {
