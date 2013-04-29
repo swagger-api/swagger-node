@@ -319,7 +319,7 @@ function resourceListing(req, res) {
 }
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
-function addMethod(app, callback, spec) {
+function addMethod(app, callback, spec, before) {
   var apiRootPath = spec.path.split("/")[1];
   var root = resources[apiRootPath];
 
@@ -366,7 +366,11 @@ function addMethod(app, callback, spec) {
         res.send(JSON.stringify({"reason":"forbidden", "code":403}), 403);
       } else {    
         try {
-          callback(req,res); 
+          if(before != null) {
+            before(req, res, callback);
+          } else {
+            callback(req,res); 
+          }
         }
         catch (ex) {
           if (ex.code && ex.reason)
@@ -397,7 +401,7 @@ function addHandlers(type, handlers) {
     }
     var handler = handlers[i];
     handler.spec.method = type;
-    addMethod(appHandler, handler.action, handler.spec);
+    addMethod(appHandler, handler.action, handler.spec, handler.before);
   }
 }
 
@@ -408,7 +412,7 @@ function discover(resource) {
       continue;
     }
     if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec); 
+      addMethod(appHandler, resource[key].action, resource[key].spec, resources[key].before); 
     } 
     else
       console.error('auto discover failed for: ' + key); 
