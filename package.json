@@ -1,15 +1,21 @@
 {
-  "name": "swagger-node-express",
-  "version": "1.2.3",
+  "name": "swagger-node-express-ext",
+  "version": "1.2.6",
   "author": {
     "name": "Tony Tam",
     "email": "fehguy@gmail.com",
     "url": "http://developer.wordnik.com"
   },
-  "description": "Wordnik swagger implementation for the express framework",
+  "contributors": [
+    {
+      "name": "Fernando Doglio",
+      "email": "deleteman@gmail.com"     
+    }
+  ],
+  "description": "Wordnik swagger implementation for the express framework with a before filter add-on to controllers",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wordnik/swagger-node-express"
+    "url": "https://github.com/deleteman/swagger-node-express"
   },
   "keywords": [
     "http",
@@ -30,4 +36,5 @@
     "docco": "0.4.x"
   },
   "license": "apache 2.0"
+  
 }

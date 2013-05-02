@@ -1,5 +1,13 @@
 This is the Wordnik Swagger code for the express framework.  For more on Swagger, please visit http://swagger.wordnik.com.  For more on express, please visit https://github.com/visionmedia/express
 
+#Why a different module?
+
+The main motivation behind this module, is that I needed to do validations that might affect the flow of a request agains MongoDB. These vaildations had to be of async nature, but the valdiator describe below doens't accept this type of function, so in order to make it work I forked and extended Swagger-Node-Express.
+
+There is also a pull request awaiting approval on the official Github repo.
+
+See below for a code sample of how the _before_ function is defined.
+
 ## READ MORE about swagger!
 
 See the [swagger website](http://swagger.wordnik.com) or the [swagger-core wiki](https://github.com/wordnik/swagger-core/wiki), which contains information about the swagger json spec.
@@ -71,9 +79,14 @@ var findById = {
     "errorResponses" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
     "nickname" : "getPetById"
   },
+  'before': funtion(req, res, action) { //Separates validation from the main action code.
+     if (!req.params.petId) { //Usefull when validation requires async callbacks.
+        throw swagger.errors.invalid('id'); 
+     } else {
+      action(req, res); //now we call the action
+   }
+  },
   'action': function (req,res) {
-    if (!req.params.petId) {
-      throw swagger.errors.invalid('id'); }
     var id = parseInt(req.params.petId);
     var pet = petData.getPetById(id);
 
