@@ -27,7 +27,7 @@ exports.query = exports.q = function(name, description, dataType, required, allo
   };
 };
 
-exports.path = function(name, description, dataType, allowableValues, defaultValue) {
+exports.path = function(name, description, dataType, allowableValues) {
   return {
     "name" : name,
     "description" : description,
@@ -35,19 +35,15 @@ exports.path = function(name, description, dataType, allowableValues, defaultVal
     "required" : true,
     "allowMultiple" : false,
     "allowableValues" : allowableValues,
-    "paramType" : "path",
-    "defaultValue" : defaultValue
-
+    "paramType" : "path"
   };
 };
 
-exports.body = function(name, description, dataType, defaultValue) {
+exports.post = function(dataType, description, defaultValue) {
   return {
-    "name" : name,
     "description" : description,
     "dataType" : dataType,
     "required" : true,
-    "allowMultiple" : false,
     "paramType" : "body",
     "defaultValue" : defaultValue
   };
@@ -58,7 +54,7 @@ exports.header = function(name, description, dataType, required) {
     "name" : name,
     "description" : description,
     "dataType" : dataType,
-    "required" : required,
+    "required" : true,
     "allowMultiple" : false,
     "paramType" : "header"
   };

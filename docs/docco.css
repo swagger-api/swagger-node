@@ -118,7 +118,6 @@ table td {
     vertical-align: top;
     background: #f5f5ff;
     border-left: 1px solid #e5e5ee;
-    white-space: nowrap;
   }
     pre, tt, code {
       font-size: 12px; line-height: 18px;
