@@ -80,7 +80,7 @@ function setResourceListingPaths(app) {
 
       // this handles the request
       // api-docs.json/pet => pet.{format}
-      var r = resources[p];
+      var r = resources[p] || resources[p.replace(formatString, "")];
       if (!r) {
         console.error("unable to find listing");
         return stopWithError(res, {'reason': 'internal error', 'code': 500});
@@ -320,7 +320,7 @@ function resourceListing(req, res) {
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
 function addMethod(app, callback, spec) {
-  var apiRootPath = spec.path.split("/")[1];
+  var apiRootPath = spec.path.split("/")[1].replace(formatString, "");
   var root = resources[apiRootPath];
 
   if (root && root.apis) {
@@ -353,8 +353,8 @@ function addMethod(app, callback, spec) {
   root.apis.push(api);
   appendToApi(root, api, spec);
 
-  //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g,"");
+  var fullPath = spec.path.replace(/{/g, ":").replace(/\}/g,"");
+
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     app[currentMethod](fullPath, function(req,res) {
@@ -510,6 +510,8 @@ function appendToApi(rootResource, api, spec) {
         break;
       case "body":
         break;
+      case "form":
+        break;
       case "header":
         break;
       default:
@@ -600,6 +602,7 @@ exports.params = params;
 exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
 exports.bodyParam = exports.params.body;
+exports.formParam = exports.params.form;
 exports.getModels = allModels;
 
 exports.error = error;

@@ -53,6 +53,19 @@ exports.body = function(name, description, dataType, defaultValue) {
   };
 };
 
+exports.form = function(name, description, dataType, required, allowMultiple, allowableValues, defaultValue) {
+  return {
+    "name" : name,
+    "description" : description,
+    "dataType" : dataType,
+    "required" : required,
+    "allowMultiple" : allowMultiple,
+    "allowableValues" : allowableValues,
+    "defaultValue" : defaultValue,
+    "paramType" : "form"
+  };
+};
+
 exports.header = function(name, description, dataType, required) {
   return {
     "name" : name,
