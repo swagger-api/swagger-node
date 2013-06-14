@@ -452,7 +452,7 @@ function addPatch() {
 
 // adds models to swagger
 function addModels(models) {
-  if(!allModels['models']) {
+  if(!allModels) {
     allModels = models;
   } else {
     for(k in models) {
