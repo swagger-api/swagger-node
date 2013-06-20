@@ -357,7 +357,8 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g,"");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
-    app[currentMethod](fullPath, function(req,res) {
+
+    function apiCallback(req, res) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
@@ -377,7 +378,24 @@ function addMethod(app, callback, spec) {
           }
         }
       }
-    }); 
+    });
+
+    // Pass the preliminary callbacks in addition to the API callback for this route.
+    var callbacks = [];
+
+    // If we have preliminaryCallbacks defined in the spec. then add the
+    // action callback to the end of the array.
+
+    if (Array.isArray(spec.preliminaryCallbacks)) {
+      callbacks = spec.preliminaryCallbacks.concat(apiCallback);
+    }
+    else {
+      // No prelim callbacks defined so go with the default.
+      callbacks.push(apiCallback);
+    }  
+
+    app[currentMethod](fullPath, callbacks); 
+
   } else {
     console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');  
     return;
