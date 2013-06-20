@@ -378,7 +378,7 @@ function addMethod(app, callback, spec) {
           }
         }
       }
-    });
+    }
 
     // Pass the preliminary callbacks in addition to the API callback for this route.
     var callbacks = [];
