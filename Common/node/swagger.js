@@ -510,6 +510,8 @@ function appendToApi(rootResource, api, spec) {
         break;
       case "body":
         break;
+	  case "form":
+        break;
       case "header":
         break;
       default:
@@ -600,6 +602,7 @@ exports.params = params;
 exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
 exports.bodyParam = exports.params.body;
+exports.formParam = exports.params.form;
 exports.getModels = allModels;
 
 exports.error = error;
