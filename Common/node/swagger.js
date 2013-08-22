@@ -210,8 +210,8 @@ function filterApiListing(req, res, r) {
         }
         var t = model.properties[pkey].type;
 
-        switch (t){
-        case "Array":
+        switch (t) {
+        case "array":
           if (model.properties[pkey].items) {
             var ref = model.properties[pkey].items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
