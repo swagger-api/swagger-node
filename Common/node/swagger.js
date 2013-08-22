@@ -28,6 +28,16 @@ var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'a
 var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
 
+// Default error handler
+var errorHandler = function(req, res, error) {
+  if (error.code && error.reason)
+    res.send(JSON.stringify(error), error.code); 
+  else {
+    console.error(req.method + " failed for path '" + require('url').parse(req.url).href + "': " + error);
+    res.send(JSON.stringify({"reason":"unknown error","code":500}), 500);
+  }
+};
+
 function configureSwaggerPaths(format, path, suffix) {
   formatString = format;
   resourcePath = path;
@@ -200,8 +210,8 @@ function filterApiListing(req, res, r) {
         }
         var t = model.properties[pkey].type;
 
-        switch (t){
-        case "Array":
+        switch (t) {
+        case "array":
           if (model.properties[pkey].items) {
             var ref = model.properties[pkey].items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
@@ -368,12 +378,11 @@ function addMethod(app, callback, spec) {
         try {
           callback(req,res); 
         }
-        catch (ex) {
-          if (ex.code && ex.reason)
-            res.send(JSON.stringify(ex), ex.code); 
-          else {
-            console.error(spec.method + " failed for path '" + require('url').parse(req.url).href + "': " + ex);
-            res.send(JSON.stringify({"reason":"unknown error","code":500}), 500);
+        catch (error) {
+          if (typeof errorHandler === "function") {
+            errorHandler(req, res, error);
+          } else {
+            throw error;
           }
         }
       }
@@ -387,6 +396,12 @@ function addMethod(app, callback, spec) {
 // Set expressjs app handler
 function setAppHandler(app) {
   appHandler = app;
+}
+
+// Change error handler
+// Error handler should be a function that accepts parameters req, res, error
+function setErrorHandler(handler) {
+  errorHandler = handler;
 }
 
 // Add swagger handlers to express 
@@ -452,7 +467,7 @@ function addPatch() {
 
 // adds models to swagger
 function addModels(models) {
-  if(!allModels['models']) {
+  if(!allModels) {
     allModels = models;
   } else {
     for(k in models) {
@@ -509,6 +524,8 @@ function appendToApi(rootResource, api, spec) {
       case "query":
         break;
       case "body":
+        break;
+	  case "form":
         break;
       case "header":
         break;
@@ -600,6 +617,7 @@ exports.params = params;
 exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
 exports.bodyParam = exports.params.body;
+exports.formParam = exports.params.form;
 exports.getModels = allModels;
 
 exports.error = error;
@@ -623,6 +641,7 @@ exports.addPATCH = addPatch;
 exports.addDELETE = addDelete;
 exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
+exports.setErrorHandler = setErrorHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.configureSwaggerPaths = configureSwaggerPaths;
