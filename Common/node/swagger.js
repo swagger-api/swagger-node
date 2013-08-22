@@ -246,7 +246,7 @@ function addModelsFromBody(operation, models){
       var param = operation.parameters[i];
       if(param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
-        models.push(param.dataType);
+        models.push(model);
       }
     }
   }
