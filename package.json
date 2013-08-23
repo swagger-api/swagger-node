@@ -1,6 +1,6 @@
 {
   "name": "swagger-node-restify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Nicolas Mathon",
     "email": "nicolas.mathon@gmail.com",
@@ -35,6 +35,6 @@
   "bugs": {
     "url": "https://github.com/tmsw/swagger-node-restify/issues"
   },
-  "_id": "swagger-node-restify@0.1.0",
+  "_id": "swagger-node-restify@0.1.1",
   "_from": "swagger-node-restify@>= 0.0.1"
 }
