@@ -1,26 +1,31 @@
-This is the Wordnik Swagger code for the express framework.  For more on Swagger, please visit http://swagger.wordnik.com.  For more on express, please visit https://github.com/visionmedia/express
+This is the Wordnik Swagger code for the restify framework. It's a fork of https://github.com/wordnik/swagger-node-express.git with some fixes to work with Restify. 
+For more on Swagger, please visit http://swagger.wordnik.com.  
+For more on restify, please visit http://mcavage.me/node-restify
 
 ## READ MORE about swagger!
 
 See the [swagger website](http://swagger.wordnik.com) or the [swagger-core wiki](https://github.com/wordnik/swagger-core/wiki), which contains information about the swagger json spec.
 
-Try a sample!  The source for a [functional sample](https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md) is available on github:
+Try a sample!  The source for a [functional sample](https://github.com/tmsw/swagger-node-restify/blob/master/README.md) is available on github:
 
 
 
-### Adding swagger to your express-based API
+### Adding swagger to your restify-based API
 
-Include swagger.js in your app and add express as the app handler:
+Include swagger.js in your app and add restify as the app handler:
 
 ```js
-var express = require("express")
+var restify = require("restify")
  , url = require("url")
- , swagger = require("swagger-node-express");
+ , swagger = require("swagger-node-restify");
 
-var app = express();
-app.use(express.bodyParser());
+var server = restify.createServer();
+server.use(restify.bodyParser());
+restify.defaultResponseHeaders = function(data) {
+  this.header('Access-Control-Allow-Origin', '*');
+};
 
-swagger.setAppHandler(app);
+swagger.setAppHandler(server);
 ```
 
 You can optionally add a validator function, which is used to filter the swagger json and request operations:
@@ -86,7 +91,7 @@ swagger.addGet(findById);
 
 ```
 
-Adds an API route to express and provides all the necessary information to swagger.
+Adds an API route to restify and provides all the necessary information to swagger.
 
 Finally, configure swagger with a `public` URL and version:
 
@@ -124,33 +129,3 @@ var findById = {
     "notes" : "Returns a pet based on ID",
     ...
 ```
-
-#### Mapping swagger to subpaths
-
-To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
-
-```js
-var app = express();
-var subpath = express();
-
-app.use(express.bodyParser());
-app.use("/v1", subpath);
-
-swagger.setAppHandler(subpath);
-```
-
-Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs.json`).
-
-#### Allows-origin and special headers
-
-If you want to modify the default headers sent with every swagger-managed method, you can do so as follows:
-
-```js
-swagger.setHeaders = function setHeaders(res) {
-  res.header('Access-Control-Allow-Origin', "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-  res.header("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
-  res.header("Content-Type", "application/json; charset=utf-8");
-};
-```
-If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
