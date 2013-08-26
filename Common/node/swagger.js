@@ -212,6 +212,7 @@ function filterApiListing(req, res, r) {
 
         switch (t) {
         case "array":
+        case "Array":
           if (model.properties[pkey].items) {
             var ref = model.properties[pkey].items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
@@ -469,12 +470,22 @@ function addPatch() {
 function addModels(models) {
   if(!allModels) {
     allModels = models;
-  } else {
+  }
+  else {
     for(k in models) {
-      if (!models.hasOwnProperty(k)) {
-        continue;
-      }
-      allModels[k] = models[k];
+      if (!models.hasOwnProperty(k)) continue;
+	  var model = models[k];
+	  for(var propertyKey in model.properties) {
+        if (!model.properties.hasOwnProperty(propertyKey)) continue;
+		var property = model.properties[propertyKey];
+		if (typeof property.enum !== 'undefined') {
+			property.allowableValues = {
+				"valueType": "LIST",
+				"values": property.enum
+			}
+		}
+	  }
+      allModels[k] = model;
     }
   }
   return this;
@@ -514,7 +525,7 @@ function appendToApi(rootResource, api, spec) {
         param.allowableValues = {valueType: type, min: values[0], max: values[1]};
       }
     }
-    
+
     switch (param.paramType) {
       case "path":
         if (api.path.indexOf("{" + param.name + "}") < 0) {
