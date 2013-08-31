@@ -475,14 +475,20 @@ function addModels(models) {
     for(k in models) {
       if (!models.hasOwnProperty(k)) continue;
 	  var model = models[k];
+	  var required = model.required;
 	  for(var propertyKey in model.properties) {
         if (!model.properties.hasOwnProperty(propertyKey)) continue;
 		var property = model.properties[propertyKey];
+		// convert enum to allowableValues
 		if (typeof property.enum !== 'undefined') {
 			property.allowableValues = {
 				"valueType": "LIST",
 				"values": property.enum
 			}
+		}
+		// convert existence in v4 required array to required attribute
+		if (required && required.indexOf(propertyKey) > -1) {
+			property.required = true;
 		}
 	  }
       allModels[k] = model;
