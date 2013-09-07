@@ -25,6 +25,10 @@ var petResources = require("./petResources.js");
 var app = express();
 app.use(express.bodyParser());
 
+// If you don't like the .{format} or .json suffix, you can override configureSwaggerPaths
+// and remove .{format} from the paths in petResources.js
+// swagger.configureSwaggerPaths("", "/api", "");
+
 // Set the main handler in swagger to the express app
 swagger.setAppHandler(app);
 
