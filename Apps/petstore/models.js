@@ -32,8 +32,7 @@ module.exports = {
               "available",
               "pending",
               "sold"
-            ],
-            "valueType":"LIST"
+            ]
           },
           "description":"pet status in the store",
           "type":"string"
