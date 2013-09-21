@@ -14,6 +14,7 @@
  *  limitations under the License.
  */
 
+var _ = require('lodash');
 var formatString = ".{format}";
 var resourcePath = "/api-docs" + formatString;
 var jsonSuffix = ".json";
@@ -468,6 +469,7 @@ function addPatch() {
 
 // adds models to swagger
 function addModels(models) {
+  models = _.cloneDeep(models);
   if(!allModels) {
     allModels = models;
   }
