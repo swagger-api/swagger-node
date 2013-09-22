@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 var _ = require('lodash');
 var formatString = ".{format}";
 var resourcePath = "/api-docs" + formatString;
@@ -30,12 +29,15 @@ var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
 
 // Default error handler
-var errorHandler = function(req, res, error) {
+var errorHandler = function (req, res, error) {
   if (error.code && error.reason)
-    res.send(JSON.stringify(error), error.code); 
+    res.send(JSON.stringify(error), error.code);
   else {
     console.error(req.method + " failed for path '" + require('url').parse(req.url).href + "': " + error);
-    res.send(JSON.stringify({"reason":"unknown error","code":500}), 500);
+    res.send(JSON.stringify({
+      "reason": "unknown error",
+      "code": 500
+    }), 500);
   }
 };
 
@@ -47,6 +49,7 @@ function configureSwaggerPaths(format, path, suffix) {
 
 // Configuring swagger will set the basepath and api version for all
 // subdocuments.  It should only be done once, and during bootstrap of the app
+
 function configure(bp, av) {
   basePath = bp;
   apiVersion = av;
@@ -56,17 +59,14 @@ function configure(bp, av) {
   appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
   // update resources if already configured
 
-  for(var key in resources) {
-    if (!resources.hasOwnProperty(key)) {
-      continue;
-    }
-    var r = resources[key];
-    r.apiVersion = av;
-    r.basePath = bp;
-  }
+  _.forOwn(resources, function (resource) {
+    resource.apiVersion = av;
+    resource.basePath = bp;
+  });
 }
 
 // Convenience to set default headers in each response.
+
 function setHeaders(res) {
   res.header('Access-Control-Allow-Origin', "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
@@ -75,15 +75,14 @@ function setHeaders(res) {
 }
 
 // creates declarations for each resource path.
+
 function setResourceListingPaths(app) {
-  for (var key in resources) {
-    if (!resources.hasOwnProperty(key)) {
-      continue;
-    }
+
+  _.forOwn(resources, function (resource, key) {
 
     // pet.json => api-docs.json/pet
     var path = baseApiFromPath(key);
-    app.get(path, function(req, res) {
+    app.get(path, function (req, res) {
       // find the api base path from the request URL
       // /api-docs.json/pet => /pet.json
 
@@ -94,20 +93,22 @@ function setResourceListingPaths(app) {
       var r = resources[p];
       if (!r) {
         console.error("unable to find listing");
-        return stopWithError(res, {'reason': 'internal error', 'code': 500});
-      }
-      else {
+        return stopWithError(res, {
+          'reason': 'internal error',
+          'code': 500
+        });
+      } else {
         exports.setHeaders(res);
         var data = filterApiListing(req, res, r);
         data.basePath = basePath;
         if (data.code) {
-          res.send(data, data.code); }
-        else {
+          res.send(data, data.code);
+        } else {
           res.send(JSON.stringify(filterApiListing(req, res, r)));
         }
       }
     });
-  }
+  });
 }
 
 function basePathFromApi(path) {
@@ -123,20 +124,18 @@ function baseApiFromPath(path) {
 
 // Applies a filter to an api listing.  When done, the api listing will only contain
 // methods and models that the user actually has access to.
+
 function filterApiListing(req, res, r) {
-  var route = req.route;
   var excludedPaths = [];
-  
+
   if (!r || !r.apis) {
-    return stopWithError(res, {'reason': 'internal error', 'code': 500});
+    return stopWithError(res, {
+      'reason': 'internal error',
+      'code': 500
+    });
   }
 
-  for (var key in r.apis) {
-    if (!r.apis.hasOwnProperty(key)) {
-      continue;
-    }
-    var api = r.apis[key];
-
+  _.forOwn(r.apis, function (api) {
     for (var opKey in api.operations) {
       if (!api.operations.hasOwnProperty(opKey)) {
         continue;
@@ -144,78 +143,56 @@ function filterApiListing(req, res, r) {
       var op = api.operations[opKey];
       var path = api.path.replace(formatString, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, op.httpMethod)) {
-        excludedPaths.push(op.httpMethod + ":" + api.path); }
+        excludedPaths.push(op.httpMethod + ":" + api.path);
+      }
     }
-  }
+  });
 
   //  clone attributes in the resource
   var output = shallowClone(r);
-  
+
   //  models required in the api listing
   var requiredModels = [];
-  
+
   //  clone methods that user can access
   output.apis = [];
   var apis = JSON.parse(JSON.stringify(r.apis));
-  for (var i in apis) {
-    if (!apis.hasOwnProperty(i)) {
-      continue;
-    }
-    var api = apis[i];
+  _.forOwn(apis, function (api) {
     var clonedApi = shallowClone(api);
 
     clonedApi.operations = [];
-    var shouldAdd = true;
-    for (var o in api.operations) {
-      if (!api.operations.hasOwnProperty(o)) {
-        continue;
-      }
-      var operation = api.operations[o];
-      if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
-        break;
-      }
-      else {
+    _.forOwn(api.operations, function (operation) {
+      if (!excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
         addModelsFromBody(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
       }
-    }
+    });
     //  only add cloned api if there are operations
     if (clonedApi.operations.length > 0) {
       output.apis.push(clonedApi);
     }
-  }
+  });
 
   // add required models to output
   output.models = {};
-  for (var i in requiredModels){
-    if (!requiredModels.hasOwnProperty(i)) {
-      continue;
-    }
-    var modelName = requiredModels[i];
+  _.forOwn(requiredModels, function (modelName) {
     var model = allModels[modelName];
-    if(model){
-      output.models[requiredModels[i]] = model;
+    if (model) {
+      output.models[modelName] = model;
     }
-  }
+  });
   //  look in object graph
-  for (var mkey in output.models) {
-    if (!output.models.hasOwnProperty(mkey)) {
-      continue;
-    }
-    var model = output.models[mkey];
+  _.forOwn(output.models, function (model) {
     if (model && model.properties) {
-      for (var pkey in model.properties) {
-        if (!model.properties.hasOwnProperty(pkey)) {
-          continue;
-        }
-        var t = model.properties[pkey].type;
+      _.forOwn(model.properties, function (property) {
+        var type = property.type;
 
-        switch (t) {
+        switch (type) {
         case "array":
         case "Array":
-          if (model.properties[pkey].items) {
-            var ref = model.properties[pkey].items.$ref;
+          if (property.items) {
+            var ref = property.items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
               requiredModels.push(ref);
             }
@@ -225,51 +202,44 @@ function filterApiListing(req, res, r) {
         case "long":
           break;
         default:
-          if (requiredModels.indexOf(t) < 0) {
-            requiredModels.push(t);
+          if (requiredModels.indexOf(type) < 0) {
+            requiredModels.push(type);
           }
           break;
         }
-      }
+      });
     }
-  }
-  for (var i in requiredModels){
-    if (!requiredModels.hasOwnProperty(i)) {
-      continue;
-    }
-    var modelName = requiredModels[i];
-    if(!output[modelName]) {
+  });
+  _.forOwn(requiredModels, function (modelName) {
+    if (!output[modelName]) {
       var model = allModels[modelName];
-      if(model){
-        output.models[requiredModels[i]] = model;
+      if (model) {
+        output.models[modelName] = model;
       }
     }
-  }
+  });
   return output;
 }
 
 // Add model to list and parse List[model] elements
-function addModelsFromBody(operation, models){
-  if(operation.parameters) {
-    for(var i in operation.parameters) {
-      if (!operation.parameters.hasOwnProperty(i)) {
-        continue;
+
+function addModelsFromBody(operation, models) {
+  if (operation.parameters) {
+    _.forOwn(operation.parameters, function (param) {
+      if (param.paramType == "body" && param.dataType) {
+        var model = param.dataType.replace(/^List\[/, "").replace(/\]/, "");
+        models.push(model);
       }
-      var param = operation.parameters[i];
-      if(param.paramType == "body" && param.dataType) {
-        var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
-        models.push(param.dataType);
-      }
-    }
+    });
   }
 }
 
-
 // Add model to list and parse List[model] elements
-function addModelsFromResponse(operation, models){
+
+function addModelsFromResponse(operation, models) {
   var responseModel = operation.responseClass;
   if (responseModel) {
-    responseModel = responseModel.replace(/^List\[/,"").replace(/\]/,"");
+    responseModel = responseModel.replace(/^List\[/, "").replace(/\]/, "");
     if (models.indexOf(responseModel) < 0) {
       models.push(responseModel);
     }
@@ -277,6 +247,7 @@ function addModelsFromResponse(operation, models){
 }
 
 // clone anything but objects to avoid shared references
+
 function shallowClone(obj) {
   var cloned = {};
   for (var i in obj) {
@@ -292,38 +263,39 @@ function shallowClone(obj) {
 
 // function for filtering a resource.  override this with your own implementation.
 // if consumer can access the resource, method returns true.
+
 function canAccessResource(req, path, httpMethod) {
-  for (var i in validators) {
-    if (!validators.hasOwnProperty(i)) {
-      continue;
-    }
-    if (!validators[i](req,path,httpMethod))
+  for (var i = 0; i < validators.length; i++) {
+    var validator = validators[i];
+    if (_.isFunction(validator) && !validator(req, path, httpMethod)) {
       return false;
+    }
   }
   return true;
 }
 
 /**
  * returns the json representation of a resource
- * 
+ *
  * @param request
  * @param response
  */
+
 function resourceListing(req, res) {
   var r = {
-    "apiVersion" : apiVersion, 
-    "swaggerVersion" : swaggerVersion, 
-    "basePath" : basePath, 
-    "apis" : []
+    "apiVersion": apiVersion,
+    "swaggerVersion": swaggerVersion,
+    "basePath": basePath,
+    "apis": []
   };
 
-  for (var key in resources) {
-    if (!resources.hasOwnProperty(key)) {
-      continue;
-    }
-    var p = resourcePath + "/" + key.replace(formatString,"");
-    r.apis.push({"path": p, "reason": "none"});
-  }
+  _.forOwn(resources, function (value, key) {
+    var p = resourcePath + "/" + key.replace(formatString, "");
+    r.apis.push({
+      "path": p,
+      "reason": "none"
+    });
+  });
 
   exports.setHeaders(res);
   res.write(JSON.stringify(r));
@@ -331,32 +303,36 @@ function resourceListing(req, res) {
 }
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
+
 function addMethod(app, callback, spec) {
   var apiRootPath = spec.path.split("/")[1];
   var root = resources[apiRootPath];
 
   if (root && root.apis) {
     // this path already exists in swagger resources
-    for (var key in root.apis) {
-      if (!root.apis.hasOwnProperty(key)) {
-        continue;
-      }
-      var api = root.apis[key];
+    _.forOwn(root.apis, function (api) {
       if (api && api.path == spec.path && api.method == spec.method) {
         // add operation & return
         appendToApi(root, api, spec);
         return;
       }
-    }
+    });
   }
 
-  var api = {"path" : spec.path};
+  var api = {
+    "path": spec.path
+  };
   if (!resources[apiRootPath]) {
     if (!root) {
       // 
-      var resourcePath = "/" + apiRootPath.replace(formatString, ""); 
+      var resourcePath = "/" + apiRootPath.replace(formatString, "");
       root = {
-        "apiVersion" : apiVersion, "swaggerVersion": swaggerVersion, "basePath": basePath, "resourcePath": resourcePath, "apis": [], "models" : []
+        "apiVersion": apiVersion,
+        "swaggerVersion": swaggerVersion,
+        "basePath": basePath,
+        "resourcePath": resourcePath,
+        "apis": [],
+        "models": []
       };
     }
     resources[apiRootPath] = root;
@@ -366,21 +342,23 @@ function addMethod(app, callback, spec) {
   appendToApi(root, api, spec);
 
   //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g,"");
+  var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
-  if (allowedMethods.indexOf(currentMethod)>-1) {
-    app[currentMethod](fullPath, function(req,res) {
+  if (allowedMethods.indexOf(currentMethod) > -1) {
+    app[currentMethod](fullPath, function (req, res) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
       var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, req.method)) {
-        res.send(JSON.stringify({"reason":"forbidden", "code":403}), 403);
-      } else {    
+        res.send(JSON.stringify({
+          "reason": "forbidden",
+          "code": 403
+        }), 403);
+      } else {
         try {
-          callback(req,res); 
-        }
-        catch (error) {
+          callback(req, res);
+        } catch (error) {
           if (typeof errorHandler === "function") {
             errorHandler(req, res, error);
           } else {
@@ -388,209 +366,217 @@ function addMethod(app, callback, spec) {
           }
         }
       }
-    }); 
+    });
   } else {
-    console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');  
+    console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');
     return;
   }
 }
 
 // Set expressjs app handler
+
 function setAppHandler(app) {
   appHandler = app;
 }
 
 // Change error handler
 // Error handler should be a function that accepts parameters req, res, error
+
 function setErrorHandler(handler) {
   errorHandler = handler;
 }
 
 // Add swagger handlers to express 
+
 function addHandlers(type, handlers) {
-  for (var i = 0; i < handlers.length; i++) {
-    if (!handlers.hasOwnProperty(i)) {
-      continue;
-    }
-    var handler = handlers[i];
+  _.forOwn(handlers, function (handler) {
     handler.spec.method = type;
     addMethod(appHandler, handler.action, handler.spec);
-  }
+  });
 }
 
 // Discover swagger handler from resource
+
 function discover(resource) {
-  for (var key in resource) {
-    if (!resource.hasOwnProperty(key)) {
-      continue;
-    }
-    if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec); 
-    } 
-    else
-      console.error('auto discover failed for: ' + key); 
-  }
+  _.forOwn(resource, function (handler, key) {
+    if (handler.spec && handler.spec.method && allowedMethods.indexOf(handler.spec.method.toLowerCase()) > -1) {
+      addMethod(appHandler, handler.action, handler.spec);
+    } else
+      console.error('auto discover failed for: ' + key);
+  });
 }
 
 // Discover swagger handler from resource file path
+
 function discoverFile(file) {
   return discover(require(file));
 }
 
 // adds get handler
+
 function addGet() {
   addHandlers('GET', arguments);
   return this;
 }
 
 // adds post handler
+
 function addPost() {
   addHandlers('POST', arguments);
   return this;
 }
 
 // adds delete handler
-function addDelete() { 
+
+function addDelete() {
   addHandlers('DELETE', arguments);
   return this;
 }
 
 // adds put handler
+
 function addPut() {
   addHandlers('PUT', arguments);
   return this;
 }
 
 // adds patch handler
+
 function addPatch() {
   addHandlers('PATCH', arguments);
   return this;
 }
 
 // adds models to swagger
+
 function addModels(models) {
   models = _.cloneDeep(models);
-  if(!allModels) {
+  if (!allModels) {
     allModels = models;
-  }
-  else {
-    for(k in models) {
-      if (!models.hasOwnProperty(k)) continue;
-	  var model = models[k];
-	  var required = model.required;
-	  for(var propertyKey in model.properties) {
-        if (!model.properties.hasOwnProperty(propertyKey)) continue;
-		var property = model.properties[propertyKey];
-		// convert enum to allowableValues
-		if (typeof property.enum !== 'undefined') {
-			property.allowableValues = {
-				"valueType": "LIST",
-				"values": property.enum
-			}
-		}
-		// convert existence in v4 required array to required attribute
-		if (required && required.indexOf(propertyKey) > -1) {
-			property.required = true;
-		}
-	  }
-      allModels[k] = model;
-    }
+  } else {
+    _.forOwn(models, function (model, key) {
+      var required = model.required;
+      _.forOwn(model.properties, function (property, propertyKey) {
+        // convert enum to allowableValues
+        if (typeof property.enum !== 'undefined') {
+          property.allowableValues = {
+            "valueType": "LIST",
+            "values": property.enum
+          }
+        }
+        // convert existence in v4 required array to required attribute
+        if (required && required.indexOf(propertyKey) > -1) {
+          property.required = true;
+        }
+      });
+      allModels[key] = model;
+    });
   }
   return this;
 }
 
-function wrap(callback, req, resp){
-  callback(req,resp);
+function wrap(callback, req, resp) {
+  callback(req, resp);
 }
 
 // appends a spec to an existing operation
+
 function appendToApi(rootResource, api, spec) {
 
   if (!api.description) {
-    api.description = spec.description; 
+    api.description = spec.description;
   }
   var validationErrors = [];
 
-  if(!spec.nickname || spec.nickname.indexOf(" ")>=0){
+  if (!spec.nickname || spec.nickname.indexOf(" ") >= 0) {
     //  nicknames don't allow spaces
-    validationErrors.push({"path": api.path, "error": "invalid nickname '" + spec.nickname + "'"});
-  } 
+    validationErrors.push({
+      "path": api.path,
+      "error": "invalid nickname '" + spec.nickname + "'"
+    });
+  }
   // validate params
-  for ( var paramKey in spec.params) {
-    if (!spec.params.hasOwnProperty(paramKey)) {
-      continue;
-    }
-    var param = spec.params[paramKey];
-    if(param.allowableValues) {
+  _.forOwn(spec.params, function (param) {
+    if (param.allowableValues) {
       var avs = param.allowableValues.toString();
       var type = avs.split('[')[0];
-      if(type == 'LIST'){
-        var values = avs.match(/\[(.*)\]/g).toString().replace('\[','').replace('\]', '').split(',');
-        param.allowableValues = {valueType: type, values: values};
-      }
-      else if (type == 'RANGE') {
-        var values = avs.match(/\[(.*)\]/g).toString().replace('\[','').replace('\]', '').split(',');
-        param.allowableValues = {valueType: type, min: values[0], max: values[1]};
+      if (type == 'LIST') {
+        var values = avs.match(/\[(.*)\]/g).toString().replace('\[', '').replace('\]', '').split(',');
+        param.allowableValues = {
+          valueType: type,
+          values: values
+        };
+      } else if (type == 'RANGE') {
+        var values = avs.match(/\[(.*)\]/g).toString().replace('\[', '').replace('\]', '').split(',');
+        param.allowableValues = {
+          valueType: type,
+          min: values[0],
+          max: values[1]
+        };
       }
     }
 
     switch (param.paramType) {
-      case "path":
-        if (api.path.indexOf("{" + param.name + "}") < 0) {
-          validationErrors.push({"path": api.path, "name": param.name, "error": "invalid path"});
-        }
-        break;
-      case "query":
-        break;
-      case "body":
-        break;
-	  case "form":
-        break;
-      case "header":
-        break;
-      default:
-        validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});
-        break;
+    case "path":
+      if (api.path.indexOf("{" + param.name + "}") < 0) {
+        validationErrors.push({
+          "path": api.path,
+          "name": param.name,
+          "error": "invalid path"
+        });
+      }
+      break;
+    case "query":
+      break;
+    case "body":
+      break;
+    case "form":
+      break;
+    case "header":
+      break;
+    default:
+      validationErrors.push({
+        "path": api.path,
+        "name": param.name,
+        "error": "invalid param type " + param.paramType
+      });
+      break;
     }
-  }
+  });
 
   if (validationErrors.length > 0) {
     console.error(validationErrors);
     return;
   }
-  
+
   if (!api.operations) {
-    api.operations = []; }
+    api.operations = [];
+  }
 
   // TODO: replace if existing HTTP operation in same api path
   var op = {
-    "parameters" : spec.params,
-    "httpMethod" : spec.method,
-    "notes" : spec.notes,
-    "errorResponses" : spec.errorResponses,
-    "nickname" : spec.nickname,
-    "summary" : spec.summary,
+    "parameters": spec.params,
+    "httpMethod": spec.method,
+    "notes": spec.notes,
+    "errorResponses": spec.errorResponses,
+    "nickname": spec.nickname,
+    "summary": spec.summary,
     "consumes" : spec.consumes,
     "produces" : spec.produces
   };
-  
-	// Add custom fields.
-  for (var propertyName in spec) {
-    if (!(propertyName in op)) {
-      op[propertyName] = spec[propertyName];          
-    }
-  }
-	
+
+  // Add custom fields.
+  op = _.extend({}, spec, op);
+
   if (spec.responseClass) {
-    op.responseClass = spec.responseClass; 
-  }
-  else {
+    op.responseClass = spec.responseClass;
+  } else {
     op.responseClass = "void";
   }
   api.operations.push(op);
 
   if (!rootResource.models) {
-    rootResource.models = {}; 
+    rootResource.models = {};
   }
 }
 
@@ -599,38 +585,67 @@ function addValidator(v) {
 }
 
 // Create Error JSON by code and text
+
 function error(code, description) {
-  return {"code" : code, "reason" : description};
+  return {
+    "code": code,
+    "reason": description
+  };
 }
 
 // Stop express ressource with error code
+
 function stopWithError(res, error) {
   exports.setHeaders(res);
   if (error && error.reason && error.code)
     res.send(JSON.stringify(error), error.code);
   else
-    res.send(JSON.stringify({'reason': 'internal error', 'code': 500}), 500);
+    res.send(JSON.stringify({
+      'reason': 'internal error',
+      'code': 500
+    }), 500);
 }
 
 // Export most needed error types for easier handling
 exports.errors = {
-  'notFound': function(field, res) { 
-    if (!res) { 
-      return {"code": 404, "reason": field + ' not found'}; }
-    else { 
-      res.send({"code": 404, "reason": field + ' not found'}, 404); }
+  'notFound': function (field, res) {
+    if (!res) {
+      return {
+        "code": 404,
+        "reason": field + ' not found'
+      };
+    } else {
+      res.send({
+        "code": 404,
+        "reason": field + ' not found'
+      }, 404);
+    }
   },
-  'invalid': function(field, res) { 
-    if (!res) { 
-      return {"code": 400, "reason": 'invalid ' + field}; }
-    else { 
-      res.send({"code": 400, "reason": 'invalid ' + field}, 404); }
+  'invalid': function (field, res) {
+    if (!res) {
+      return {
+        "code": 400,
+        "reason": 'invalid ' + field
+      };
+    } else {
+      res.send({
+        "code": 400,
+        "reason": 'invalid ' + field
+      }, 404);
+    }
   },
-  'forbidden': function(res) {
-    if (!res) { 
-      return {"code": 403, "reason": 'forbidden' }; }
-    else { 
-      res.send({"code": 403, "reason": 'forbidden'}, 403); }
+  'forbidden': function (res) {
+    if (!res) {
+      return {
+        "code": 403,
+        "reason": 'forbidden'
+      };
+    } else {
+      res.send({
+        "code": 403,
+        "reason": 'forbidden'
+      }, 403);
+    }
   }
 };
 
