@@ -56,14 +56,10 @@ function configure(bp, av) {
   appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
   // update resources if already configured
 
-  for(var key in resources) {
-    if (!resources.hasOwnProperty(key)) {
-      continue;
-    }
-    var r = resources[key];
-    r.apiVersion = av;
-    r.basePath = bp;
-  }
+  _.forOwn(resources, function(resource) {
+    resource.apiVersion = av;
+    resource.basePath = bp;
+  });
 }
 
 // Convenience to set default headers in each response.
@@ -76,10 +72,8 @@ function setHeaders(res) {
 
 // creates declarations for each resource path.
 function setResourceListingPaths(app) {
-  for (var key in resources) {
-    if (!resources.hasOwnProperty(key)) {
-      continue;
-    }
+
+  _.forOwn(resources, function(resource, key) {
 
     // pet.json => api-docs.json/pet
     var path = baseApiFromPath(key);
@@ -107,7 +101,7 @@ function setResourceListingPaths(app) {
         }
       }
     });
-  }
+  });
 }
 
 function basePathFromApi(path) {
@@ -124,19 +118,13 @@ function baseApiFromPath(path) {
 // Applies a filter to an api listing.  When done, the api listing will only contain
 // methods and models that the user actually has access to.
 function filterApiListing(req, res, r) {
-  var route = req.route;
   var excludedPaths = [];
   
   if (!r || !r.apis) {
     return stopWithError(res, {'reason': 'internal error', 'code': 500});
   }
 
-  for (var key in r.apis) {
-    if (!r.apis.hasOwnProperty(key)) {
-      continue;
-    }
-    var api = r.apis[key];
-
+  _.forOwn(r.apis, function(api) {
     for (var opKey in api.operations) {
       if (!api.operations.hasOwnProperty(opKey)) {
         continue;
@@ -146,7 +134,7 @@ function filterApiListing(req, res, r) {
       if (!canAccessResource(req, path, op.httpMethod)) {
         excludedPaths.push(op.httpMethod + ":" + api.path); }
     }
-  }
+  });
 
   //  clone attributes in the resource
   var output = shallowClone(r);
@@ -157,65 +145,42 @@ function filterApiListing(req, res, r) {
   //  clone methods that user can access
   output.apis = [];
   var apis = JSON.parse(JSON.stringify(r.apis));
-  for (var i in apis) {
-    if (!apis.hasOwnProperty(i)) {
-      continue;
-    }
-    var api = apis[i];
+  _.forOwn(apis, function(api) {
     var clonedApi = shallowClone(api);
 
     clonedApi.operations = [];
-    var shouldAdd = true;
-    for (var o in api.operations) {
-      if (!api.operations.hasOwnProperty(o)) {
-        continue;
-      }
-      var operation = api.operations[o];
-      if (excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
-        break;
-      }
-      else {
+    _.forOwn(api.operations, function(operation) {
+      if (!excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
         addModelsFromBody(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
       }
-    }
+    });
     //  only add cloned api if there are operations
     if (clonedApi.operations.length > 0) {
       output.apis.push(clonedApi);
     }
-  }
+  });
 
   // add required models to output
   output.models = {};
-  for (var i in requiredModels){
-    if (!requiredModels.hasOwnProperty(i)) {
-      continue;
-    }
-    var modelName = requiredModels[i];
+  _.forOwn(requiredModels, function(modelName) {
     var model = allModels[modelName];
     if(model){
-      output.models[requiredModels[i]] = model;
+      output.models[modelName] = model;
     }
-  }
+  });
   //  look in object graph
-  for (var mkey in output.models) {
-    if (!output.models.hasOwnProperty(mkey)) {
-      continue;
-    }
-    var model = output.models[mkey];
+  _.forOwn(output.models, function(model) {
     if (model && model.properties) {
-      for (var pkey in model.properties) {
-        if (!model.properties.hasOwnProperty(pkey)) {
-          continue;
-        }
-        var t = model.properties[pkey].type;
+      _.forOwn(model.properties, function(property) {
+        var type = property.type;
 
-        switch (t) {
+        switch (type) {
         case "array":
         case "Array":
-          if (model.properties[pkey].items) {
-            var ref = model.properties[pkey].items.$ref;
+          if (property.items) {
+            var ref = property.items.$ref;
             if (ref && requiredModels.indexOf(ref) < 0) {
               requiredModels.push(ref);
             }
@@ -225,42 +190,34 @@ function filterApiListing(req, res, r) {
         case "long":
           break;
         default:
-          if (requiredModels.indexOf(t) < 0) {
-            requiredModels.push(t);
+          if (requiredModels.indexOf(type) < 0) {
+            requiredModels.push(type);
           }
           break;
         }
-      }
+      });
     }
-  }
-  for (var i in requiredModels){
-    if (!requiredModels.hasOwnProperty(i)) {
-      continue;
-    }
-    var modelName = requiredModels[i];
+  });
+  _.forOwn(requiredModels, function(modelName) {
     if(!output[modelName]) {
       var model = allModels[modelName];
       if(model){
-        output.models[requiredModels[i]] = model;
+        output.models[modelName] = model;
       }
     }
-  }
+  });
   return output;
 }
 
 // Add model to list and parse List[model] elements
 function addModelsFromBody(operation, models){
   if(operation.parameters) {
-    for(var i in operation.parameters) {
-      if (!operation.parameters.hasOwnProperty(i)) {
-        continue;
-      }
-      var param = operation.parameters[i];
+    _.forOwn(operation.parameters, function(param) {
       if(param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/,"").replace(/\]/,"");
-        models.push(param.dataType);
+        models.push(model);
       }
-    }
+    });
   }
 }
 
@@ -293,12 +250,11 @@ function shallowClone(obj) {
 // function for filtering a resource.  override this with your own implementation.
 // if consumer can access the resource, method returns true.
 function canAccessResource(req, path, httpMethod) {
-  for (var i in validators) {
-    if (!validators.hasOwnProperty(i)) {
-      continue;
-    }
-    if (!validators[i](req,path,httpMethod))
+  for (var i = 0; i < validators.length; i++) {
+	var validator = validators[i];
+    if (_.isFunction(validator) && !validator(req, path, httpMethod)) {
       return false;
+    }
   }
   return true;
 }
@@ -317,13 +273,10 @@ function resourceListing(req, res) {
     "apis" : []
   };
 
-  for (var key in resources) {
-    if (!resources.hasOwnProperty(key)) {
-      continue;
-    }
+  _.forOwn(resources, function(value, key) {
     var p = resourcePath + "/" + key.replace(formatString,"");
     r.apis.push({"path": p, "reason": "none"});
-  }
+  });
 
   exports.setHeaders(res);
   res.write(JSON.stringify(r));
@@ -337,17 +290,13 @@ function addMethod(app, callback, spec) {
 
   if (root && root.apis) {
     // this path already exists in swagger resources
-    for (var key in root.apis) {
-      if (!root.apis.hasOwnProperty(key)) {
-        continue;
-      }
-      var api = root.apis[key];
+    _.forOwn(root.apis, function(api) {
       if (api && api.path == spec.path && api.method == spec.method) {
         // add operation & return
         appendToApi(root, api, spec);
         return;
       }
-    }
+    });
   }
 
   var api = {"path" : spec.path};
@@ -408,28 +357,21 @@ function setErrorHandler(handler) {
 
 // Add swagger handlers to express 
 function addHandlers(type, handlers) {
-  for (var i = 0; i < handlers.length; i++) {
-    if (!handlers.hasOwnProperty(i)) {
-      continue;
-    }
-    var handler = handlers[i];
-    handler.spec.method = type;
-    addMethod(appHandler, handler.action, handler.spec);
-  }
+  _.forOwn(handlers, function(handler) {
+	  handler.spec.method = type;
+      addMethod(appHandler, handler.action, handler.spec);
+  });
 }
 
 // Discover swagger handler from resource
 function discover(resource) {
-  for (var key in resource) {
-    if (!resource.hasOwnProperty(key)) {
-      continue;
-    }
-    if (resource[key].spec && resource[key].spec.method && allowedMethods.indexOf(resource[key].spec.method.toLowerCase())>-1) {
-      addMethod(appHandler, resource[key].action, resource[key].spec); 
+  _.forOwn(resource, function(handler, key) {
+    if (handler.spec && handler.spec.method && allowedMethods.indexOf(handler.spec.method.toLowerCase())>-1) {
+      addMethod(appHandler, handler.action, handler.spec);
     } 
     else
       console.error('auto discover failed for: ' + key); 
-  }
+  });
 }
 
 // Discover swagger handler from resource file path
@@ -474,13 +416,9 @@ function addModels(models) {
     allModels = models;
   }
   else {
-    for(k in models) {
-      if (!models.hasOwnProperty(k)) continue;
-	  var model = models[k];
+    _.forOwn(models, function(model, key) {
 	  var required = model.required;
-	  for(var propertyKey in model.properties) {
-        if (!model.properties.hasOwnProperty(propertyKey)) continue;
-		var property = model.properties[propertyKey];
+     _.forOwn(model.properties, function(property, propertyKey) {
 		// convert enum to allowableValues
 		if (typeof property.enum !== 'undefined') {
 			property.allowableValues = {
@@ -492,9 +430,9 @@ function addModels(models) {
 		if (required && required.indexOf(propertyKey) > -1) {
 			property.required = true;
 		}
-	  }
-      allModels[k] = model;
-    }
+	  });
+      allModels[key] = model;
+    });
   }
   return this;
 }
@@ -516,11 +454,7 @@ function appendToApi(rootResource, api, spec) {
     validationErrors.push({"path": api.path, "error": "invalid nickname '" + spec.nickname + "'"});
   } 
   // validate params
-  for ( var paramKey in spec.params) {
-    if (!spec.params.hasOwnProperty(paramKey)) {
-      continue;
-    }
-    var param = spec.params[paramKey];
+  _.forOwn(spec.params, function(param) {
     if(param.allowableValues) {
       var avs = param.allowableValues.toString();
       var type = avs.split('[')[0];
@@ -552,7 +486,7 @@ function appendToApi(rootResource, api, spec) {
         validationErrors.push({"path": api.path, "name": param.name, "error": "invalid param type " + param.paramType});
         break;
     }
-  }
+  });
 
   if (validationErrors.length > 0) {
     console.error(validationErrors);
@@ -560,7 +494,8 @@ function appendToApi(rootResource, api, spec) {
   }
   
   if (!api.operations) {
-    api.operations = []; }
+    api.operations = [];
+  }
 
   // TODO: replace if existing HTTP operation in same api path
   var op = {
@@ -573,13 +508,9 @@ function appendToApi(rootResource, api, spec) {
     "consumes" : spec.consumes,
     "produces" : spec.produces
   };
-  
-	// Add custom fields.
-  for (var propertyName in spec) {
-    if (!(propertyName in op)) {
-      op[propertyName] = spec[propertyName];          
-    }
-  }
+
+  // Add custom fields.
+  op = _.extend({}, spec, op);
 	
   if (spec.responseClass) {
     op.responseClass = spec.responseClass; 
