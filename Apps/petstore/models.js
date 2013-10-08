@@ -1,4 +1,4 @@
-module.exports = {
+exports.models = {
     "Category":{
       "id":"Category",
       "properties":{
