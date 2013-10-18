@@ -293,7 +293,7 @@ function resourceListing(req, res) {
     var p = resourcePath + "/" + key.replace(formatString, "");
     r.apis.push({
       "path": p,
-      "reason": "none"
+      "description": "none"
     });
   });
 

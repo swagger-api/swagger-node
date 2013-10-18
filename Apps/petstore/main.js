@@ -47,9 +47,10 @@ swagger.addValidator(
   }
 );
 
+var models = require("./models.js");
 
 // Add models and methods to swagger
-swagger.addModels(petResources.models)
+swagger.addModels(models)
   .addGet(petResources.findByTags)
   .addGet(petResources.findByStatus)
   .addGet(petResources.findById)

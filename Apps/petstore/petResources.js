@@ -10,8 +10,6 @@ function writeResponse (res, data) {
   res.send(JSON.stringify(data));
 }
 
-exports.models = require("./models.js").models;
-
 exports.findById = {
   'spec': {
     "description" : "Operations about pets",
