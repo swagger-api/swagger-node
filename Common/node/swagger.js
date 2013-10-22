@@ -90,7 +90,7 @@ function setResourceListingPaths(app) {
 
       // this handles the request
       // api-docs.json/pet => pet.{format}
-      var r = resources[p];
+      var r = resources[p] || resources[p.replace(formatString, "")];
       if (!r) {
         console.error("unable to find listing");
         return stopWithError(res, {
