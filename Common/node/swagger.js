@@ -228,22 +228,38 @@ function addModelsFromBody(operation, models) {
     _.forOwn(operation.parameters, function (param) {
       if (param.paramType == "body" && param.dataType) {
         var model = param.dataType.replace(/^List\[/, "").replace(/\]/, "");
-        models.push(model);
+        walkObj(model, models);
       }
     });
   }
 }
 
 // Add model to list and parse List[model] elements
-
 function addModelsFromResponse(operation, models) {
   var responseModel = operation.responseClass;
   if (responseModel) {
     responseModel = responseModel.replace(/^List\[/, "").replace(/\]/, "");
     if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel);
+      walkObj(responseModel, models);
     }
   }
+}
+
+function walkObj(object, models)
+{
+    models.push(object);
+    _.forOwn(allModels[object].properties, function (param) {
+        if(param.type == 'Array' || param.type == 'array')
+        {
+            if(param.items.$ref && allModels[param.items.$ref])
+                walkObj(param.items.$ref, models);
+        }
+        else
+        {
+            if(allModels[param.type])
+                walkObj(param.type, models);
+        }
+    });
 }
 
 // clone anything but objects to avoid shared references
