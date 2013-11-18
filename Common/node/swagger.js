@@ -678,6 +678,7 @@ exports.addDELETE = addDelete;
 exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
 exports.setErrorHandler = setErrorHandler;
+exports.errorHandler = errorHandler;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.configureSwaggerPaths = configureSwaggerPaths;
