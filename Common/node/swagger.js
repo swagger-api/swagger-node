@@ -386,6 +386,13 @@ function setErrorHandler(handler) {
   errorHandler = handler;
 }
 
+// Throw an error using errorHandler
+// Throw an error form async code. Pass req and res forward from the action function
+
+function throwError(req, res, error) {
+    errorHandler(req, res, error);
+}
+
 // Add swagger handlers to express 
 
 function addHandlers(type, handlers) {
@@ -678,7 +685,7 @@ exports.addDELETE = addDelete;
 exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
 exports.setErrorHandler = setErrorHandler;
-exports.errorHandler = errorHandler;
+exports.throwError = throwError;
 exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.configureSwaggerPaths = configureSwaggerPaths;
