@@ -612,12 +612,14 @@ exports.errors = {
     if (!res) {
       return {
         "code": 404,
-        "reason": field + ' not found'
+        "reason": field + ' not found',
+        "message": "Raised if the '" + field + "' is not found."
       };
     } else {
       res.send({
         "code": 404,
-        "reason": field + ' not found'
+        "reason": field + ' not found',
+        "message": "Raised if the '" + field + "' is not found."
       }, 404);
     }
   },
@@ -625,12 +627,14 @@ exports.errors = {
     if (!res) {
       return {
         "code": 400,
-        "reason": 'invalid ' + field
+        "reason": 'invalid ' + field,
+        "message": "Raised if the '" + field + "' is invalid."
       };
     } else {
       res.send({
         "code": 400,
-        "reason": 'invalid ' + field
+        "reason": 'invalid ' + field,
+        "message": "Raised if the '" + field + "' is invalid."
       }, 404);
     }
   },
@@ -638,12 +642,14 @@ exports.errors = {
     if (!res) {
       return {
         "code": 403,
-        "reason": 'forbidden'
+        "reason": 'forbidden',
+        "message": "Raised if you are not allowed."
       };
     } else {
       res.send({
         "code": 403,
-        "reason": 'forbidden'
+        "reason": 'forbidden',
+        "message": "Raised if you are not allowed."
       }, 403);
     }
   }
