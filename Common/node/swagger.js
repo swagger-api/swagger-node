@@ -18,30 +18,33 @@ var formatString = ".{format}";
 var resourcePath = "/api-docs" + formatString;
 var jsonSuffix = ".json";
 var basePath = "/";
-var swaggerVersion = "1.1";
-var apiVersion = "0.0";
+var apiInfo = null;
+var authorizations = null;
+var swaggerVersion = "1.2";
+var apiVersion = "1.0";
 var resources = {};
 var validators = [];
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
-var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
+var allowedDataTypes = ['string', 'integer', 'boolean', 'array'];
 var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
 
 // Default error handler
 var errorHandler = function (req, res, error) {
-  if (error.code && error.reason)
+  if (error.code && error.message)
     res.send(JSON.stringify(error), error.code);
   else {
     console.error(req.method + " failed for path '" + require('url').parse(req.url).href + "': " + error);
     res.send(JSON.stringify({
-      "reason": "unknown error",
+      "message": "unknown error",
       "code": 500
     }), 500);
   }
 };
 
 function configureSwaggerPaths(format, path, suffix) {
+  if(path.indexOf("/") != 0) path = "/" + path;
   formatString = format;
   resourcePath = path;
   jsonSuffix = suffix;
@@ -57,6 +60,7 @@ function configure(bp, av) {
 
   // add the GET for resource listing
   appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
+
   // update resources if already configured
 
   _.forOwn(resources, function (resource) {
@@ -77,7 +81,6 @@ function setHeaders(res) {
 // creates declarations for each resource path.
 
 function setResourceListingPaths(app) {
-
   _.forOwn(resources, function (resource, key) {
 
     // pet.json => api-docs.json/pet
@@ -94,7 +97,7 @@ function setResourceListingPaths(app) {
       if (!r) {
         console.error("unable to find listing");
         return stopWithError(res, {
-          'reason': 'internal error',
+          'message': 'internal error',
           'code': 500
         });
       } else {
@@ -104,7 +107,7 @@ function setResourceListingPaths(app) {
         if (data.code) {
           res.send(data, data.code);
         } else {
-          res.send(JSON.stringify(filterApiListing(req, res, r)));
+          res.send(JSON.stringify(data));
         }
       }
     });
@@ -130,7 +133,7 @@ function filterApiListing(req, res, r) {
 
   if (!r || !r.apis) {
     return stopWithError(res, {
-      'reason': 'internal error',
+      'message': 'internal error',
       'code': 500
     });
   }
@@ -142,14 +145,20 @@ function filterApiListing(req, res, r) {
       }
       var op = api.operations[opKey];
       var path = api.path.replace(formatString, "").replace(/{.*\}/, "*");
-      if (!canAccessResource(req, path, op.httpMethod)) {
-        excludedPaths.push(op.httpMethod + ":" + api.path);
+      if (!canAccessResource(req, path, op.method)) {
+        excludedPaths.push(op.method + ":" + api.path);
       }
     }
   });
 
   //  clone attributes in the resource
   var output = shallowClone(r);
+
+  // clone arrays for 
+  if(r["produces"]) output.produces = r["produces"].slice(0);
+  if(r["consumes"]) output.consumes = r["consumes"].slice(0);
+  if(r["authorizations"]) output.authorizations = r["authorizations"].slice(0);
+  if(r["protocols"]) output.protocols = r["protocols"].slice(0);
 
   //  models required in the api listing
   var requiredModels = [];
@@ -162,7 +171,7 @@ function filterApiListing(req, res, r) {
 
     clonedApi.operations = [];
     _.forOwn(api.operations, function (operation) {
-      if (!excludedPaths.indexOf(operation.httpMethod + ":" + api.path) >= 0) {
+      if (excludedPaths.indexOf(operation.method + ":" + api.path) == -1) {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
         addModelsFromBody(operation, requiredModels);
         addModelsFromResponse(operation, requiredModels);
@@ -182,30 +191,37 @@ function filterApiListing(req, res, r) {
       output.models[modelName] = model;
     }
   });
+
   //  look in object graph
   _.forOwn(output.models, function (model) {
     if (model && model.properties) {
       _.forOwn(model.properties, function (property) {
-        var type = property.type;
+        var type = property["type"];
 
-        switch (type) {
-        case "array":
-        case "Array":
-          if (property.items) {
-            var ref = property.items.$ref;
-            if (ref && requiredModels.indexOf(ref) < 0) {
-              requiredModels.push(ref);
+        if(type) {
+          switch (type) {
+          case "array":
+            if (property.items) {
+              var ref = property.items.$ref;
+              if (ref && requiredModels.indexOf(ref) < 0) {
+                requiredModels.push(ref);
+              }
             }
+            break;
+          case "string":
+          case "integer":
+            break;
+          default:
+            if (requiredModels.indexOf(type) < 0) {
+              requiredModels.push(type);
+            }
+            break;
           }
-          break;
-        case "string":
-        case "long":
-          break;
-        default:
-          if (requiredModels.indexOf(type) < 0) {
-            requiredModels.push(type);
+        }
+        else {
+          if (property["$ref"]){
+            requiredModels.push(property["$ref"]);
           }
-          break;
         }
       });
     }
@@ -218,6 +234,7 @@ function filterApiListing(req, res, r) {
       }
     }
   });
+
   return output;
 }
 
@@ -226,8 +243,8 @@ function filterApiListing(req, res, r) {
 function addModelsFromBody(operation, models) {
   if (operation.parameters) {
     _.forOwn(operation.parameters, function (param) {
-      if (param.paramType == "body" && param.dataType) {
-        var model = param.dataType.replace(/^List\[/, "").replace(/\]/, "");
+      if (param.paramType == "body" && param.type) {
+        var model = param.type.replace(/^List\[/, "").replace(/\]/, "");
         models.push(model);
       }
     });
@@ -237,17 +254,23 @@ function addModelsFromBody(operation, models) {
 // Add model to list and parse List[model] elements
 
 function addModelsFromResponse(operation, models) {
-  var responseModel = operation.responseClass;
-  if (responseModel) {
-    responseModel = responseModel.replace(/^List\[/, "").replace(/\]/, "");
-    if (models.indexOf(responseModel) < 0) {
-      models.push(responseModel);
+  var responseModel = operation.type;
+  if(responseModel === "array" && operation.items) {
+    var items = operation.items;
+    if(items["$ref"]) {
+      models.push(items["$ref"]);
     }
+    else if (items.type && allowedDataTypes.indexOf(items.type) == -1) {
+      models.push(items["type"]);
+    }
+  }
+  // if not void or a json-schema type, add the model
+  else if (responseModel != "void" && allowedDataTypes.indexOf(responseModel) == -1) {
+    models.push(responseModel);
   }
 }
 
 // clone anything but objects to avoid shared references
-
 function shallowClone(obj) {
   var cloned = {};
   for (var i in obj) {
@@ -264,10 +287,10 @@ function shallowClone(obj) {
 // function for filtering a resource.  override this with your own implementation.
 // if consumer can access the resource, method returns true.
 
-function canAccessResource(req, path, httpMethod) {
+function canAccessResource(req, path, method) {
   for (var i = 0; i < validators.length; i++) {
     var validator = validators[i];
-    if (_.isFunction(validator) && !validator(req, path, httpMethod)) {
+    if (_.isFunction(validator) && !validator(req, path, method)) {
       return false;
     }
   }
@@ -285,15 +308,20 @@ function resourceListing(req, res) {
   var r = {
     "apiVersion": apiVersion,
     "swaggerVersion": swaggerVersion,
-    "basePath": basePath,
     "apis": []
   };
 
+  if(authorizations != null)
+    r["authorizations"] = authorizations;
+
+  if(apiInfo != null)
+    r["info"] = apiInfo;
+
   _.forOwn(resources, function (value, key) {
-    var p = resourcePath + "/" + key.replace(formatString, "");
+    var p = "/" + key.replace(formatString, "");
     r.apis.push({
       "path": p,
-      "description": "none"
+      "description": value.description
     });
   });
 
@@ -352,7 +380,7 @@ function addMethod(app, callback, spec) {
       var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, req.method)) {
         res.send(JSON.stringify({
-          "reason": "forbidden",
+          "message": "forbidden",
           "code": 403
         }), 403);
       } else {
@@ -455,20 +483,6 @@ function addModels(models) {
     allModels = models;
   } else {
     _.forOwn(models, function (model, key) {
-      var required = model.required;
-      _.forOwn(model.properties, function (property, propertyKey) {
-        // convert enum to allowableValues
-        if (typeof property.enum !== 'undefined') {
-          property.allowableValues = {
-            "valueType": "LIST",
-            "values": property.enum
-          }
-        }
-        // convert existence in v4 required array to required attribute
-        if (required && required.indexOf(propertyKey) > -1) {
-          property.required = true;
-        }
-      });
       allModels[key] = model;
     });
   }
@@ -482,10 +496,6 @@ function wrap(callback, req, resp) {
 // appends a spec to an existing operation
 
 function appendToApi(rootResource, api, spec) {
-
-  if (!api.description) {
-    api.description = spec.description;
-  }
   var validationErrors = [];
 
   if (!spec.nickname || spec.nickname.indexOf(" ") >= 0) {
@@ -496,32 +506,14 @@ function appendToApi(rootResource, api, spec) {
     });
   }
   // validate params
-  _.forOwn(spec.params, function (param) {
-    if (param.allowableValues) {
-      var avs = param.allowableValues.toString();
-      var type = avs.split('[')[0];
-      if (type == 'LIST') {
-        var values = avs.match(/\[(.*)\]/g).toString().replace('\[', '').replace('\]', '').split(',');
-        param.allowableValues = {
-          valueType: type,
-          values: values
-        };
-      } else if (type == 'RANGE') {
-        var values = avs.match(/\[(.*)\]/g).toString().replace('\[', '').replace('\]', '').split(',');
-        param.allowableValues = {
-          valueType: type,
-          min: values[0],
-          max: values[1]
-        };
-      }
-    }
+  _.forOwn(spec.parameters, function (parameter) {
 
-    switch (param.paramType) {
+    switch (parameter.paramType) {
     case "path":
-      if (api.path.indexOf("{" + param.name + "}") < 0) {
+      if (api.path.indexOf("{" + parameter.name + "}") < 0) {
         validationErrors.push({
           "path": api.path,
-          "name": param.name,
+          "name": parameter.name,
           "error": "invalid path"
         });
       }
@@ -537,8 +529,8 @@ function appendToApi(rootResource, api, spec) {
     default:
       validationErrors.push({
         "path": api.path,
-        "name": param.name,
-        "error": "invalid param type " + param.paramType
+        "name": parameter.name,
+        "error": "invalid param type " + parameter.paramType
       });
       break;
     }
@@ -555,10 +547,10 @@ function appendToApi(rootResource, api, spec) {
 
   // TODO: replace if existing HTTP operation in same api path
   var op = {
-    "parameters": spec.params,
-    "httpMethod": spec.method,
+    "parameters": spec.parameters,
+    "method": spec.method,
     "notes": spec.notes,
-    "errorResponses": spec.errorResponses,
+    "responseMessages": spec.responseMessages,
     "nickname": spec.nickname,
     "summary": spec.summary,
     "consumes" : spec.consumes,
@@ -568,10 +560,8 @@ function appendToApi(rootResource, api, spec) {
   // Add custom fields.
   op = _.extend({}, spec, op);
 
-  if (spec.responseClass) {
-    op.responseClass = spec.responseClass;
-  } else {
-    op.responseClass = "void";
+  if (!spec.type) {
+    op.type = "void";
   }
   api.operations.push(op);
 
@@ -589,7 +579,7 @@ function addValidator(v) {
 function error(code, description) {
   return {
     "code": code,
-    "reason": description
+    "message": description
   };
 }
 
@@ -597,13 +587,21 @@ function error(code, description) {
 
 function stopWithError(res, error) {
   exports.setHeaders(res);
-  if (error && error.reason && error.code)
+  if (error && error.message && error.code)
     res.send(JSON.stringify(error), error.code);
   else
     res.send(JSON.stringify({
-      'reason': 'internal error',
+      'message': 'internal error',
       'code': 500
     }), 500);
+}
+
+function setApiInfo(data) {
+  apiInfo = data;
+}
+
+function setAuthorizations(data) {
+  authorizations = data;
 }
 
 // Export most needed error types for easier handling
@@ -612,12 +610,12 @@ exports.errors = {
     if (!res) {
       return {
         "code": 404,
-        "reason": field + ' not found'
+        "message": field + ' not found'
       };
     } else {
       res.send({
         "code": 404,
-        "reason": field + ' not found'
+        "message": field + ' not found'
       }, 404);
     }
   },
@@ -625,12 +623,12 @@ exports.errors = {
     if (!res) {
       return {
         "code": 400,
-        "reason": 'invalid ' + field
+        "message": 'invalid ' + field
       };
     } else {
       res.send({
         "code": 400,
-        "reason": 'invalid ' + field
+        "message": 'invalid ' + field
       }, 404);
     }
   },
@@ -638,16 +636,38 @@ exports.errors = {
     if (!res) {
       return {
         "code": 403,
-        "reason": 'forbidden'
+        "message": 'forbidden'
       };
     } else {
       res.send({
         "code": 403,
-        "reason": 'forbidden'
+        "message": 'forbidden'
       }, 403);
     }
   }
 };
+
+function configureDeclaration(resourceName, obj) {
+  if(resources[resourceName]) {
+    var resource = resources[resourceName];
+
+    if(obj["description"]) {
+      resource["description"] = obj["description"];
+    }
+    if(obj["consumes"]) {
+      resource["consumes"] = obj["consumes"];
+    }
+    if(obj["produces"]) {
+      resource["produces"] = obj["produces"];
+    }
+    if(obj["protocols"]) {
+      resource["protocols"] = obj["protocols"];
+    }
+    if(obj["authorizations"]) {
+      resource["authorizations"] = obj["authorizations"];
+    }
+  }
+}
 
 exports.params = params;
 exports.queryParam = exports.params.query;
@@ -683,3 +703,6 @@ exports.discover = discover;
 exports.discoverFile = discoverFile;
 exports.configureSwaggerPaths = configureSwaggerPaths;
 exports.setHeaders = setHeaders;
+exports.setApiInfo = setApiInfo;
+exports.setAuthorizations = setAuthorizations;
+exports.configureDeclaration = configureDeclaration;

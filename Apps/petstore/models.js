@@ -1,62 +1,77 @@
 module.exports = {
     "Category":{
       "id":"Category",
+      "required": ["id", "name"],
       "properties":{
         "id":{
-          "type":"long"
+          "type":"integer",
+          "format": "int64",
+          "description": "Category unique identifier",
+          "minimum": "0.0",
+          "maximum": "100.0"
         },
         "name":{
-          "type":"string"
+          "type":"string",
+          "description": "Name of the category"
         }
       }
     },
     "Pet":{
       "id":"Pet",
+      "required": ["id", "name"],
       "properties":{
-        "tags":{
-          "items":{
-            "$ref":"Tag"
-          },
-          "type":"Array"
-        },
         "id":{
-          "type":"long"
+          "type":"integer",
+          "format":"int64",
+          "description": "Unique identifier for the Pet",
+          "minimum": "0.0",
+          "maximum": "100.0"
         },
         "category":{
-          "type":"Category"
-        },
-        "status":{
-          "allowableValues":{
-            "valueType":"LIST",
-            "values":[
-              "available",
-              "pending",
-              "sold"
-            ],
-            "valueType":"LIST"
-          },
-          "description":"pet status in the store",
-          "type":"string"
+          "$ref":"Category",
+          "description": "Category the pet is in"
         },
         "name":{
-          "type":"string"
+          "type":"string",
+          "description": "Friendly name of the pet"
         },
         "photoUrls":{
+          "type":"array",
+          "description": "Image URLs",
           "items":{
             "type":"string"
-          },
-          "type":"Array"
+          }
+        },
+        "tags":{
+          "type":"array",
+          "description": "Tags assigned to this pet",
+          "items":{
+            "$ref":"Tag"
+          }
+        },
+        "status":{
+          "type":"string",
+          "description":"pet status in the store",
+          "enum":[
+            "available",
+            "pending",
+            "sold"
+          ]
         }
       }
     },
     "Tag":{
       "id":"Tag",
+      "required": ["id"],
       "properties":{
         "id":{
-          "type":"long"
+          "type":"integer",
+          "format":"int64",
+          "description": "Unique identifier for the tag"
         },
         "name":{
-          "type":"string"
+          "type":"string",
+          "description":"Friendly name for the tag"
         }
       }
     }

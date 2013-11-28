@@ -1,11 +1,17 @@
 {
   "name": "swagger-node-express",
-  "version": "1.3.2",
+  "version": "2.0.0",
   "author": {
     "name": "Tony Tam",
     "email": "fehguy@gmail.com",
     "url": "http://developer.wordnik.com"
   },
+  "contributors": [ 
+    {
+      "name": "Pauh Hill",
+      "email": "phill@kixeye.com"
+    }
+  ],
   "description": "Wordnik swagger implementation for the express framework",
   "repository": {
     "type": "git",

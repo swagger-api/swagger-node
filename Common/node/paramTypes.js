@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-exports.query = exports.q = function(name, description, dataType, required, allowMultiple, allowableValues, defaultValue) {
+exports.query = exports.q = function(name, description, type, required, allowMultiple, allowableValues, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : required,
     "allowMultiple" : allowMultiple,
     "allowableValues" : allowableValues,
@@ -27,11 +27,11 @@ exports.query = exports.q = function(name, description, dataType, required, allo
   };
 };
 
-exports.path = function(name, description, dataType, allowableValues, defaultValue) {
+exports.path = function(name, description, type, allowableValues, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : true,
     "allowMultiple" : false,
     "allowableValues" : allowableValues,
@@ -41,11 +41,11 @@ exports.path = function(name, description, dataType, allowableValues, defaultVal
   };
 };
 
-exports.body = function(name, description, dataType, defaultValue) {
+exports.body = function(name, description, type, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : true,
     "allowMultiple" : false,
     "paramType" : "body",
@@ -53,11 +53,11 @@ exports.body = function(name, description, dataType, defaultValue) {
   };
 };
 
-exports.form = function(name, description, dataType, defaultValue) {
+exports.form = function(name, description, type, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : "string",
+    "type" : "string",
     "required" : true,
     "allowMultiple" : false,
     "paramType" : "form",
@@ -65,11 +65,11 @@ exports.form = function(name, description, dataType, defaultValue) {
   };
 };
 
-exports.header = function(name, description, dataType, required) {
+exports.header = function(name, description, type, required) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : required,
     "allowMultiple" : false,
     "paramType" : "header"
