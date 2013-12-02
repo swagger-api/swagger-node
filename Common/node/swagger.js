@@ -22,6 +22,7 @@ var swaggerVersion = "1.1";
 var apiVersion = "0.0";
 var resources = {};
 var validators = [];
+var interceptors = [];
 var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
@@ -345,7 +346,7 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod) > -1) {
-    app[currentMethod](fullPath, function (req, res) {
+    app[currentMethod](fullPath, interceptors, function (req, res) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
@@ -584,6 +585,15 @@ function addValidator(v) {
   validators.push(v);
 }
 
+/**
+ * Intercept all route access in express classic way
+ *
+ * @param express route callback
+ */
+function addInterceptor(interceptor) {
+    interceptors.push(interceptor);
+}
+
 // Create Error JSON by code and text
 
 function error(code, description) {
@@ -660,6 +670,7 @@ exports.error = error;
 exports.stopWithError = stopWithError;
 exports.stop = stopWithError;
 exports.addValidator = addValidator;
+exports.addInterceptor = addInterceptor;
 exports.configure = configure;
 exports.canAccessResource = canAccessResource;
 exports.resourcePath = resourcePath;
