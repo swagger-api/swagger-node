@@ -345,7 +345,7 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod) > -1) {
-    app[currentMethod](fullPath, function (req, res) {
+    app[currentMethod](fullPath, function (req, res, next) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
@@ -357,7 +357,7 @@ function addMethod(app, callback, spec) {
         }), 403);
       } else {
         try {
-          callback(req, res);
+          callback(req, res, next);
         } catch (error) {
           if (typeof errorHandler === "function") {
             errorHandler(req, res, error);
