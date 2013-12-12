@@ -42,7 +42,7 @@ exports.findByStatus = {
     summary : "Find pets by status",
     method: "GET",    
     parameters : [
-      param.query("status", "Status in the store", "string", true, true, "LIST[available,pending,sold]", "available")
+      param.query("status", "Status in the store", "string", true, ["available","pending","sold"], "available")
     ],
     type : "array",
     items: {
@@ -67,7 +67,7 @@ exports.findByTags = {
     notes : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
     summary : "Find pets by tags",
     method: "GET",    
-    parameters : [param.query("tags", "Tags to filter by", "string", true, true)],
+    parameters : [param.query("tags", "Tags to filter by", "string", true)],
     type : "array",
     items: {
       $ref: "Pet"

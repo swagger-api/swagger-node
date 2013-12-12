@@ -14,30 +14,27 @@
  *  limitations under the License.
  */
 
-exports.query = exports.q = function(name, description, type, required, allowMultiple, allowableValues, defaultValue) {
+exports.query = exports.q = function(name, description, type, required, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
     "type" : type,
     "required" : required,
-    "allowMultiple" : allowMultiple,
-    "allowableValues" : allowableValues,
+    "enum" : allowableValuesEnum,
     "defaultValue" : defaultValue,
     "paramType" : "query"
   };
 };
 
-exports.path = function(name, description, type, allowableValues, defaultValue) {
+exports.path = function(name, description, type, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
     "type" : type,
     "required" : true,
-    "allowMultiple" : false,
-    "allowableValues" : allowableValues,
+    "enum" : allowableValuesEnum,
     "paramType" : "path",
     "defaultValue" : defaultValue
-
   };
 };
 
@@ -47,19 +44,18 @@ exports.body = function(name, description, type, defaultValue) {
     "description" : description,
     "type" : type,
     "required" : true,
-    "allowMultiple" : false,
     "paramType" : "body",
     "defaultValue" : defaultValue
   };
 };
 
-exports.form = function(name, description, type, defaultValue) {
+exports.form = function(name, description, type, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
     "type" : "string",
     "required" : true,
-    "allowMultiple" : false,
+    "enum" : allowableValuesEnum,
     "paramType" : "form",
     "defaultValue" : defaultValue
   };

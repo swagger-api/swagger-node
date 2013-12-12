@@ -66,8 +66,8 @@ var findById = {
     "notes" : "Returns a pet based on ID",
     "summary" : "Find pet by ID",
     "method": "GET",
-    "params" : [swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")],
-    "responseClass" : "Pet",
+    "parameters" : [swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")],
+    "type" : "Pet",
     "errorResponses" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
     "nickname" : "getPetById"
   },
@@ -139,7 +139,7 @@ app.use("/v1", subpath);
 swagger.setAppHandler(subpath);
 ```
 
-Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs.json`).
+Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
 
 #### Allows-origin and special headers
 
