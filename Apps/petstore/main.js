@@ -23,7 +23,8 @@ var express = require("express")
 var petResources = require("./petResources.js");
 
 var app = express();
-app.use(express.bodyParser());
+app.use(express.json());
+app.use(express.urlencoded());
 
 // Set the main handler in swagger to the express app
 swagger.setAppHandler(app);
