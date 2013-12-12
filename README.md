@@ -18,7 +18,8 @@ var express = require("express")
  , swagger = require("swagger-node-express");
 
 var app = express();
-app.use(express.bodyParser());
+app.use(express.json());
+app.use(express.urlencoded());
 
 swagger.setAppHandler(app);
 ```
@@ -133,7 +134,8 @@ To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you
 var app = express();
 var subpath = express();
 
-app.use(express.bodyParser());
+app.use(express.json());
+app.use(express.urlencoded());
 app.use("/v1", subpath);
 
 swagger.setAppHandler(subpath);
