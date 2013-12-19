@@ -324,7 +324,7 @@ function addMethod(app, callback, spec) {
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     if(currentMethod == 'delete') currentMethod = 'del';
-    app[currentMethod](fullPath, function(req,res, next) {
+    app[currentMethod](fullPath, function swaggerAddMethod(req,res, next) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
