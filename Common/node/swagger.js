@@ -228,7 +228,13 @@ function addModelsFromPost(operation, models){
       models.push(responseModel); 
     }
   }
+  if( operation.otherModels ) {
+    ( operation.otherModels ).forEach( function addModelIfNotExists( model ) {
+      if( this.indexOf( model ) < 0 ) this.push( model );
+    }, models );
+  }
 }
+
 
 
 // Add model to list and parse List[model] elements
@@ -239,6 +245,12 @@ function addModelsFromResponse(operation, models){
     if (models.indexOf(responseModel) < 0) {
       models.push(responseModel); 
     }
+  }
+
+  if( operation.otherModels ) {
+    ( operation.otherModels ).forEach( function addModelIfNotExists( model ) {
+      if( this.indexOf( model ) < 0 ) this.push( model );
+    }, models );
   }
 }
 
@@ -324,7 +336,7 @@ function addMethod(app, callback, spec) {
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod)>-1) {
     if(currentMethod == 'delete') currentMethod = 'del';
-    app[currentMethod](fullPath, function(req,res, next) {
+    app[currentMethod](fullPath, function swaggerAddMethod(req,res, next) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
@@ -479,7 +491,7 @@ function appendToApi(rootResource, api, spec) {
     "notes" : spec.notes,
     "errorResponses" : spec.errorResponses,
     "nickname" : spec.nickname,
-    "summary" : spec.summary
+    "summary" : spec.summary,
   };
   
   if (spec.responseClass) {
@@ -489,6 +501,9 @@ function appendToApi(rootResource, api, spec) {
     op.responseClass = "void";
   }
   api.operations.push(op);
+  
+  if( spec.otherModels )
+    op.otherModels = spec.otherModels;
 
   if (!rootResource.models) {
     rootResource.models = {}; 
