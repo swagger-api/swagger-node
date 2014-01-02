@@ -332,7 +332,11 @@ function resourceListing(req, res) {
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
 
-function addMethod(app, callback, spec) {
+function addMethod(app, handler) {
+  var callback = handler.action;
+  var spec = handler.spec;
+  var middleware = handler.middleware || [];
+  var middleware = _.isArray(middleware) ? middleware : [middleware];
   var apiRootPath = spec.path.split(/[\/\(]/)[1];
   var root = resources[apiRootPath];
 
@@ -373,7 +377,7 @@ function addMethod(app, callback, spec) {
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod) > -1) {
-    app[currentMethod](fullPath, function (req, res, next) {
+    app[currentMethod].apply(app, [fullPath].concat(middleware).concat(function (req, res, next) {
       exports.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
@@ -394,7 +398,7 @@ function addMethod(app, callback, spec) {
           }
         }
       }
-    });
+    }));
   } else {
     console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');
     return;
@@ -419,7 +423,7 @@ function setErrorHandler(handler) {
 function addHandlers(type, handlers) {
   _.forOwn(handlers, function (handler) {
     handler.spec.method = type;
-    addMethod(appHandler, handler.action, handler.spec);
+    addMethod(appHandler, handler);
   });
 }
 
@@ -428,7 +432,7 @@ function addHandlers(type, handlers) {
 function discover(resource) {
   _.forOwn(resource, function (handler, key) {
     if (handler.spec && handler.spec.method && allowedMethods.indexOf(handler.spec.method.toLowerCase()) > -1) {
-      addMethod(appHandler, handler.action, handler.spec);
+      addMethod(appHandler, handler);
     } else
       console.error('auto discover failed for: ' + key);
   });
