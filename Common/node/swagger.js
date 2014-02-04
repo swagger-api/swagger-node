@@ -676,6 +676,7 @@ exports.queryParam = exports.params.query;
 exports.pathParam = exports.params.path;
 exports.bodyParam = exports.params.body;
 exports.formParam = exports.params.form;
+exports.headerParam = exports.params.header;
 exports.getModels = allModels;
 
 exports.error = error;
