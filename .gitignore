@@ -40,4 +40,8 @@ Thumbs.db
 # Project Specific #
 ####################
 node_modules/
-swagger-ui/
+
+# IDE #
+#######
+*.iml
+.idea

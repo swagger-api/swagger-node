@@ -10,19 +10,19 @@ function writeResponse (res, data) {
   res.send(JSON.stringify(data));
 }
 
-exports.models = require("./models.js").models;
-
+// the description will be picked up in the resource listing
 exports.findById = {
   'spec': {
-    "description" : "Operations about pets",
-    "path" : "/pet.{format}/{petId}",
-    "notes" : "Returns a pet based on ID",
-    "summary" : "Find pet by ID",
-    "method": "GET",
-    "params" : [param.path("petId", "ID of pet that needs to be fetched", "string")],
-    "responseClass" : "Pet",
-    "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
-    "nickname" : "getPetById"
+    description : "Operations about pets",  
+    path : "/pet/{petId}",
+    method: "GET",
+    summary : "Find pet by ID",
+    notes : "Returns a pet based on ID",
+    type : "Pet",
+    nickname : "getPetById",
+    produces : ["application/json"],
+    parameters : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    responseMessages : [swe.invalid('id'), swe.notFound('pet')]
   },
   'action': function (req,res) {
     if (!req.params.petId) {
@@ -37,17 +37,19 @@ exports.findById = {
 
 exports.findByStatus = {
   'spec': {
-    "description" : "Operations about pets",  
-    "path" : "/pet.{format}/findByStatus",
-    "notes" : "Multiple status values can be provided with comma-separated strings",
-    "summary" : "Find pets by status",
-    "method": "GET",    
-    "params" : [
-      param.query("status", "Status in the store", "string", true, true, "LIST[available,pending,sold]", "available")
+    path : "/pet/findByStatus",
+    notes : "Multiple status values can be provided with comma-separated strings",
+    summary : "Find pets by status",
+    method: "GET",    
+    parameters : [
+      param.query("status", "Status in the store", "string", true, ["available","pending","sold"], "available")
     ],
-    "responseClass" : "List[Pet]",
-    "errorResponses" : [swe.invalid('status')],
-    "nickname" : "findPetsByStatus"
+    type : "array",
+    items: {
+      $ref: "Pet"
+    },
+    responseMessages : [swe.invalid('status')],
+    nickname : "findPetsByStatus"
   },  
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
@@ -61,14 +63,17 @@ exports.findByStatus = {
 
 exports.findByTags = {
   'spec': {
-    "path" : "/pet.{format}/findByTags",
-    "notes" : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
-    "summary" : "Find pets by tags",
-    "method": "GET",    
-    "params" : [param.query("tags", "Tags to filter by", "string", true, true)],
-    "responseClass" : "List[Pet]",
-    "errorResponses" : [swe.invalid('tag')],
-    "nickname" : "findPetsByTags"
+    path : "/pet/findByTags",
+    notes : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
+    summary : "Find pets by tags",
+    method: "GET",    
+    parameters : [param.query("tags", "Tags to filter by", "string", true)],
+    type : "array",
+    items: {
+      $ref: "Pet"
+    },
+    responseMessages : [swe.invalid('tag')],
+    nickname : "findPetsByTags"
   },
   'action': function (req,res) {
     var tagsString = url.parse(req.url,true).query["tags"];
@@ -81,13 +86,13 @@ exports.findByTags = {
 
 exports.addPet = {
   'spec': {
-    "path" : "/pet.{format}",
-    "notes" : "adds a pet to the store",
-    "summary" : "Add a new pet to the store",
-    "method": "POST",
-    "params" : [param.body("Pet", "Pet object that needs to be added to the store", "Pet")],
-    "errorResponses" : [swe.invalid('input')],
-    "nickname" : "addPet"
+    path : "/pet",
+    notes : "adds a pet to the store",
+    summary : "Add a new pet to the store",
+    method: "POST",
+    parameters : [param.body("Pet", "Pet object that needs to be added to the store", "Pet")],
+    responseMessages : [swe.invalid('input')],
+    nickname : "addPet"
   },  
   'action': function(req, res) {
     var body = req.body;
@@ -103,13 +108,13 @@ exports.addPet = {
 
 exports.updatePet = {
   'spec': {
-    "path" : "/pet.{format}",
-    "notes" : "updates a pet in the store",
-    "method": "PUT",    
-    "summary" : "Update an existing pet",
-    "params" : [param.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
-    "errorResponses" : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
-    "nickname" : "addPet"
+    path : "/pet",
+    notes : "updates a pet in the store",
+    method: "PUT",    
+    summary : "Update an existing pet",
+    parameters : [param.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
+    responseMessages : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
+    nickname : "addPet"
   },  
   'action': function(req, res) {
     var body = req.body;
@@ -125,17 +130,17 @@ exports.updatePet = {
 
 exports.deletePet = {
   'spec': {
-    "path" : "/pet.{format}/{id}",
-    "notes" : "removes a pet from the store",
-    "method": "DELETE",
-    "summary" : "Remove an existing pet",
-    "params" : [param.path("id", "ID of pet that needs to be removed", "string")],
-    "errorResponses" : [swe.invalid('id'), swe.notFound('pet')],
-    "nickname" : "deletePet" 
+    path : "/pet/{id}",
+    notes : "removes a pet from the store",
+    method: "DELETE",
+    summary : "Remove an existing pet",
+    parameters : [param.path("id", "ID of pet that needs to be removed", "string")],
+    responseMessages : [swe.invalid('id'), swe.notFound('pet')],
+    nickname : "deletePet" 
   },  
   'action': function(req, res) {
     var id = parseInt(req.params.id);
     petData.deletePet(id)
-    res.send(200);
+    res.send(204);
   }
 };
