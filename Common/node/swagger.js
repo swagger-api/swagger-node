@@ -33,13 +33,13 @@ var allModels = {};
 // Default error handler
 var errorHandler = function (req, res, error) {
   if (error.code && error.message)
-    res.send(error, error.code);
+    res.send(error.code, error);
   else {
     console.error(req.method + " failed for path '" + require('url').parse(req.url).href + "': " + error);
-    res.send({
+    res.send(500, {
       "message": "unknown error",
       "code": 500
-    }, 500);
+    });
   }
 };
 
@@ -105,7 +105,7 @@ function setResourceListingPaths(app) {
         var data = filterApiListing(req, res, r);
         data.basePath = basePath;
         if (data.code) {
-          res.send(data, data.code);
+          res.send(data.code, data);
         } else {
           res.send(data);
         }
@@ -392,10 +392,10 @@ function addMethod(app, callback, spec) {
       // todo: needs to do smarter matching against the defined paths
       var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
       if (!canAccessResource(req, path, req.method)) {
-        res.send({
+        res.send(403, {
           "message": "forbidden",
           "code": 403
-        }, 403);
+        });
       } else {
         try {
           callback(req, res, next);
@@ -604,12 +604,12 @@ function error(code, description) {
 function stopWithError(res, error) {
   exports.setHeaders(res);
   if (error && error.message && error.code)
-    res.send(error, error.code);
+    res.send(error.code, error);
   else
-    res.send({
+    res.send(500, {
       'message': 'internal error',
       'code': 500
-    }, 500);
+    });
 }
 
 function setApiInfo(data) {
@@ -629,10 +629,10 @@ exports.errors = {
         "message": field + ' not found'
       };
     } else {
-      res.send({
+      res.send(404, {
         "code": 404,
         "message": field + ' not found'
-      }, 404);
+      });
     }
   },
   'invalid': function (field, res) {
@@ -642,10 +642,10 @@ exports.errors = {
         "message": 'invalid ' + field
       };
     } else {
-      res.send({
+      res.send(400, {
         "code": 400,
         "message": 'invalid ' + field
-      }, 404);
+      });
     }
   },
   'forbidden': function (res) {
@@ -655,10 +655,10 @@ exports.errors = {
         "message": 'forbidden'
       };
     } else {
-      res.send({
+      res.send(403, {
         "code": 403,
         "message": 'forbidden'
-      }, 403);
+      });
     }
   }
 };
