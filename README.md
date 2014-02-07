@@ -143,16 +143,39 @@ swagger.setAppHandler(subpath);
 
 Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
 
-#### Allows-origin and special headers
+#### Allows special headers
 
 If you want to modify the default headers sent with every swagger-managed method, you can do so as follows:
 
 ```js
 swagger.setHeaders = function setHeaders(res) {
-  res.header('Access-Control-Allow-Origin', "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
   res.header("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
   res.header("Content-Type", "application/json; charset=utf-8");
 };
 ```
 If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
+
+#### Enabling cors support using cors library
+
+To enable cors support using cors express npm module (https://npmjs.org/package/cors) add the following to your app.
+
+```js
+var cors = require('cors');
+
+var corsOptions = {
+    credentials: true,
+    origin: function(origin,callback) {
+        if(origin===undefined) {
+            callback(null,false);
+        } else {
+            // change wordnik.com to your allowed domain.
+            var match = origin.match("^(.*)?.wordnik.com(\:[0-9]+)?");
+            var allowed = (match!==null && match.length > 0);
+            callback(null,allowed);
+        }
+    }
+};
+
+app.use(cors(corsOptions));
+
+```
