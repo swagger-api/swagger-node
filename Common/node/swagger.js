@@ -72,8 +72,6 @@ function configure(bp, av) {
 // Convenience to set default headers in each response.
 
 function setHeaders(res) {
-  res.header('Access-Control-Allow-Origin', "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, api_key");
   res.header("Content-Type", "application/json; charset=utf-8");
 }
