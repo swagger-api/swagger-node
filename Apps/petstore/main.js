@@ -23,7 +23,8 @@ var express = require("express")
 var petResources = require("./petResources.js");
 
 var app = express();
-app.use(express.bodyParser());
+app.use(express.json());
+app.use(express.urlencoded());
 
 // Set the main handler in swagger to the express app
 swagger.setAppHandler(app);
@@ -47,21 +48,46 @@ swagger.addValidator(
   }
 );
 
+var models = require("./models.js");
 
 // Add models and methods to swagger
-swagger.addModels(petResources.models)
+swagger.addModels(models)
+  .addGet(petResources.findById)
   .addGet(petResources.findByTags)
   .addGet(petResources.findByStatus)
-  .addGet(petResources.findById)
   .addPost(petResources.addPet)
   .addPut(petResources.updatePet)
   .addDelete(petResources.deletePet);
 
+swagger.configureDeclaration("pet", {
+  description : "Operations about Pets",
+  authorizations : ["oauth2"],
+  produces: ["application/json"]
+});
+
+// set api info
+swagger.setApiInfo({
+  title: "Swagger Sample App",
+  description: "This is a sample server Petstore server. You can find out more about Swagger at <a href=\"http://swagger.wordnik.com\">http://swagger.wordnik.com</a> or on irc.freenode.net, #swagger.  For this sample, you can use the api key \"special-key\" to test the authorization filters",
+  termsOfServiceUrl: "http://helloreverb.com/terms/",
+  contact: "apiteam@wordnik.com",
+  license: "Apache 2.0",
+  licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.html"
+});
+
+swagger.setAuthorizations({
+  apiKey: {
+    type: "apiKey",
+    passAs: "header"
+  }
+});
+
 // Configures the app's base path and api version.
-swagger.configure("http://localhost:8002", "0.1");
+swagger.configureSwaggerPaths("", "api-docs", "")
+swagger.configure("http://localhost:8002", "1.0.0");
 
 // Serve up swagger ui at /docs via static route
-var docs_handler = express.static(__dirname + '/../../swagger-ui-1.1.13/');
+var docs_handler = express.static(__dirname + '/../../swagger-ui/');
 app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   if (req.url === '/docs') { // express static barfs on root url w/o trailing slash
     res.writeHead(302, { 'Location' : req.url + '/' });

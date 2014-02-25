@@ -14,50 +14,58 @@
  *  limitations under the License.
  */
 
-exports.query = exports.q = function(name, description, dataType, required, allowMultiple, allowableValues, defaultValue) {
+exports.query = exports.q = function(name, description, type, required, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : required,
-    "allowMultiple" : allowMultiple,
-    "allowableValues" : allowableValues,
+    "enum" : allowableValuesEnum,
     "defaultValue" : defaultValue,
     "paramType" : "query"
   };
 };
 
-exports.path = function(name, description, dataType, allowableValues, defaultValue) {
+exports.path = function(name, description, type, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : true,
-    "allowMultiple" : false,
-    "allowableValues" : allowableValues,
+    "enum" : allowableValuesEnum,
     "paramType" : "path",
     "defaultValue" : defaultValue
-
   };
 };
 
-exports.body = function(name, description, dataType, defaultValue) {
+exports.body = function(name, description, type, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : type,
     "required" : true,
-    "allowMultiple" : false,
     "paramType" : "body",
     "defaultValue" : defaultValue
   };
 };
 
-exports.header = function(name, description, dataType, required) {
+exports.form = function(name, description, type, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
-    "dataType" : dataType,
+    "type" : "string",
+    "required" : true,
+    "enum" : allowableValuesEnum,
+    "paramType" : "form",
+    "defaultValue" : defaultValue
+  };
+};
+
+exports.header = function(name, description, type, required) {
+  return {
+    "name" : name,
+    "description" : description,
+    "type" : type,
     "required" : required,
     "allowMultiple" : false,
     "paramType" : "header"

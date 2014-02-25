@@ -71,8 +71,8 @@ var findById = {
     "notes" : "Returns a pet based on ID",
     "summary" : "Find pet by ID",
     "method": "GET",
-    "params" : [swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")],
-    "responseClass" : "Pet",
+    "parameters" : [swagger.pathParam("petId", "ID of pet that needs to be fetched", "string")],
+    "type" : "Pet",
     "errorResponses" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
     "nickname" : "getPetById"
   },
@@ -129,3 +129,34 @@ var findById = {
     "notes" : "Returns a pet based on ID",
     ...
 ```
+
+#### Mapping swagger to subpaths
+
+To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
+
+```js
+var app = express();
+var subpath = express();
+
+app.use(express.json());
+app.use(express.urlencoded());
+app.use("/v1", subpath);
+
+swagger.setAppHandler(subpath);
+```
+
+Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
+
+#### Allows-origin and special headers
+
+If you want to modify the default headers sent with every swagger-managed method, you can do so as follows:
+
+```js
+swagger.setHeaders = function setHeaders(res) {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  res.header("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
+  res.header("Content-Type", "application/json; charset=utf-8");
+};
+```
+If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
