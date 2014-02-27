@@ -152,7 +152,7 @@ function filterApiListing(req, res, r) {
   //  clone attributes in the resource
   var output = shallowClone(r);
 
-  // clone arrays for 
+  // clone arrays for
   if(r["produces"]) output.produces = r["produces"].slice(0);
   if(r["consumes"]) output.consumes = r["consumes"].slice(0);
   if(r["authorizations"]) output.authorizations = r["authorizations"].slice(0);
@@ -191,39 +191,18 @@ function filterApiListing(req, res, r) {
   });
 
   //  look in object graph
-  _.forOwn(output.models, function (model) {
+  function scanForRefs(model){
     if (model && model.properties) {
-      _.forOwn(model.properties, function (property) {
-        var type = property["type"];
-
-        if(type) {
-          switch (type) {
-          case "array":
-            if (property.items) {
-              var ref = property.items.$ref;
-              if (ref && requiredModels.indexOf(ref) < 0) {
-                requiredModels.push(ref);
-              }
-            }
-            break;
-          case "string":
-          case "integer":
-            break;
-          default:
-            if (requiredModels.indexOf(type) < 0) {
-              requiredModels.push(type);
-            }
-            break;
-          }
-        }
-        else {
-          if (property["$ref"]){
-            requiredModels.push(property["$ref"]);
-          }
-        }
+      _.forOwn(model.properties, function(property){
+        processProperties(property);
       });
     }
+  }
+
+  _.forOwn(output.models, function (model) {
+    scanForRefs(model);
   });
+
   _.forOwn(requiredModels, function (modelName) {
     if (!output[modelName]) {
       var model = allModels[modelName];
@@ -233,8 +212,46 @@ function filterApiListing(req, res, r) {
     }
   });
 
+  function processProperties(property) {
+    var type = property["type"],
+        currentRequiredModels = [];
+
+    if(type) {
+      switch (type) {
+      case "array":
+        if (property.items) {
+          var ref = property.items.$ref;
+          if (ref && requiredModels.indexOf(ref) < 0) {
+            currentRequiredModels.push(ref);
+          }
+        }
+        break;
+      case "string":
+      case "integer":
+        break;
+      default:
+        if (requiredModels.indexOf(type) < 0) {
+          currentRequiredModels.push(type);
+        }
+        break;
+      }
+    }
+    else {
+      if (property["$ref"]){
+        currentRequiredModels.push(property["$ref"]);
+      }
+    }
+
+    _.forOwn(currentRequiredModels, function(modelName){
+        scanForRefs(allModels[modelName]);
+    });
+
+    requiredModels.push.apply(requiredModels, currentRequiredModels);
+  }
+
   return output;
 }
+
 
 // Add model to list and parse List[model] elements
 
@@ -350,7 +367,7 @@ function addMethod(app, callback, spec) {
   };
   if (!resources[apiRootPath]) {
     if (!root) {
-      // 
+      //
       var resourcePath = "/" + apiRootPath.replace(formatString, "");
       root = {
         "apiVersion": apiVersion,
@@ -414,7 +431,7 @@ function setErrorHandler(handler) {
   errorHandler = handler;
 }
 
-// Add swagger handlers to express 
+// Add swagger handlers to express
 
 function addHandlers(type, handlers) {
   _.forOwn(handlers, function (handler) {
