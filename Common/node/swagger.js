@@ -123,6 +123,40 @@ function baseApiFromPath(path) {
   return p;
 }
 
+function addPropertiesToRequiredModels(properties, requiredModels) {
+  _.forOwn(properties, function (property) {
+    var type = property["type"];
+    if(type) {
+      switch (type) {
+      case "array":
+        if (property.items) {
+          var ref = property.items.$ref;
+          if (ref && requiredModels.indexOf(ref) < 0) {
+            requiredModels.push(ref);
+          }
+        }
+        break;
+      case "string":
+      case "integer":
+        break;
+      default:
+        if (requiredModels.indexOf(type) < 0) {
+          requiredModels.push(type);
+        }
+        break;
+      }
+    }
+    else {
+      if (property["$ref"]){
+        requiredModels.push(property["$ref"]);
+      }
+    }
+    if (property.properties) {
+      addPropertiesToRequiredModels(property.properties, requiredModels);
+    }
+  });
+}
+
 // Applies a filter to an api listing.  When done, the api listing will only contain
 // methods and models that the user actually has access to.
 
@@ -152,7 +186,7 @@ function filterApiListing(req, res, r) {
   //  clone attributes in the resource
   var output = shallowClone(r);
 
-  // clone arrays for 
+  // clone arrays for
   if(r["produces"]) output.produces = r["produces"].slice(0);
   if(r["consumes"]) output.consumes = r["consumes"].slice(0);
   if(r["authorizations"]) output.authorizations = r["authorizations"].slice(0);
@@ -193,35 +227,7 @@ function filterApiListing(req, res, r) {
   //  look in object graph
   _.forOwn(output.models, function (model) {
     if (model && model.properties) {
-      _.forOwn(model.properties, function (property) {
-        var type = property["type"];
-
-        if(type) {
-          switch (type) {
-          case "array":
-            if (property.items) {
-              var ref = property.items.$ref;
-              if (ref && requiredModels.indexOf(ref) < 0) {
-                requiredModels.push(ref);
-              }
-            }
-            break;
-          case "string":
-          case "integer":
-            break;
-          default:
-            if (requiredModels.indexOf(type) < 0) {
-              requiredModels.push(type);
-            }
-            break;
-          }
-        }
-        else {
-          if (property["$ref"]){
-            requiredModels.push(property["$ref"]);
-          }
-        }
-      });
+      addPropertiesToRequiredModels(model.properties, requiredModels);
     }
   });
   _.forOwn(requiredModels, function (modelName) {
@@ -350,7 +356,7 @@ function addMethod(app, callback, spec) {
   };
   if (!resources[apiRootPath]) {
     if (!root) {
-      // 
+      //
       var resourcePath = "/" + apiRootPath.replace(formatString, "");
       root = {
         "apiVersion": apiVersion,
@@ -414,7 +420,7 @@ function setErrorHandler(handler) {
   errorHandler = handler;
 }
 
-// Add swagger handlers to express 
+// Add swagger handlers to express
 
 function addHandlers(type, handlers) {
   _.forOwn(handlers, function (handler) {
