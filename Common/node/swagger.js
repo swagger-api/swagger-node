@@ -348,7 +348,7 @@ function addMethod(app, callback, spec) {
         // add operation & return
         appendToApi(root, api, spec);
         appendedToExistinApi = true;
-        return;
+        return false;
       }
     });
   }
