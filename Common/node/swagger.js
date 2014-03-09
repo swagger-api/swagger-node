@@ -412,8 +412,17 @@ function addMethod(app, callback, spec) {
 
 // Set expressjs app handler
 
-function setAppHandler(app) {
+function setAppHandler(app, reset) {
   appHandler = app;
+
+  if (reset) {
+    resources = {};
+    validators = [];
+    appHandler = null;
+    allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
+    allowedDataTypes = ['string', 'integer', 'boolean', 'array'];
+    allModels = {};
+  }
 }
 
 // Change error handler
