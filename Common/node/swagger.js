@@ -353,8 +353,6 @@ function addMethod(app, callback, spec) {
     });
   }
 
-  if (appendedToExistinApi) return;
-
   var api = {
     "path": spec.path
   };
@@ -374,7 +372,9 @@ function addMethod(app, callback, spec) {
   }
 
   root.apis.push(api);
-  appendToApi(root, api, spec);
+  if (!appendedToExistinApi) {
+    appendToApi(root, api, spec);
+  }
 
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
