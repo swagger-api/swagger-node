@@ -418,7 +418,6 @@ function setAppHandler(app, reset) {
   if (reset) {
     resources = {};
     validators = [];
-    appHandler = null;
     allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
     allowedDataTypes = ['string', 'integer', 'boolean', 'array'];
     allModels = {};
