@@ -339,14 +339,16 @@ function resourceListing(req, res) {
 function addMethod(app, callback, spec) {
   var apiRootPath = spec.path.split(/[\/\(]/)[1];
   var root = resources[apiRootPath];
+  var appendedToExistinApi = false;
 
   if (root && root.apis) {
     // this path already exists in swagger resources
     _.forOwn(root.apis, function (api) {
-      if (api && api.path == spec.path && api.method == spec.method) {
+      if (api && api.path == spec.path) {
         // add operation & return
         appendToApi(root, api, spec);
-        return;
+        appendedToExistinApi = true;
+        return false;
       }
     });
   }
@@ -354,24 +356,25 @@ function addMethod(app, callback, spec) {
   var api = {
     "path": spec.path
   };
-  if (!resources[apiRootPath]) {
-    if (!root) {
-      //
-      var resourcePath = "/" + apiRootPath.replace(formatString, "");
-      root = {
-        "apiVersion": apiVersion,
-        "swaggerVersion": swaggerVersion,
-        "basePath": basePath,
-        "resourcePath": resourcePath,
-        "apis": [],
-        "models": []
-      };
-    }
+  if (!root) {
+    //
+    var resourcePath = "/" + apiRootPath.replace(formatString, "");
+    root = {
+      "apiVersion": apiVersion,
+      "swaggerVersion": swaggerVersion,
+      "basePath": basePath,
+      "resourcePath": resourcePath,
+      "apis": [],
+      "models": []
+    };
+
     resources[apiRootPath] = root;
   }
 
   root.apis.push(api);
-  appendToApi(root, api, spec);
+  if (!appendedToExistinApi) {
+    appendToApi(root, api, spec);
+  }
 
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
@@ -409,8 +412,16 @@ function addMethod(app, callback, spec) {
 
 // Set expressjs app handler
 
-function setAppHandler(app) {
+function setAppHandler(app, reset) {
   appHandler = app;
+
+  if (reset) {
+    resources = {};
+    validators = [];
+    allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
+    allowedDataTypes = ['string', 'integer', 'boolean', 'array'];
+    allModels = {};
+  }
 }
 
 // Change error handler
@@ -569,7 +580,14 @@ function appendToApi(rootResource, api, spec) {
   if (!spec.type) {
     op.type = "void";
   }
-  api.operations.push(op);
+
+  var existingIndex = _.findIndex(api.operations, { 'method': op.method });
+
+  if (existingIndex === -1) {
+    api.operations.push(op);
+  } else {
+    api.operations[existingIndex] = op;
+  }
 
   if (!rootResource.models) {
     rootResource.models = {};
