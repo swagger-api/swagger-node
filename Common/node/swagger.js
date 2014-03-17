@@ -123,6 +123,15 @@ function baseApiFromPath(path) {
   return p;
 }
 
+function addPropertiesToRequiredModelsFromDeepModel(modelRef, requiredModels) {
+  if (modelRef) {
+    var model = allModels[modelRef];
+    if (model.properties) {
+      addPropertiesToRequiredModels(model.properties, requiredModels);
+    }
+  }
+}
+
 function addPropertiesToRequiredModels(properties, requiredModels) {
   _.forOwn(properties, function (property) {
     var type = property["type"];
@@ -133,6 +142,7 @@ function addPropertiesToRequiredModels(properties, requiredModels) {
           var ref = property.items.$ref;
           if (ref && requiredModels.indexOf(ref) < 0) {
             requiredModels.push(ref);
+            addPropertiesToRequiredModelsFromDeepModel(ref, requiredModels);
           }
         }
         break;
@@ -147,8 +157,10 @@ function addPropertiesToRequiredModels(properties, requiredModels) {
       }
     }
     else {
-      if (property["$ref"]){
-        requiredModels.push(property["$ref"]);
+      var ownRef = property["$ref"];
+      if (ownRef) {
+        requiredModels.push(ownRef);
+        addPropertiesToRequiredModelsFromDeepModel(ownRef, requiredModels);
       }
     }
     if (property.properties) {
