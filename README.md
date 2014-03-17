@@ -1,26 +1,40 @@
-This is the Wordnik Swagger code for the express framework.  For more on Swagger, please visit http://swagger.wordnik.com.  For more on express, please visit https://github.com/visionmedia/express
+# Swagger for Express and Node.js
 
-## READ MORE about swagger!
+This is a [Swagger](https://github.com/wordnik/swagger-spec) module for the [Express](http://expressjs.com) web application framework for Node.js.
 
-See the [swagger website](http://swagger.wordnik.com) or the [swagger-core wiki](https://github.com/wordnik/swagger-core/wiki), which contains information about the swagger json spec.
+This module allows build self-documenting RESTful applications using the Swagger specification and tools.
 
 Try a sample!  The source for a [functional sample](https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md) is available on github:
 
+## Installation
+
+Using NPM, include the `swagger-node-express` module in your `package.json` dependencies.
+
+```json
+{
+	...
+	"dependencies": {
+		"swagger-node-express": "~2.0",
+		...
+	}
+}
+```
 
 
-### Adding swagger to your express-based API
-
-Include swagger.js in your app and add express as the app handler:
+## Adding Swagger to an Express Application
 
 ```js
+// Load module dependencies.
 var express = require("express")
  , url = require("url")
  , swagger = require("swagger-node-express");
 
+// Create the application.
 var app = express();
 app.use(express.json());
 app.use(express.urlencoded());
 
+// Couple the application to the Swagger module.
 swagger.setAppHandler(app);
 ```
 
@@ -37,7 +51,8 @@ swagger.addValidator(
     if ("POST" == httpMethod || "DELETE" == httpMethod || "PUT" == httpMethod) {
       var apiKey = req.headers["api_key"];
       if (!apiKey) {
-        apiKey = url.parse(req.url,true).query["api_key"]; }
+        apiKey = url.parse(req.url,true).query["api_key"];
+      }
       if ("special-key" == apiKey) {
         return true; 
       }
@@ -74,12 +89,16 @@ var findById = {
   },
   'action': function (req,res) {
     if (!req.params.petId) {
-      throw swagger.errors.invalid('id'); }
+      throw swagger.errors.invalid('id');
+    }
     var id = parseInt(req.params.petId);
     var pet = petData.getPetById(id);
 
-    if(pet) res.send(JSON.stringify(pet));
-    else throw swagger.errors.notFound('pet');
+    if (pet) {
+      res.send(JSON.stringify(pet));
+    } else {
+      throw swagger.errors.notFound('pet');
+    }
   }
 };
 
@@ -89,7 +108,7 @@ swagger.addGet(findById);
 
 Adds an API route to express and provides all the necessary information to swagger.
 
-Finally, configure swagger with a `public` URL and version:
+Finally, configure swagger with a `public` URL and version (note, this must be called after all the other swagger API calls):
 
 ```js
 swagger.configure("http://petstore.swagger.wordnik.com", "0.1");
@@ -104,9 +123,9 @@ app.listen(8002);
 Now you can open up a [swagger-ui](https://github.com/wordnik/swagger-ui) and browse your API, generate a client with [swagger-codegen](https://github.com/wordnik/swagger-codegen), and be happy.
 
 
-### Other Configurations
+## Additional Configurations
 
-#### .{format} suffix removal
+### .{format} suffix removal
 
 If you don't like the .{format} or .json suffix, you can override this before configuring swagger:
 
@@ -126,7 +145,7 @@ var findById = {
     ...
 ```
 
-#### Mapping swagger to subpaths
+### Mapping swagger to subpaths
 
 To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
 
@@ -143,7 +162,7 @@ swagger.setAppHandler(subpath);
 
 Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
 
-#### Allows special headers
+### Allows special headers
 
 If you want to modify the default headers sent with every swagger-managed method, you can do so as follows:
 
@@ -155,7 +174,7 @@ swagger.setHeaders = function setHeaders(res) {
 ```
 If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
 
-#### Enabling cors support using cors library
+### Enabling cors support using cors library
 
 To enable cors support using cors express npm module (https://npmjs.org/package/cors) add the following to your app.
 
@@ -179,3 +198,18 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 ```
+
+### Configuring the Resource Listing Information
+
+The Swagger `info` node of the resource listing can be configured using the `configureDeclaration` method:
+
+```js
+swagger.configureDeclaration('pet', {
+	description: 'Operations about Pets',
+	authorizations : ["oauth2"],
+	protocols : ["http"],
+	consumes: ['application/json'],
+	produces: ['application/json']
+});
+```
+
