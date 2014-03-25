@@ -31,7 +31,7 @@ exports.findById = {
     var pet = petData.getPetById(id);
 
     if(pet) res.send(JSON.stringify(pet));
-    else throw swe.notFound('pet');
+    else throw swe.notFound('pet',res);
   }
 };
 
