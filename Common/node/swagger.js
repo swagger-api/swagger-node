@@ -635,7 +635,7 @@ exports.errors = {
       res.send({
         "code": 400,
         "message": 'invalid ' + field
-      }, 404);
+      }, 400);
     }
   },
   'forbidden': function (res) {
