@@ -135,14 +135,13 @@ var findById = {
 To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
 
 ```js
-var app = express();
-var subpath = express();
+var server = restify.createServer();
+server.use(function(req, res, next){
+    req.url = req.url.replace(/^\/v1/,'');
+    next(req, res);
+});
 
-app.use(express.json());
-app.use(express.urlencoded());
-app.use("/v1", subpath);
-
-swagger.setAppHandler(subpath);
+swagger.setAppHandler(server);
 ```
 
 Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
