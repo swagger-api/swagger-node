@@ -49,12 +49,12 @@ exports.body = function(name, description, type, defaultValue) {
   };
 };
 
-exports.form = function(name, description, type, allowableValuesEnum, defaultValue) {
+exports.form = function(name, description, type, required, allowableValuesEnum, defaultValue) {
   return {
     "name" : name,
     "description" : description,
     "type" : "string",
-    "required" : true,
+    "required" : (typeof required !== 'undefined') ? required : true,
     "enum" : allowableValuesEnum,
     "paramType" : "form",
     "defaultValue" : defaultValue
