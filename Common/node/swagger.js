@@ -478,35 +478,35 @@ Swagger.prototype.discoverFile = function(file) {
 // adds get handler
 
 Swagger.prototype.addGet = Swagger.prototype.addGET = function() {
-  addHandlers('GET', arguments);
+  this.addHandlers('GET', arguments);
   return this;
 };
 
 // adds post handler
 
 Swagger.prototype.addPost = Swagger.prototype.addPOST = function() {
-  addHandlers('POST', arguments);
+  this.addHandlers('POST', arguments);
   return this;
 };
 
 // adds delete handler
 
 Swagger.prototype.addDelete = Swagger.prototype.addDELETE = function() {
-  addHandlers('DELETE', arguments);
+  this.addHandlers('DELETE', arguments);
   return this;
 };
 
 // adds put handler
 
 Swagger.prototype.addPut = Swagger.prototype.addPUT = function() {
-  addHandlers('PUT', arguments);
+  this.addHandlers('PUT', arguments);
   return this;
 };
 
 // adds patch handler
 
 Swagger.prototype.addPatch = Swagger.prototype.addPATCH = function() {
-  addHandlers('PATCH', arguments);
+  this.addHandlers('PATCH', arguments);
   return this;
 };
 
@@ -641,7 +641,7 @@ Swagger.prototype.setAuthorizations = function(data) {
 };
 
 // Export most needed error types for easier handling
-exports.errors = {
+Swagger.prototype.errors = {
   'notFound': function (field, res) {
     if (!res) {
       return {

@@ -26,23 +26,22 @@ var petResources = require("./petResources.js");
 var app = express();
 
 var corsOptions = {
-    credentials: true,
-    origin: function(origin,callback) {
-        if(origin===undefined) {
-            callback(null,false);
-        } else {
-            // change wordnik.com to your allowed domain.
-            var match = origin.match("^(.*)?.wordnik.com(\:[0-9]+)?");
-            var allowed = (match!==null && match.length > 0);
-            callback(null,allowed);
-        }
+  credentials: true,
+  origin: function(origin,callback) {
+    if(origin===undefined) {
+      callback(null,false);
+    } else {
+      // change wordnik.com to your allowed domain.
+      var match = origin.match("^(.*)?.wordnik.com(\:[0-9]+)?");
+      var allowed = (match!==null && match.length > 0);
+      callback(null,allowed);
     }
+  }
 };
 
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(cors(corsOptions));
-
 
 // Set the main handler in swagger to the express app
 swagger.setAppHandler(app);
