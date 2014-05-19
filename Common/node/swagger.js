@@ -14,84 +14,107 @@
  *  limitations under the License.
  */
 var _ = require('lodash');
-var formatString = ".{format}";
-var resourcePath = "/api-docs" + formatString;
-var jsonSuffix = ".json";
-var basePath = "/";
-var apiInfo = null;
-var authorizations = null;
-var swaggerVersion = "1.2";
-var apiVersion = "1.0";
-var resources = {};
-var validators = [];
-var appHandler = null;
 var allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
 var allowedDataTypes = ['string', 'integer', 'boolean', 'array'];
 var params = require(__dirname + '/paramTypes.js');
-var allModels = {};
 
-// Default error handler
-var errorHandler = function (req, res, error) {
-  if (error.code && error.message)
-    res.send(JSON.stringify(error), error.code);
-  else {
-    console.error(req.method + " failed for path '" + require('url').parse(req.url).href + "': " + error);
-    res.send(JSON.stringify({
-      "message": "unknown error",
-      "code": 500
-    }), 500);
+function Swagger() {
+  
+  if (!(this instanceof Swagger)){
+    return new Swagger();
   }
+
+  this.formatString = ".{format}";
+  this.resourcePath = "/api-docs" + this.formatString;
+  this.jsonSuffix = ".json";
+  this.basePath = "/";
+  this.apiInfo = null;
+  this.authorizations = null;
+  this.swaggerVersion = "1.2";
+  this.apiVersion = "1.0";
+  this.allModels = {};
+  this.validators = [];
+  this.appHandler = null;
+  this.resources = {};
+
+  // Default error handler
+
+  this.errorHandler = function (req, res, error) {
+    if (error.code && error.message)
+      res.send(JSON.stringify(error), error.code);
+    else {
+      console.error(req.method + " failed for path '" + require('url').parse(req.url).href + "': " + error);
+      res.send(JSON.stringify({
+        "message": "unknown error",
+        "code": 500
+      }), 500);
+    }
+  };
+
+  // For backwards compatability
+  this.getModels = this.allModels;
+}
+
+/**
+ * returns a new instance of swagger
+ */
+
+Swagger.prototype.createNew = function(){
+  return new Swagger();
 };
 
-function configureSwaggerPaths(format, path, suffix) {
+Swagger.prototype.configureSwaggerPaths = function(format, path, suffix) {
   if(path.indexOf("/") != 0) path = "/" + path;
-  formatString = format;
-  resourcePath = path;
-  jsonSuffix = suffix;
-}
+  this.formatString = format;
+  this.resourcePath = path;
+  this.jsonSuffix = suffix;
+};
 
 // Configuring swagger will set the basepath and api version for all
 // subdocuments.  It should only be done once, and during bootstrap of the app
 
-function configure(bp, av) {
-  basePath = bp;
-  apiVersion = av;
-  setResourceListingPaths(appHandler);
+Swagger.prototype.configure = function(bp, av) {
+  var self = this;
+  self.basePath = bp;
+  self.apiVersion = av;
+  self.setResourceListingPaths(self.appHandler);
 
   // add the GET for resource listing
-  appHandler.get(resourcePath.replace(formatString, jsonSuffix), resourceListing);
+  var resourceListing = _.bind(self.resourceListing, self);
+  self.appHandler.get(self.resourcePath.replace(self.formatString, self.jsonSuffix), resourceListing);
 
   // update resources if already configured
 
-  _.forOwn(resources, function (resource) {
+  _.forOwn(self.resources, function (resource) {
     resource.apiVersion = av;
     resource.basePath = bp;
   });
-}
+};
 
 // Convenience to set default headers in each response.
 
-function setHeaders(res) {
+Swagger.prototype.setHeaders = function(res) {
   res.header("Access-Control-Allow-Headers", "Content-Type, api_key");
   res.header("Content-Type", "application/json; charset=utf-8");
-}
+};
 
 // creates declarations for each resource path.
 
-function setResourceListingPaths(app) {
-  _.forOwn(resources, function (resource, key) {
+Swagger.prototype.setResourceListingPaths = function(app) {
+  var self = this;
+  _.forOwn(this.resources, function (resource, key) {
 
     // pet.json => api-docs.json/pet
-    var path = baseApiFromPath(key);
+    var path = self.baseApiFromPath(key);
     app.get(path, function (req, res) {
       // find the api base path from the request URL
       // /api-docs.json/pet => /pet.json
 
-      var p = basePathFromApi(req.url.split('?')[0]);
+      var p = self.basePathFromApi(req.url.split('?')[0]);
 
       // this handles the request
       // api-docs.json/pet => pet.{format}
-      var r = resources[p] || resources[p.replace(formatString, "")];
+      var r = self.resources[p] || self.resources[p.replace(self.formatString, "")];
       if (!r) {
         console.error("unable to find listing");
         return stopWithError(res, {
@@ -99,9 +122,9 @@ function setResourceListingPaths(app) {
           'code': 500
         });
       } else {
-        exports.setHeaders(res);
-        var data = filterApiListing(req, res, r);
-        data.basePath = basePath;
+        self.setHeaders(res);
+        var data = self.filterApiListing(req, res, r);
+        data.basePath = self.basePath;
         if (data.code) {
           res.send(data, data.code);
         } else {
@@ -110,20 +133,21 @@ function setResourceListingPaths(app) {
       }
     });
   });
-}
+};
 
-function basePathFromApi(path) {
-  var l = resourcePath.replace(formatString, jsonSuffix);
-  var p = path.substring(l.length + 1) + formatString;
+Swagger.prototype.basePathFromApi = function(path) {
+  var l = this.resourcePath.replace(this.formatString, this.jsonSuffix);
+  var p = path.substring(l.length + 1) + this.formatString;
   return p;
-}
+};
 
-function baseApiFromPath(path) {
-  var p = resourcePath.replace(formatString, jsonSuffix) + "/" + path.replace(formatString, "");
+Swagger.prototype.baseApiFromPath = function(path) {
+  var p = this.resourcePath.replace(this.formatString, this.jsonSuffix) + "/" + path.replace(this.formatString, "");
   return p;
-}
+};
 
-function addPropertiesToRequiredModels(properties, requiredModels) {
+Swagger.prototype.addPropertiesToRequiredModels = function(properties, requiredModels) {
+  var self = this;
   _.forOwn(properties, function (property) {
     var type = property["type"];
     if(type) {
@@ -152,15 +176,16 @@ function addPropertiesToRequiredModels(properties, requiredModels) {
       }
     }
     if (property.properties) {
-      addPropertiesToRequiredModels(property.properties, requiredModels);
+      self.addPropertiesToRequiredModels(property.properties, requiredModels);
     }
   });
-}
+};
 
 // Applies a filter to an api listing.  When done, the api listing will only contain
 // methods and models that the user actually has access to.
 
-function filterApiListing(req, res, r) {
+Swagger.prototype.filterApiListing = function(req, res, r) {
+  var self = this;
   var excludedPaths = [];
 
   if (!r || !r.apis) {
@@ -176,8 +201,8 @@ function filterApiListing(req, res, r) {
         continue;
       }
       var op = api.operations[opKey];
-      var path = api.path.replace(formatString, "").replace(/{.*\}/, "*");
-      if (!canAccessResource(req, path, op.method)) {
+      var path = api.path.replace(self.formatString, "").replace(/{.*\}/, "*");
+      if (!self.canAccessResource(req, path, op.method)) {
         excludedPaths.push(op.method + ":" + api.path);
       }
     }
@@ -205,8 +230,8 @@ function filterApiListing(req, res, r) {
     _.forOwn(api.operations, function (operation) {
       if (excludedPaths.indexOf(operation.method + ":" + api.path) == -1) {
         clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
-        addModelsFromBody(operation, requiredModels);
-        addModelsFromResponse(operation, requiredModels);
+        self.addModelsFromBody(operation, requiredModels);
+        self.addModelsFromResponse(operation, requiredModels);
       }
     });
     //  only add cloned api if there are operations
@@ -218,7 +243,7 @@ function filterApiListing(req, res, r) {
   // add required models to output
   output.models = {};
   _.forOwn(requiredModels, function (modelName) {
-    var model = allModels[modelName];
+    var model = self.allModels[modelName];
     if (model) {
       output.models[modelName] = model;
     }
@@ -227,12 +252,12 @@ function filterApiListing(req, res, r) {
   //  look in object graph
   _.forOwn(output.models, function (model) {
     if (model && model.properties) {
-      addPropertiesToRequiredModels(model.properties, requiredModels);
+      self.addPropertiesToRequiredModels(model.properties, requiredModels);
     }
   });
   _.forOwn(requiredModels, function (modelName) {
     if (!output[modelName]) {
-      var model = allModels[modelName];
+      var model = self.allModels[modelName];
       if (model) {
         output.models[modelName] = model;
       }
@@ -240,24 +265,25 @@ function filterApiListing(req, res, r) {
   });
 
   return output;
-}
+};
 
 // Add model to list and parse List[model] elements
 
-function addModelsFromBody(operation, models) {
+Swagger.prototype.addModelsFromBody = function(operation, models) {
+  var self = this;
   if (operation.parameters) {
     _.forOwn(operation.parameters, function (param) {
       if (param.paramType == "body" && param.type) {
         var model = param.type.replace(/^List\[/, "").replace(/\]/, "");
-        models.push(model);
+        self.models.push(model);
       }
     });
   }
-}
+};
 
 // Add model to list and parse List[model] elements
 
-function addModelsFromResponse(operation, models) {
+Swagger.prototype.addModelsFromResponse = function(operation, models) {
   var responseModel = operation.type;
   if(responseModel === "array" && operation.items) {
     var items = operation.items;
@@ -272,7 +298,7 @@ function addModelsFromResponse(operation, models) {
   else if (responseModel != "void" && allowedDataTypes.indexOf(responseModel) == -1) {
     models.push(responseModel);
   }
-}
+};
 
 // clone anything but objects to avoid shared references
 function shallowClone(obj) {
@@ -291,15 +317,15 @@ function shallowClone(obj) {
 // function for filtering a resource.  override this with your own implementation.
 // if consumer can access the resource, method returns true.
 
-function canAccessResource(req, path, method) {
-  for (var i = 0; i < validators.length; i++) {
-    var validator = validators[i];
+Swagger.prototype.canAccessResource = function(req, path, method) {
+  for (var i = 0; i < this.validators.length; i++) {
+    var validator = this.validators[i];
     if (_.isFunction(validator) && !validator(req, path, method)) {
       return false;
     }
   }
   return true;
-}
+};
 
 /**
  * returns the json representation of a resource
@@ -308,37 +334,38 @@ function canAccessResource(req, path, method) {
  * @param response
  */
 
-function resourceListing(req, res) {
+Swagger.prototype.resourceListing = function(req, res) {
+  var self = this;
   var r = {
-    "apiVersion": apiVersion,
-    "swaggerVersion": swaggerVersion,
+    "apiVersion": self.apiVersion,
+    "swaggerVersion": self.swaggerVersion,
     "apis": []
   };
 
-  if(authorizations != null)
-    r["authorizations"] = authorizations;
+  if(self.authorizations != null)
+    r["authorizations"] = self.authorizations;
 
-  if(apiInfo != null)
-    r["info"] = apiInfo;
+  if(self.apiInfo != null)
+    r["info"] = self.apiInfo;
 
-  _.forOwn(resources, function (value, key) {
-    var p = "/" + key.replace(formatString, "");
+  _.forOwn(self.resources, function (value, key) {
+    var p = "/" + key.replace(self.formatString, "");
     r.apis.push({
       "path": p,
       "description": value.description
     });
   });
-
-  exports.setHeaders(res);
+  self.setHeaders(res);
   res.write(JSON.stringify(r));
   res.end();
-}
+};
 
 // Adds a method to the api along with a spec.  If the spec fails to validate, it won't be added
 
-function addMethod(app, callback, spec) {
+Swagger.prototype.addMethod = function(app, callback, spec) {
+  var self = this;
   var apiRootPath = spec.path.split(/[\/\(]/)[1];
-  var root = resources[apiRootPath];
+  var root = self.resources[apiRootPath];
 
   if (root && root.apis) {
     // this path already exists in swagger resources
@@ -354,35 +381,35 @@ function addMethod(app, callback, spec) {
   var api = {
     "path": spec.path
   };
-  if (!resources[apiRootPath]) {
+  if (!self.resources[apiRootPath]) {
     if (!root) {
       //
-      var resourcePath = "/" + apiRootPath.replace(formatString, "");
+      var resourcePath = "/" + apiRootPath.replace(self.formatString, "");
       root = {
-        "apiVersion": apiVersion,
-        "swaggerVersion": swaggerVersion,
-        "basePath": basePath,
+        "apiVersion": self.apiVersion,
+        "swaggerVersion": self.swaggerVersion,
+        "basePath": self.basePath,
         "resourcePath": resourcePath,
         "apis": [],
         "models": []
       };
     }
-    resources[apiRootPath] = root;
+    self.resources[apiRootPath] = root;
   }
 
   root.apis.push(api);
   appendToApi(root, api, spec);
 
   //  convert .{format} to .json, make path params happy
-  var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
+  var fullPath = spec.path.replace(self.formatString, self.jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
   if (allowedMethods.indexOf(currentMethod) > -1) {
     app[currentMethod](fullPath, function (req, res, next) {
-      exports.setHeaders(res);
+      self.setHeaders(res);
 
       // todo: needs to do smarter matching against the defined paths
-      var path = req.url.split('?')[0].replace(jsonSuffix, "").replace(/{.*\}/, "*");
-      if (!canAccessResource(req, path, req.method)) {
+      var path = req.url.split('?')[0].replace(self.jsonSuffix, "").replace(/{.*\}/, "*");
+      if (!self.canAccessResource(req, path, req.method)) {
         res.send(JSON.stringify({
           "message": "forbidden",
           "code": 403
@@ -391,9 +418,9 @@ function addMethod(app, callback, spec) {
         try {
           callback(req, res, next);
         } catch (error) {
-          if (typeof errorHandler === "function") {
-            errorHandler(req, res, error);
-          } else if (errorHandler === "next") {
+          if (typeof self.errorHandler === "function") {
+            self.errorHandler(req, res, error);
+          } else if (self.errorHandler === "next") {
             next(error);
           } else {
             throw error;
@@ -405,95 +432,98 @@ function addMethod(app, callback, spec) {
     console.error('unable to add ' + currentMethod.toUpperCase() + ' handler');
     return;
   }
-}
+};
 
 // Set expressjs app handler
 
-function setAppHandler(app) {
-  appHandler = app;
-}
+Swagger.prototype.setAppHandler = function(app) {
+  this.appHandler = app;
+};
 
 // Change error handler
 // Error handler should be a function that accepts parameters req, res, error
 
-function setErrorHandler(handler) {
-  errorHandler = handler;
-}
+Swagger.prototype.setErrorHandler= function(handler) {
+  this.errorHandler = handler;
+};
 
 // Add swagger handlers to express
 
-function addHandlers(type, handlers) {
+Swagger.prototype.addHandlers = function(type, handlers) {
+  var self = this;
   _.forOwn(handlers, function (handler) {
     handler.spec.method = type;
-    addMethod(appHandler, handler.action, handler.spec);
+    self.addMethod(self.appHandler, handler.action, handler.spec);
   });
-}
+};
 
 // Discover swagger handler from resource
 
-function discover(resource) {
+Swagger.prototype.discover = function(resource) {
+  var self = this;
   _.forOwn(resource, function (handler, key) {
     if (handler.spec && handler.spec.method && allowedMethods.indexOf(handler.spec.method.toLowerCase()) > -1) {
-      addMethod(appHandler, handler.action, handler.spec);
+      self.addMethod(self.appHandler, handler.action, handler.spec);
     } else
       console.error('auto discover failed for: ' + key);
   });
-}
+};
 
 // Discover swagger handler from resource file path
 
-function discoverFile(file) {
-  return discover(require(file));
-}
+Swagger.prototype.discoverFile = function(file) {
+  return this.discover(require(file));
+};
 
 // adds get handler
 
-function addGet() {
+Swagger.prototype.addGet = Swagger.prototype.addGET = function() {
   addHandlers('GET', arguments);
   return this;
-}
+};
 
 // adds post handler
 
-function addPost() {
+Swagger.prototype.addPost = Swagger.prototype.addPOST = function() {
   addHandlers('POST', arguments);
   return this;
-}
+};
 
 // adds delete handler
 
-function addDelete() {
+Swagger.prototype.addDelete = Swagger.prototype.addDELETE = function() {
   addHandlers('DELETE', arguments);
   return this;
-}
+};
 
 // adds put handler
 
-function addPut() {
+Swagger.prototype.addPut = Swagger.prototype.addPUT = function() {
   addHandlers('PUT', arguments);
   return this;
-}
+};
 
 // adds patch handler
 
-function addPatch() {
+Swagger.prototype.addPatch = Swagger.prototype.addPATCH = function() {
   addHandlers('PATCH', arguments);
   return this;
-}
+};
 
 // adds models to swagger
 
-function addModels(models) {
+Swagger.prototype.addModels = function(models) {
   models = _.cloneDeep(models);
-  if (!allModels) {
-    allModels = models;
+  var self = this;
+  if (!self.allModels) {
+    self.allModels = models;
   } else {
     _.forOwn(models, function (model, key) {
-      allModels[key] = model;
+      self.allModels[key] = model;
     });
   }
   return this;
-}
+};
 
 function wrap(callback, req, resp) {
   callback(req, resp);
@@ -576,9 +606,9 @@ function appendToApi(rootResource, api, spec) {
   }
 }
 
-function addValidator(v) {
-  validators.push(v);
-}
+Swagger.prototype.addValidator = function(v) {
+  this.validators.push(v);
+};
 
 // Create Error JSON by code and text
 
@@ -591,8 +621,8 @@ function error(code, description) {
 
 // Stop express ressource with error code
 
-function stopWithError(res, error) {
-  exports.setHeaders(res);
+stopWithError = function(res, error) {
+  this.setHeaders(res);
   if (error && error.message && error.code)
     res.send(JSON.stringify(error), error.code);
   else
@@ -600,15 +630,15 @@ function stopWithError(res, error) {
       'message': 'internal error',
       'code': 500
     }), 500);
-}
+};
 
-function setApiInfo(data) {
-  apiInfo = data;
-}
+Swagger.prototype.setApiInfo = function(data) {
+  this.apiInfo = data;
+};
 
-function setAuthorizations(data) {
-  authorizations = data;
-}
+Swagger.prototype.setAuthorizations = function(data) {
+  this.authorizations = data;
+};
 
 // Export most needed error types for easier handling
 exports.errors = {
@@ -635,7 +665,7 @@ exports.errors = {
       res.send({
         "code": 400,
         "message": 'invalid ' + field
-      }, 400);
+      }, 404);
     }
   },
   'forbidden': function (res) {
@@ -653,9 +683,9 @@ exports.errors = {
   }
 };
 
-function configureDeclaration(resourceName, obj) {
-  if(resources[resourceName]) {
-    var resource = resources[resourceName];
+Swagger.prototype.configureDeclaration = function(resourceName, obj) {
+  if(this.resources[resourceName]) {
+    var resource = this.resources[resourceName];
 
     if(obj["description"]) {
       resource["description"] = obj["description"];
@@ -673,7 +703,10 @@ function configureDeclaration(resourceName, obj) {
       resource["authorizations"] = obj["authorizations"];
     }
   }
-}
+};
+
+// For backwards compatability, we just export a new instance of Swagger
+module.exports = exports = Swagger();
 
 exports.params = params;
 exports.queryParam = exports.params.query;
@@ -681,35 +714,6 @@ exports.pathParam = exports.params.path;
 exports.bodyParam = exports.params.body;
 exports.formParam = exports.params.form;
 exports.headerParam = exports.params.header;
-exports.getModels = allModels;
-
 exports.error = error;
 exports.stopWithError = stopWithError;
 exports.stop = stopWithError;
-exports.addValidator = addValidator;
-exports.configure = configure;
-exports.canAccessResource = canAccessResource;
-exports.resourcePath = resourcePath;
-exports.resourceListing = resourceListing;
-exports.setHeaders = setHeaders;
-exports.addGet = addGet;
-exports.addPost = addPost;
-exports.addPut = addPut;
-exports.addPatch = addPatch;
-exports.addDelete = addDelete;
-exports.addGET = addGet;
-exports.addPOST = addPost;
-exports.addPUT = addPut;
-exports.addPATCH = addPatch;
-exports.addDELETE = addDelete;
-exports.addModels = addModels;
-exports.setAppHandler = setAppHandler;
-exports.setErrorHandler = setErrorHandler;
-exports.errorHandler = errorHandler;
-exports.discover = discover;
-exports.discoverFile = discoverFile;
-exports.configureSwaggerPaths = configureSwaggerPaths;
-exports.setHeaders = setHeaders;
-exports.setApiInfo = setApiInfo;
-exports.setAuthorizations = setAuthorizations;
-exports.configureDeclaration = configureDeclaration;
