@@ -275,7 +275,7 @@ Swagger.prototype.addModelsFromBody = function(operation, models) {
     _.forOwn(operation.parameters, function (param) {
       if (param.paramType == "body" && param.type) {
         var model = param.type.replace(/^List\[/, "").replace(/\]/, "");
-        self.models.push(model);
+        models.push(model);
       }
     });
   }
