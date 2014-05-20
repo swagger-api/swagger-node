@@ -1,5 +1,5 @@
 /**
- *  Copyright 2013 Wordnik, Inc.
+ *  Copyright 2014 Wordnik, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -229,7 +229,17 @@ Swagger.prototype.filterApiListing = function(req, res, r) {
     clonedApi.operations = [];
     _.forOwn(api.operations, function (operation) {
       if (excludedPaths.indexOf(operation.method + ":" + api.path) == -1) {
-        clonedApi.operations.push(JSON.parse(JSON.stringify(operation)));
+        var co = JSON.parse(JSON.stringify(operation));
+        delete co.path;
+
+        var type = toJsonSchema(co.type);
+        if(type) {
+          for(var nm in type) {
+            delete co[nm];
+            co[nm] = type[nm];
+          }
+        }
+        clonedApi.operations.push(co);
         self.addModelsFromBody(operation, requiredModels);
         self.addModelsFromResponse(operation, requiredModels);
       }
@@ -267,6 +277,35 @@ Swagger.prototype.filterApiListing = function(req, res, r) {
   return output;
 };
 
+var mappings = {
+  "int": {
+    type: "integer",
+    format: "int32"
+  },
+  "long": {
+    type: "integer",
+    format: "int64"
+  },
+  "float": {
+    type: "number",
+    format: "float"
+  },
+  "double": {
+    type: "number",
+    format: "double"
+  },
+  "date": {
+    type: "string",
+    format: "date-time"
+  }
+}
+
+function toJsonSchema(model) {
+  if(model && mappings[model]) {
+    return mappings[model];
+  }
+}
+
 // Add model to list and parse List[model] elements
 
 Swagger.prototype.addModelsFromBody = function(operation, models) {
@@ -275,7 +314,7 @@ Swagger.prototype.addModelsFromBody = function(operation, models) {
     _.forOwn(operation.parameters, function (param) {
       if (param.paramType == "body" && param.type) {
         var model = param.type.replace(/^List\[/, "").replace(/\]/, "");
-        self.models.push(model);
+        models.push(model);
       }
     });
   }
@@ -513,7 +552,7 @@ Swagger.prototype.addPatch = Swagger.prototype.addPATCH = function() {
 // adds models to swagger
 
 Swagger.prototype.addModels = function(models) {
-  models = _.cloneDeep(models);
+  models = _.cloneDeep(models).models;
   var self = this;
   if (!self.allModels) {
     self.allModels = models;
