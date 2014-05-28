@@ -403,7 +403,7 @@ Swagger.prototype.resourceListing = function(req, res) {
 
 Swagger.prototype.addMethod = function(app, callback, spec) {
   var self = this;
-  var apiRootPath = spec.apiRootPath || spec.path.split(/[\/\(]/)[1];
+  var apiRootPath = spec.resourcePath || spec.path.split(/[\/\(]/)[1];
   var root = self.resources[apiRootPath];
 
   if (root && root.apis) {
