@@ -403,7 +403,7 @@ Swagger.prototype.resourceListing = function(req, res) {
 
 Swagger.prototype.addMethod = function(app, callback, spec) {
   var self = this;
-  var apiRootPath = spec.path.split(/[\/\(]/)[1];
+  var apiRootPath = spec.resourcePath || spec.path.split(/[\/\(]/)[1];
   var root = self.resources[apiRootPath];
 
   if (root && root.apis) {
@@ -661,7 +661,7 @@ function error(code, description) {
 // Stop express ressource with error code
 
 stopWithError = function(res, error) {
-  this.setHeaders(res);
+  Swagger.prototype.setHeaders(res);
   if (error && error.message && error.code)
     res.send(JSON.stringify(error), error.code);
   else
