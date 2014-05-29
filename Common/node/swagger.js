@@ -661,7 +661,7 @@ function error(code, description) {
 // Stop express ressource with error code
 
 stopWithError = function(res, error) {
-  this.setHeaders(res);
+  Swagger.prototype.setHeaders(res);
   if (error && error.message && error.code)
     res.send(JSON.stringify(error), error.code);
   else
