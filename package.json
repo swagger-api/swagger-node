@@ -6,7 +6,7 @@
     "email": "fehguy@gmail.com",
     "url": "http://developer.wordnik.com"
   },
-  "contributors": [ 
+  "contributors": [
     {
       "name": "Pauh Hill",
       "email": "phill@kixeye.com"
@@ -34,7 +34,12 @@
     "connect": ">= 1.8.x",
     "express": "3.x",
     "docco": "0.4.x",
-    "cors": "2.1.1"
+    "cors": "2.1.1",
+    "mocha": "~1.20.0",
+    "should": "~4.0.0"
   },
-  "license": "apache 2.0"
+  "license": "apache 2.0",
+  "scripts": {
+    "test": "mocha -r should './test/**/*.js'"
+  }
 }
