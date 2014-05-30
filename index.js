@@ -1,2 +1,1 @@
-module.exports = require("./Common/node/swagger.js"), 
-	require("./Common/node/paramTypes.js");
+module.exports = require("./lib/swagger.js");

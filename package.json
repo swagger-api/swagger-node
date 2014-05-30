@@ -24,9 +24,6 @@
     "server"
   ],
   "main": "index.js",
-  "directories": {
-    "lib": "./Common/node"
-  },
   "engines": {
     "node": ">= 0.8.x"
   },
