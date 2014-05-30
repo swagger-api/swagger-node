@@ -1,14 +1,9 @@
-var sw = require("../../lib/swagger.js");
-var param = require("../../lib/paramTypes.js");
+var sw = require("../");
+var param = require("../lib/paramTypes.js");
 var url = require("url");
 var swe = sw.errors;
 
-var petData = require("./petData.js");
-
-function writeResponse (res, data) {
-	sw.setHeaders(res);
-  res.send(JSON.stringify(data));
-}
+var petData = require("./service.js");
 
 // the description will be picked up in the resource listing
 exports.findById = {
@@ -80,7 +75,8 @@ exports.findByTags = {
     if (!tagsString) {
       throw swe.invalid('tag'); }
     var output = petData.findPetByTags(tagsString);
-    writeResponse(res, output);
+    sw.setHeaders(res);
+    res.send(JSON.stringify(data));
   }
 };
 
