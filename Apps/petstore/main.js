@@ -19,7 +19,7 @@
 var express = require("express")
  , url = require("url")
  , cors = require("cors")
- , swagger = require("../../Common/node/swagger.js");
+ , swagger = require("../../lib/swagger.js");
 
 var petResources = require("./petResources.js");
 
