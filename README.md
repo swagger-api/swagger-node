@@ -1,5 +1,7 @@
 # Swagger for Express and Node.js
 
+[![Build Status](https://travis-ci.org/wordnik/swagger-node-express.png)](https://travis-ci.org/wordnik/swagger-node-express)
+
 This is a [Swagger](https://github.com/wordnik/swagger-spec) module for the [Express](http://expressjs.com) web application framework for Node.js.
 
 Try a sample!  The source for a [functional sample](https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md) is available on github.
