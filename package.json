@@ -1,6 +1,6 @@
 {
   "name": "swagger-node-express",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "author": {
     "name": "Tony Tam",
     "email": "fehguy@gmail.com",
@@ -41,7 +41,7 @@
   },
   "license": "apache 2.0",
   "scripts": {
-    "test": "mocha -r should './test/**/*.js'",
+    "test": "mocha -r should \"./test/**/*.js\"",
     "start": "node sample-application/app.js"
   }
 }
