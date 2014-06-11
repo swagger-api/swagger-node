@@ -116,5 +116,16 @@ app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   return docs_handler(req, res, next);
 });
 
+app.get('/throw/some/error', function(){
+  throw {
+    status: 500,
+    message: 'we just threw an error for a test case!'
+  };
+});
+
+app.use(function(err, req, res, next){
+  res.send(err.status, err.message);
+});
+
 // Start the server on port 8002
 app.listen(8002);

@@ -182,6 +182,18 @@ swagger.setHeaders = function setHeaders(res) {
 ```
 If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
 
+### Error handling
+As of 2.1.0, swagger no longer consumes errors.  The preferred way to handle errors
+is to use standard express middelware with an arity of 4 I.E.
+
+```javascript
+var app = express();
+swagger.setAppHandler(app);
+app.use(function(err, req, res, next){
+  //do something with the error.
+});
+```
+
 ### Enabling cors support using cors library
 
 To enable cors support using cors express npm module (https://npmjs.org/package/cors) add the following to your app.
