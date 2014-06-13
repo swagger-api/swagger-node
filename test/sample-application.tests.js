@@ -66,6 +66,25 @@ describe('sample application', function(){
     });
   });
 
+  describe('pipeline /pet/hello/:name', function(){
+    it('should return message built by pipeline', function(done){
+      request(endpoint + '/pet/hello/fido', {json:true}, function(err, res, body){
+        body.message.should.equal('Hello fido!');
+        res.statusCode.should.equal(200);
+        done(err);
+      });
+    });
+
+    it('should also work with trailing slash', function(done){
+      request(endpoint + '/pet/hello/fido/', {json:true}, function(err, res, body){
+        body.message.should.equal('Hello fido!');
+        res.statusCode.should.equal(200);
+        done(err);
+      });
+    });
+  });
+
+
 
   describe('error handling', function(){
     it('should use the express error handler', function(done){

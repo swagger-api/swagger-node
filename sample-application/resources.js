@@ -8,7 +8,7 @@ var petData = require("./service.js");
 // the description will be picked up in the resource listing
 exports.findById = {
   'spec': {
-    description : "Operations about pets",  
+    description : "Operations about pets",
     path : "/pet/{petId}",
     method: "GET",
     summary : "Find pet by ID",
@@ -35,7 +35,7 @@ exports.findByStatus = {
     path : "/pet/findByStatus",
     notes : "Multiple status values can be provided with comma-separated strings",
     summary : "Find pets by status",
-    method: "GET",    
+    method: "GET",
     parameters : [
       param.query("status", "Status in the store", "string", true, ["available","pending","sold"], "available")
     ],
@@ -45,7 +45,7 @@ exports.findByStatus = {
     },
     responseMessages : [swe.invalid('status')],
     nickname : "findPetsByStatus"
-  },  
+  },
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
     if (!statusString) {
@@ -61,7 +61,7 @@ exports.findByTags = {
     path : "/pet/findByTags",
     notes : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
     summary : "Find pets by tags",
-    method: "GET",    
+    method: "GET",
     parameters : [param.query("tags", "Tags to filter by", "string", true)],
     type : "array",
     items: {
@@ -89,7 +89,7 @@ exports.addPet = {
     parameters : [param.body("Pet", "Pet object that needs to be added to the store", "Pet")],
     responseMessages : [swe.invalid('input')],
     nickname : "addPet"
-  },  
+  },
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
@@ -98,7 +98,7 @@ exports.addPet = {
     else{
 	    petData.addPet(body);
 	    res.send(200);
-	  }  
+	  }
   }
 };
 
@@ -106,12 +106,12 @@ exports.updatePet = {
   'spec': {
     path : "/pet",
     notes : "updates a pet in the store",
-    method: "PUT",    
+    method: "PUT",
     summary : "Update an existing pet",
     parameters : [param.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
     nickname : "addPet"
-  },  
+  },
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
@@ -132,11 +132,37 @@ exports.deletePet = {
     summary : "Remove an existing pet",
     parameters : [param.path("id", "ID of pet that needs to be removed", "string")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')],
-    nickname : "deletePet" 
-  },  
+    nickname : "deletePet"
+  },
   'action': function(req, res) {
     var id = parseInt(req.params.id);
     petData.deletePet(id)
     res.send(204);
   }
 };
+
+
+exports.helloPet = {
+  spec: {
+    path : "/pet/hello/{name}",
+    notes : "says hello to a pet using pipeline",
+    method: "GET",
+    summary : "Says hello to pet",
+    parameters : [param.path("name", "Pet's name", "string")],
+    responseMessages : [swe.invalid('id'), swe.notFound('pet')],
+    nickname : "helloPet"
+  },
+  action: [
+    function(req, res, next) {
+      req.petFormat = 'Hello {name}!';
+      next();
+    },
+    function(req, res) {
+      var name = req.params.name;
+      var message = req.petFormat.replace('{name}', name);
+      res.json({message: message});
+    }
+  ]
+};
+
+
