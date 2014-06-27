@@ -1,1 +1,1 @@
-module.exports = require("./lib/swagger.js");
+module.exports = require('./lib');
