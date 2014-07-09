@@ -66,6 +66,16 @@ describe('sample application', function(){
     });
   });
 
+
+  describe('error handling', function(){
+    it('should use the express error handler', function(done){
+      request(endpoint + '/throw/some/error', {json: true},  function(err, res, body){
+        body.should.equal('we just threw an error for a test case!');
+        done();
+      });
+    });
+  });
+
   //I couldnt get this one to work.
   /*describe('/pet/findByTags', function(){
     it('should return pets', function(done){

@@ -1,15 +1,15 @@
 // ### Swagger Sample Application
-// 
+//
 // This is a sample application which uses the [swagger-node-express](https://github.com/wordnik/swagger-node-express)
 // module.  The application is organized in the following manner:
 //
 // #### petResources.js
-// 
+//
 // All API methods for this petstore implementation live in this file and are added to the swagger middleware.
 //
 // #### models.js
 //
-// This contains all model definitions which are sent & received from the API methods. 
+// This contains all model definitions which are sent & received from the API methods.
 //
 // #### petData.js
 //
@@ -19,11 +19,11 @@
 var express = require("express")
  , url = require("url")
  , cors = require("cors")
- , swagger = require("../lib/swagger.js");
+ , app = express()
+ , swagger = require("../").createNew(app);
 
 var petResources = require("./resources.js");
 
-var app = express();
 
 var corsOptions = {
   credentials: true,
@@ -43,9 +43,6 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(cors(corsOptions));
 
-// Set the main handler in swagger to the express app
-swagger.setAppHandler(app);
-
 // This is a sample validator.  It simply says that for _all_ POST, DELETE, PUT
 // methods, the header `api_key` OR query param `api_key` must be equal
 // to the string literal `special-key`.  All other HTTP ops are A-OK
@@ -57,7 +54,7 @@ swagger.addValidator(
       if (!apiKey) {
         apiKey = url.parse(req.url,true).query["api_key"]; }
       if ("special-key" == apiKey) {
-        return true; 
+        return true;
       }
       return false;
     }
@@ -114,6 +111,17 @@ app.get(/^\/docs(\/.*)?$/, function(req, res, next) {
   // take off leading /docs so that connect locates file correctly
   req.url = req.url.substr('/docs'.length);
   return docs_handler(req, res, next);
+});
+
+app.get('/throw/some/error', function(){
+  throw {
+    status: 500,
+    message: 'we just threw an error for a test case!'
+  };
+});
+
+app.use(function(err, req, res, next){
+  res.send(err.status, err.message);
 });
 
 // Start the server on port 8002
