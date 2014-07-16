@@ -72,7 +72,7 @@ swagger.addValidator(
 
 ```
 
-You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/wordnik/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see [here](https://github.com/wordnik/swagger-node-express/blob/master/Apps/petstore/models.js) for an example), or you can add them as such:
+You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/wordnik/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see [here](https://github.com/wordnik/swagger-node-express/blob/master/sample-application/models.js) for an example), or you can add them as such:
 
 ```js
 swagger.addModels(models);
