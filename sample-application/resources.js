@@ -76,8 +76,7 @@ exports.findByTags = {
       return swe.invalid('tag', res); }
 
     var output = petData.findPetByTags(tagsString);
-    sw.setHeaders(res);
-    res.send(JSON.stringify(data));
+    res.send(JSON.stringify(output));
   }
 };
 
