@@ -32,7 +32,7 @@ exports.findById = {
 
 exports.findByStatus = {
   'spec': {
-    path : "/pet/findByStatus",
+    path : "/pet/find/byStatus", // /pet/findByStatus matches the above route (/pet/{petId}) with findByStatus being the petId
     notes : "Multiple status values can be provided with comma-separated strings",
     summary : "Find pets by status",
     method: "GET",    
@@ -58,7 +58,7 @@ exports.findByStatus = {
 
 exports.findByTags = {
   'spec': {
-    path : "/pet/findByTags",
+    path : "/pet/find/byTags", // /pet/findByTags matches the above route (/pet/{petId}) with findByTags being the petId
     notes : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
     summary : "Find pets by tags",
     method: "GET",    
