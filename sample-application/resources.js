@@ -137,7 +137,7 @@ exports.deletePet = {
   },  
   'action': function(req, res) {
     var id = parseInt(req.params.id);
-    petData.deletePet(id)
+    petData.deletePet(id);
     res.send(204);
   }
 };
