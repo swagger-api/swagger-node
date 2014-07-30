@@ -26,7 +26,7 @@ exports.findById = {
     var pet = petData.getPetById(id);
 
     if(pet) res.send(JSON.stringify(pet));
-    else throw swe.notFound('pet',res);
+    else swe.notFound('pet',res);
   }
 };
 
@@ -49,7 +49,7 @@ exports.findByStatus = {
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
     if (!statusString) {
-      return swe.invalid('status', res); }
+      swe.invalid('status', res); }
 
     var output = petData.findPetByStatus(statusString);
     res.send(JSON.stringify(output));
@@ -93,11 +93,11 @@ exports.addPet = {
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
-      return swe.invalid('pet', res);
+      swe.invalid('pet', res);
     }
     else{
 	    petData.addPet(body);
-	    res.send(200);
+	    res.send();
 	  }  
   }
 };
@@ -115,11 +115,11 @@ exports.updatePet = {
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
-      return swe.invalid('pet', res);
+      swe.invalid('pet', res);
     }
     else {
 	    petData.addPet(body);
-	    res.send(200);
+	    res.send();
 	  }
   }
 };
