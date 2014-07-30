@@ -49,7 +49,7 @@ exports.findByStatus = {
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
     if (!statusString) {
-      throw swe.invalid('status'); }
+      return swe.invalid('status', res); }
 
     var output = petData.findPetByStatus(statusString);
     res.send(JSON.stringify(output));
@@ -73,7 +73,8 @@ exports.findByTags = {
   'action': function (req,res) {
     var tagsString = url.parse(req.url,true).query["tags"];
     if (!tagsString) {
-      throw swe.invalid('tag'); }
+      return swe.invalid('tag', res); }
+
     var output = petData.findPetByTags(tagsString);
     sw.setHeaders(res);
     res.send(JSON.stringify(data));
@@ -93,7 +94,7 @@ exports.addPet = {
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
-      throw swe.invalid('pet');
+      return swe.invalid('pet', res);
     }
     else{
 	    petData.addPet(body);
@@ -115,7 +116,7 @@ exports.updatePet = {
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
-      throw swe.invalid('pet');
+      return swe.invalid('pet', res);
     }
     else {
 	    petData.addPet(body);
