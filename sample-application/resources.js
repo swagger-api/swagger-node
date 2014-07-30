@@ -16,7 +16,7 @@ exports.findById = {
     type : "Pet",
     nickname : "getPetById",
     produces : ["application/json"],
-    parameters : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    parameters : [param.path("petId", "ID of pet that needs to be fetched", "integer")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')]
   },
   'action': function (req,res) {
@@ -130,7 +130,7 @@ exports.deletePet = {
     notes : "removes a pet from the store",
     method: "DELETE",
     summary : "Remove an existing pet",
-    parameters : [param.path("id", "ID of pet that needs to be removed", "string")],
+    parameters : [param.path("id", "ID of pet that needs to be removed", "integer")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')],
     nickname : "deletePet" 
   },  
