@@ -121,7 +121,10 @@ app.get('/throw/some/error', function(){
 });
 
 app.use(function(err, req, res, next){
-  res.send(err.status, err.message);
+  var status = err.status || err.code || 500;
+  var message = err.message || 'An error has occurred - ' + err;
+
+  res.send(status, message);
 });
 
 // Start the server on port 8002
