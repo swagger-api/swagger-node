@@ -16,7 +16,7 @@ exports.findById = {
     type : "Pet",
     nickname : "getPetById",
     produces : ["application/json"],
-    parameters : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    parameters : [param.path("petId", "ID of pet that needs to be fetched", "integer")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')]
   },
   'action': function (req,res) {
@@ -26,13 +26,13 @@ exports.findById = {
     var pet = petData.getPetById(id);
 
     if(pet) res.send(JSON.stringify(pet));
-    else throw swe.notFound('pet',res);
+    else swe.notFound('pet',res);
   }
 };
 
 exports.findByStatus = {
   'spec': {
-    path : "/pet/findByStatus",
+    path : "/pet/find/byStatus", // /pet/findByStatus matches the above route (/pet/{petId}) with findByStatus being the petId
     notes : "Multiple status values can be provided with comma-separated strings",
     summary : "Find pets by status",
     method: "GET",    
@@ -49,7 +49,7 @@ exports.findByStatus = {
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
     if (!statusString) {
-      throw swe.invalid('status'); }
+      swe.invalid('status', res); }
 
     var output = petData.findPetByStatus(statusString);
     res.send(JSON.stringify(output));
@@ -58,7 +58,7 @@ exports.findByStatus = {
 
 exports.findByTags = {
   'spec': {
-    path : "/pet/findByTags",
+    path : "/pet/find/byTags", // /pet/findByTags matches the above route (/pet/{petId}) with findByTags being the petId
     notes : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
     summary : "Find pets by tags",
     method: "GET",    
@@ -73,10 +73,10 @@ exports.findByTags = {
   'action': function (req,res) {
     var tagsString = url.parse(req.url,true).query["tags"];
     if (!tagsString) {
-      throw swe.invalid('tag'); }
+      return swe.invalid('tag', res); }
+
     var output = petData.findPetByTags(tagsString);
-    sw.setHeaders(res);
-    res.send(JSON.stringify(data));
+    res.send(JSON.stringify(output));
   }
 };
 
@@ -93,11 +93,11 @@ exports.addPet = {
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
-      throw swe.invalid('pet');
+      swe.invalid('pet', res);
     }
     else{
 	    petData.addPet(body);
-	    res.send(200);
+	    res.send();
 	  }  
   }
 };
@@ -115,11 +115,11 @@ exports.updatePet = {
   'action': function(req, res) {
     var body = req.body;
     if(!body || !body.id){
-      throw swe.invalid('pet');
+      swe.invalid('pet', res);
     }
     else {
 	    petData.addPet(body);
-	    res.send(200);
+	    res.send();
 	  }
   }
 };
@@ -130,13 +130,13 @@ exports.deletePet = {
     notes : "removes a pet from the store",
     method: "DELETE",
     summary : "Remove an existing pet",
-    parameters : [param.path("id", "ID of pet that needs to be removed", "string")],
+    parameters : [param.path("id", "ID of pet that needs to be removed", "integer")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')],
     nickname : "deletePet" 
   },  
   'action': function(req, res) {
     var id = parseInt(req.params.id);
-    petData.deletePet(id)
+    petData.deletePet(id);
     res.send(204);
   }
 };

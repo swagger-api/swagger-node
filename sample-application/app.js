@@ -53,10 +53,7 @@ swagger.addValidator(
       var apiKey = req.headers["api_key"];
       if (!apiKey) {
         apiKey = url.parse(req.url,true).query["api_key"]; }
-      if ("special-key" == apiKey) {
-        return true;
-      }
-      return false;
+      return "special-key" == apiKey;
     }
     return true;
   }
@@ -121,7 +118,10 @@ app.get('/throw/some/error', function(){
 });
 
 app.use(function(err, req, res, next){
-  res.send(err.status, err.message);
+  var status = err.status || err.code || 500;
+  var message = err.message || 'An error has occurred - ' + err;
+
+  res.send(status, message);
 });
 
 // Start the server on port 8002
