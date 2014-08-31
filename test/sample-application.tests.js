@@ -76,14 +76,13 @@ describe('sample application', function(){
     });
   });
 
-  //I couldnt get this one to work.
-  /*describe('/pet/findByTags', function(){
+  describe('/pet/findByTags', function(){
     it('should return pets', function(done){
-      request(endpoint + '/pet/findByTags?tags=1', {json:true}, function(err, res, body){
+      request(endpoint + '/pet/findByTags?tags=tag1', {json:true}, function(err, res, body){
         res.statusCode.should.equal(200);
         done(err);
       });
     });
-  });*/
+  });
 
 });
