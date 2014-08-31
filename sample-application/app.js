@@ -66,9 +66,9 @@ var models = require("./models.js");
 
 // Add models and methods to swagger
 swagger.addModels(models)
-  .addGet(petResources.findById)
-  .addGet(petResources.findByTags)
-  .addGet(petResources.findByStatus)
+  .addGet(petResources.findByTags)    // - /pet/findByTags
+  .addGet(petResources.findByStatus)  // - /pet/findByStatus
+  .addGet(petResources.findById)      // - /pet/{petId}
   .addPost(petResources.addPet)
   .addPut(petResources.updatePet)
   .addDelete(petResources.deletePet);
@@ -121,7 +121,7 @@ app.get('/throw/some/error', function(){
 });
 
 app.use(function(err, req, res, next){
-  res.send(err.status, err.message);
+  res.send(err.code, err.message);
 });
 
 // Start the server on port 8002
