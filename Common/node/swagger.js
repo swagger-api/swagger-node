@@ -25,7 +25,7 @@ var apiVersion = "1.0";
 var resources = {};
 var validators = [];
 var appHandler = null;
-var allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
+var allowedMethods = ['get', 'post', 'put', 'patch', 'del'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
@@ -470,7 +470,7 @@ function addPost() {
 // adds delete handler
 
 function addDelete() {
-  addHandlers('DELETE', arguments);
+  addHandlers('DEL', arguments);
   return this;
 }
 
@@ -710,6 +710,7 @@ exports.addGET = addGet;
 exports.addPOST = addPost;
 exports.addPUT = addPut;
 exports.addDELETE = addDelete;
+exports.addDel = addDelete;
 exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
 exports.setErrorHandler = setErrorHandler;
