@@ -385,6 +385,9 @@ function addMethod(app, callback, spec) {
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
+  if (currentMethod === 'delete') {
+    currentMethod = 'del';
+  }
   if (allowedMethods.indexOf(currentMethod) > -1) {
     app[currentMethod](fullPath, function (req, res, next) {
       exports.setHeaders(res);
@@ -470,7 +473,7 @@ function addPost() {
 // adds delete handler
 
 function addDelete() {
-  addHandlers('DEL', arguments);
+  addHandlers('DELETE', arguments);
   return this;
 }
 
