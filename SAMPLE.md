@@ -10,7 +10,7 @@ npm install
 
 To run the sample server:
 ```js
-node Apps/petstore/main.js
+node sample-application/app.js
 ```
 
 Then visit the server directly from your browser:
