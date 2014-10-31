@@ -1,17 +1,17 @@
 # Swagger for Express and Node.js
 
-[![Build Status](https://travis-ci.org/wordnik/swagger-node-express.png)](https://travis-ci.org/wordnik/swagger-node-express)
+[![Build Status](https://travis-ci.org/swagger-api/swagger-node-express.png)](https://travis-ci.org/swagger-api/swagger-node-express)
 
-This is a [Swagger](https://github.com/wordnik/swagger-spec) module for the [Express](http://expressjs.com) web application framework for Node.js.
+This is a [Swagger](https://github.com/swagger-api/swagger-spec) module for the [Express](http://expressjs.com) web application framework for Node.js.
 
-Try a sample!  The source for a [functional sample](https://github.com/wordnik/swagger-node-express/blob/master/SAMPLE.md) is available on github.
+Try a sample!  The source for a [functional sample](https://github.com/swagger-api/swagger-node-express/blob/master/SAMPLE.md) is available on github.
 
 ## What's Swagger?
 
 The goal of Swagger™ is to define a standard, language-agnostic interface to REST APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined via Swagger, a consumer can understand and interact with the remote service with a minimal amount of implementation logic. Similar to what interfaces have done for lower-level programming, Swagger removes the guesswork in calling the service.
 
 
-Check out [Swagger-Spec](https://github.com/wordnik/swagger-spec) for additional information about the Swagger project, including additional libraries with support for other languages and more. 
+Check out [Swagger-Spec](https://github.com/swagger-api/swagger-spec) for additional information about the Swagger project, including additional libraries with support for other languages and more. 
 
 
 ## Installation
@@ -72,7 +72,7 @@ swagger.addValidator(
 
 ```
 
-You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/wordnik/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see [here](https://github.com/wordnik/swagger-node-express/blob/master/sample-application/models.js) for an example), or you can add them as such:
+You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/swagger-api/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see [here](https://github.com/swagger-api/swagger-node-express/blob/master/sample-application/models.js) for an example), or you can add them as such:
 
 ```js
 swagger.addModels(models);
@@ -128,7 +128,7 @@ and the server can be started:
 app.listen(8002);
 ```
 
-Now you can open up a [swagger-ui](https://github.com/wordnik/swagger-ui) and browse your API, generate a client with [swagger-codegen](https://github.com/wordnik/swagger-codegen), and be happy.
+Now you can open up a [swagger-ui](https://github.com/swagger-api/swagger-ui) and browse your API, generate a client with [swagger-codegen](https://github.com/swagger-api/swagger-codegen), and be happy.
 
 
 ## Additional Configurations
