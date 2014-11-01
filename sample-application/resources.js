@@ -1,5 +1,5 @@
 var sw = require("../");
-var param = require("../lib/paramTypes.js");
+var paramTypes = sw.paramTypes;
 var url = require("url");
 var swe = sw.errors;
 
@@ -16,7 +16,7 @@ exports.findById = {
     type : "Pet",
     nickname : "getPetById",
     produces : ["application/json"],
-    parameters : [param.path("petId", "ID of pet that needs to be fetched", "string")],
+    parameters : [paramTypes.path("petId", "ID of pet that needs to be fetched", "string")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')]
   },
   'action': function (req,res) {
@@ -37,7 +37,7 @@ exports.findByStatus = {
     summary : "Find pets by status",
     method: "GET",    
     parameters : [
-      param.query("status", "Status in the store", "string", true, ["available","pending","sold"], "available")
+      paramTypes.query("status", "Status in the store", "string", true, ["available","pending","sold"], "available")
     ],
     type : "array",
     items: {
@@ -62,7 +62,7 @@ exports.findByTags = {
     notes : "Multiple tags can be provided with comma-separated strings. Use tag1, tag2, tag3 for testing.",
     summary : "Find pets by tags",
     method: "GET",    
-    parameters : [param.query("tags", "Tags to filter by", "string", true)],
+    parameters : [paramTypes.query("tags", "Tags to filter by", "string", true)],
     type : "array",
     items: {
       $ref: "Pet"
@@ -86,7 +86,7 @@ exports.addPet = {
     notes : "adds a pet to the store",
     summary : "Add a new pet to the store",
     method: "POST",
-    parameters : [param.body("Pet", "Pet object that needs to be added to the store", "Pet")],
+    parameters : [paramTypes.body("Pet", "Pet object that needs to be added to the store", "Pet")],
     responseMessages : [swe.invalid('input')],
     nickname : "addPet"
   },  
@@ -108,7 +108,7 @@ exports.updatePet = {
     notes : "updates a pet in the store",
     method: "PUT",    
     summary : "Update an existing pet",
-    parameters : [param.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
+    parameters : [paramTypes.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
     nickname : "addPet"
   },  
@@ -130,7 +130,7 @@ exports.deletePet = {
     notes : "removes a pet from the store",
     method: "DELETE",
     summary : "Remove an existing pet",
-    parameters : [param.path("id", "ID of pet that needs to be removed", "string")],
+    parameters : [paramTypes.path("id", "ID of pet that needs to be removed", "string")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet')],
     nickname : "deletePet" 
   },  
