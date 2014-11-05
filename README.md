@@ -168,6 +168,12 @@ app.use("/v1", subpath);
 swagger.setAppHandler(subpath);
 ```
 
+Be sure to set your `basePath` correctly to reflect this subpath:
+
+```
+swagger.configure("http://petstore.swagger.wordnik.com/v1", "0.1");
+```
+
 Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
 
 ### Allows special headers
