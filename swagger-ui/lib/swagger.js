@@ -1,5 +1,5 @@
 // swagger.js
-// version 2.0.41
+// version 2.0.44
 
 (function () {
 
@@ -498,7 +498,7 @@
           }
         }
         o.nickname = this.sanitize(o.nickname);
-        var op = new SwaggerOperation(o.nickname, resource_path, method, o.parameters, o.summary, o.notes, type, responseMessages, this, consumes, produces, o.authorizations);
+        var op = new SwaggerOperation(o.nickname, resource_path, method, o.parameters, o.summary, o.notes, type, responseMessages, this, consumes, produces, o.authorizations, o.deprecated);
         this.operations[op.nickname] = op;
         output.push(this.operationsArray.push(op));
       }
@@ -691,7 +691,7 @@
     return str;
   };
 
-  var SwaggerOperation = function (nickname, path, method, parameters, summary, notes, type, responseMessages, resource, consumes, produces, authorizations) {
+  var SwaggerOperation = function (nickname, path, method, parameters, summary, notes, type, responseMessages, resource, consumes, produces, authorizations, deprecated) {
     var _this = this;
 
     var errors = [];
@@ -707,6 +707,7 @@
     this.consumes = consumes;
     this.produces = produces;
     this.authorizations = authorizations;
+    this.deprecated = deprecated;
     this["do"] = __bind(this["do"], this);
 
     if (errors.length > 0) {
@@ -738,7 +739,7 @@
       }
       param.type = type;
 
-      if (type.toLowerCase() === 'boolean') {
+      if (type && type.toLowerCase() === 'boolean') {
         param.allowableValues = {};
         param.allowableValues.values = ["true", "false"];
       }
@@ -973,24 +974,21 @@
     var queryParams = "";
     for (var i = 0; i < params.length; i++) {
       var param = params[i];
-      if (param.paramType === 'query') {
-        if (args[param.name] !== undefined) {
-          var value = args[param.name];
-          if (queryParams !== '')
-            queryParams += '&';
-          if (Array.isArray(value)) {
-            var j;
-            var output = '';
-            for(j = 0; j < value.length; j++) {
-              if(j > 0)
-                output += ',';
-              output += encodeURIComponent(value[j]);
-            }
-            queryParams += encodeURIComponent(param.name) + '=' + output;
-          }
-          else {
-            queryParams += encodeURIComponent(param.name) + '=' + encodeURIComponent(args[param.name]);            
-          }
+      if(param.paramType === 'query') {
+        if (queryParams !== '')
+          queryParams += '&';    
+        if (Array.isArray(param)) {
+          var j;   
+          var output = '';   
+          for(j = 0; j < param.length; j++) {    
+            if(j > 0)    
+              output += ',';   
+            output += encodeURIComponent(param[j]);    
+          }    
+          queryParams += encodeURIComponent(param.name) + '=' + output;    
+        }    
+        else {   
+          queryParams += encodeURIComponent(param.name) + '=' + encodeURIComponent(args[param.name]);                
         }
       }
     }
@@ -1489,8 +1487,8 @@
         data: response.content.data
       };
 
-      var contentType = (response._headers["content-type"] || response._headers["Content-Type"] || null)
-
+      var headers = response._headers.normalized || response._headers;
+      var contentType = (headers["content-type"] || headers["Content-Type"] || null)
       if (contentType != null) {
         if (contentType.indexOf("application/json") == 0 || contentType.indexOf("+json") > 0) {
           if (response.content.data && response.content.data !== "")
@@ -1659,6 +1657,8 @@
   var sampleModels = {};
   var cookies = {};
 
+  e.parameterMacro = parameterMacro;
+  e.modelPropertyMacro = modelPropertyMacro;
   e.SampleModels = sampleModels;
   e.SwaggerHttp = SwaggerHttp;
   e.SwaggerRequest = SwaggerRequest;

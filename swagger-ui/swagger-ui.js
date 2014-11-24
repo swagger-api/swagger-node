@@ -1,55 +1,55 @@
 // swagger-ui.js
-// version 2.1.0-alpha.3
+// version 2.1.0-alpha.6
 $(function() {
 
-	// Helper function for vertically aligning DOM elements
-	// http://www.seodenver.com/simple-vertical-align-plugin-for-jquery/
-	$.fn.vAlign = function() {
-		return this.each(function(i){
-		var ah = $(this).height();
-		var ph = $(this).parent().height();
-		var mh = (ph - ah) / 2;
-		$(this).css('margin-top', mh);
-		});
-	};
+  // Helper function for vertically aligning DOM elements
+  // http://www.seodenver.com/simple-vertical-align-plugin-for-jquery/
+  $.fn.vAlign = function() {
+    return this.each(function(i){
+    var ah = $(this).height();
+    var ph = $(this).parent().height();
+    var mh = (ph - ah) / 2;
+    $(this).css('margin-top', mh);
+    });
+  };
 
-	$.fn.stretchFormtasticInputWidthToParent = function() {
-		return this.each(function(i){
-		var p_width = $(this).closest("form").innerWidth();
-		var p_padding = parseInt($(this).closest("form").css('padding-left') ,10) + parseInt($(this).closest("form").css('padding-right'), 10);
-		var this_padding = parseInt($(this).css('padding-left'), 10) + parseInt($(this).css('padding-right'), 10);
-		$(this).css('width', p_width - p_padding - this_padding);
-		});
-	};
+  $.fn.stretchFormtasticInputWidthToParent = function() {
+    return this.each(function(i){
+    var p_width = $(this).closest("form").innerWidth();
+    var p_padding = parseInt($(this).closest("form").css('padding-left') ,10) + parseInt($(this).closest("form").css('padding-right'), 10);
+    var this_padding = parseInt($(this).css('padding-left'), 10) + parseInt($(this).css('padding-right'), 10);
+    $(this).css('width', p_width - p_padding - this_padding);
+    });
+  };
 
-	$('form.formtastic li.string input, form.formtastic textarea').stretchFormtasticInputWidthToParent();
+  $('form.formtastic li.string input, form.formtastic textarea').stretchFormtasticInputWidthToParent();
 
-	// Vertically center these paragraphs
-	// Parent may need a min-height for this to work..
-	$('ul.downplayed li div.content p').vAlign();
+  // Vertically center these paragraphs
+  // Parent may need a min-height for this to work..
+  $('ul.downplayed li div.content p').vAlign();
 
-	// When a sandbox form is submitted..
-	$("form.sandbox").submit(function(){
+  // When a sandbox form is submitted..
+  $("form.sandbox").submit(function(){
 
-		var error_free = true;
+    var error_free = true;
 
-		// Cycle through the forms required inputs
- 		$(this).find("input.required").each(function() {
+    // Cycle through the forms required inputs
+    $(this).find("input.required").each(function() {
 
-			// Remove any existing error styles from the input
-			$(this).removeClass('error');
+      // Remove any existing error styles from the input
+      $(this).removeClass('error');
 
-			// Tack the error style on if the input is empty..
-			if ($(this).val() == '') {
-				$(this).addClass('error');
-				$(this).wiggle();
-				error_free = false;
-			}
+      // Tack the error style on if the input is empty..
+      if ($(this).val() == '') {
+        $(this).addClass('error');
+        $(this).wiggle();
+        error_free = false;
+      }
 
-		});
+    });
 
-		return error_free;
-	});
+    return error_free;
+  });
 
 });
 
@@ -83,106 +83,106 @@ if (Function.prototype.bind && console && typeof console.log == "object") {
 
 var Docs = {
 
-	shebang: function() {
+  shebang: function() {
 
-		// If shebang has an operation nickname in it..
-		// e.g. /docs/#!/words/get_search
-		var fragments = $.param.fragment().split('/');
-		fragments.shift(); // get rid of the bang
+    // If shebang has an operation nickname in it..
+    // e.g. /docs/#!/words/get_search
+    var fragments = $.param.fragment().split('/');
+    fragments.shift(); // get rid of the bang
 
-		switch (fragments.length) {
-			case 1:
-				// Expand all operations for the resource and scroll to it
-				var dom_id = 'resource_' + fragments[0];
+    switch (fragments.length) {
+      case 1:
+        // Expand all operations for the resource and scroll to it
+        var dom_id = 'resource_' + fragments[0];
 
-				Docs.expandEndpointListForResource(fragments[0]);
-				$("#"+dom_id).slideto({highlight: false});
-				break;
-			case 2:
-				// Refer to the endpoint DOM element, e.g. #words_get_search
+        Docs.expandEndpointListForResource(fragments[0]);
+        $("#"+dom_id).slideto({highlight: false});
+        break;
+      case 2:
+        // Refer to the endpoint DOM element, e.g. #words_get_search
 
         // Expand Resource
         Docs.expandEndpointListForResource(fragments[0]);
         $("#"+dom_id).slideto({highlight: false});
 
         // Expand operation
-				var li_dom_id = fragments.join('_');
-				var li_content_dom_id = li_dom_id + "_content";
+        var li_dom_id = fragments.join('_');
+        var li_content_dom_id = li_dom_id + "_content";
 
 
-				Docs.expandOperation($('#'+li_content_dom_id));
-				$('#'+li_dom_id).slideto({highlight: false});
-				break;
-		}
+        Docs.expandOperation($('#'+li_content_dom_id));
+        $('#'+li_dom_id).slideto({highlight: false});
+        break;
+    }
 
-	},
+  },
 
-	toggleEndpointListForResource: function(resource) {
-		var elem = $('li#resource_' + Docs.escapeResourceName(resource) + ' ul.endpoints');
-		if (elem.is(':visible')) {
-			Docs.collapseEndpointListForResource(resource);
-		} else {
-			Docs.expandEndpointListForResource(resource);
-		}
-	},
+  toggleEndpointListForResource: function(resource) {
+    var elem = $('li#resource_' + Docs.escapeResourceName(resource) + ' ul.endpoints');
+    if (elem.is(':visible')) {
+      Docs.collapseEndpointListForResource(resource);
+    } else {
+      Docs.expandEndpointListForResource(resource);
+    }
+  },
 
-	// Expand resource
-	expandEndpointListForResource: function(resource) {
-		var resource = Docs.escapeResourceName(resource);
-		if (resource == '') {
-			$('.resource ul.endpoints').slideDown();
-			return;
-		}
-		
-		$('li#resource_' + resource).addClass('active');
+  // Expand resource
+  expandEndpointListForResource: function(resource) {
+    var resource = Docs.escapeResourceName(resource);
+    if (resource == '') {
+      $('.resource ul.endpoints').slideDown();
+      return;
+    }
+    
+    $('li#resource_' + resource).addClass('active');
 
-		var elem = $('li#resource_' + resource + ' ul.endpoints');
-		elem.slideDown();
-	},
+    var elem = $('li#resource_' + resource + ' ul.endpoints');
+    elem.slideDown();
+  },
 
-	// Collapse resource and mark as explicitly closed
-	collapseEndpointListForResource: function(resource) {
-		var resource = Docs.escapeResourceName(resource);
-		$('li#resource_' + resource).removeClass('active');
+  // Collapse resource and mark as explicitly closed
+  collapseEndpointListForResource: function(resource) {
+    var resource = Docs.escapeResourceName(resource);
+    $('li#resource_' + resource).removeClass('active');
 
-		var elem = $('li#resource_' + resource + ' ul.endpoints');
-		elem.slideUp();
-	},
+    var elem = $('li#resource_' + resource + ' ul.endpoints');
+    elem.slideUp();
+  },
 
-	expandOperationsForResource: function(resource) {
-		// Make sure the resource container is open..
-		Docs.expandEndpointListForResource(resource);
-		
-		if (resource == '') {
-			$('.resource ul.endpoints li.operation div.content').slideDown();
-			return;
-		}
+  expandOperationsForResource: function(resource) {
+    // Make sure the resource container is open..
+    Docs.expandEndpointListForResource(resource);
+    
+    if (resource == '') {
+      $('.resource ul.endpoints li.operation div.content').slideDown();
+      return;
+    }
 
-		$('li#resource_' + Docs.escapeResourceName(resource) + ' li.operation div.content').each(function() {
-			Docs.expandOperation($(this));
-		});
-	},
+    $('li#resource_' + Docs.escapeResourceName(resource) + ' li.operation div.content').each(function() {
+      Docs.expandOperation($(this));
+    });
+  },
 
-	collapseOperationsForResource: function(resource) {
-		// Make sure the resource container is open..
-		Docs.expandEndpointListForResource(resource);
+  collapseOperationsForResource: function(resource) {
+    // Make sure the resource container is open..
+    Docs.expandEndpointListForResource(resource);
 
-		$('li#resource_' + Docs.escapeResourceName(resource) + ' li.operation div.content').each(function() {
-			Docs.collapseOperation($(this));
-		});
-	},
+    $('li#resource_' + Docs.escapeResourceName(resource) + ' li.operation div.content').each(function() {
+      Docs.collapseOperation($(this));
+    });
+  },
 
-	escapeResourceName: function(resource) {
-		return resource.replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
-	},
+  escapeResourceName: function(resource) {
+    return resource.replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
+  },
 
-	expandOperation: function(elem) {
-		elem.slideDown();
-	},
+  expandOperation: function(elem) {
+    elem.slideDown();
+  },
 
-	collapseOperation: function(elem) {
-		elem.slideUp();
-	}
+  collapseOperation: function(elem) {
+    elem.slideUp();
+  }
 };(function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['apikey_button_view'] = template(function (Handlebars,depth0,helpers,partials,data) {
@@ -231,13 +231,13 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n	<option value=\"";
+  buffer += "\n <option value=\"";
   stack1 = (typeof depth0 === functionType ? depth0.apply(depth0) : depth0);
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\">";
   stack1 = (typeof depth0 === functionType ? depth0.apply(depth0) : depth0);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</option>\n	";
+  buffer += "</option>\n  ";
   return buffer;
   }
 
@@ -573,36 +573,36 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		";
+  buffer += "\n   ";
   stack1 = helpers['if'].call(depth0, depth0.isFile, {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
+  buffer += "\n ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			<input type=\"file\" name='";
+  buffer += "\n     <input type=\"file\" name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'/>\n			<div class=\"parameter-content-type\" />\n		";
+    + "'/>\n      <div class=\"parameter-content-type\" />\n    ";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			";
+  buffer += "\n     ";
   stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\n   ";
   return buffer;
   }
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<textarea class='body-textarea' name='";
+  buffer += "\n       <textarea class='body-textarea' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -610,43 +610,43 @@ function program5(depth0,data) {
   if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</textarea>\n			";
+    + "</textarea>\n      ";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<textarea class='body-textarea' name='";
+  buffer += "\n       <textarea class='body-textarea' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'></textarea>\n				<br />\n				<div class=\"parameter-content-type\" />\n			";
+    + "'></textarea>\n        <br />\n        <div class=\"parameter-content-type\" />\n      ";
   return buffer;
   }
 
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		";
+  buffer += "\n   ";
   stack1 = helpers['if'].call(depth0, depth0.isFile, {hash:{},inverse:self.program(10, program10, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
+  buffer += "\n ";
   return buffer;
   }
 function program10(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			";
+  buffer += "\n     ";
   stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(13, program13, data),fn:self.program(11, program11, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\n   ";
   return buffer;
   }
 function program11(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<input class='parameter' minlength='0' name='";
+  buffer += "\n       <input class='parameter' minlength='0' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -654,18 +654,18 @@ function program11(depth0,data) {
   if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'/>\n			";
+    + "'/>\n      ";
   return buffer;
   }
 
 function program13(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<input class='parameter' minlength='0' name='";
+  buffer += "\n       <input class='parameter' minlength='0' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "' placeholder='' type='text' value=''/>\n			";
+    + "' placeholder='' type='text' value=''/>\n      ";
   return buffer;
   }
 
@@ -673,7 +673,7 @@ function program13(depth0,data) {
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</td>\n<td>\n\n	";
+    + "</td>\n<td>\n\n  ";
   stack1 = helpers['if'].call(depth0, depth0.isBody, {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</td>\n<td>";
@@ -684,7 +684,7 @@ function program13(depth0,data) {
   if (stack1 = helpers.paramType) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.paramType; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "</td>\n<td>\n	<span class=\"model-signature\"></span>\n</td>\n";
+  buffer += "</td>\n<td>\n  <span class=\"model-signature\"></span>\n</td>\n";
   return buffer;
   });
 })();
@@ -712,7 +712,7 @@ function program5(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n      ";
-  stack1 = helpers['if'].call(depth0, depth0.defaultValue, {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
+  stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
   return buffer;
@@ -830,8 +830,8 @@ function program1(depth0,data) {
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "'>";
-  if (stack1 = helpers.defaultValue) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.defaultValue; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "</textarea>\n    ";
   return buffer;
@@ -841,7 +841,7 @@ function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, depth0.defaultValue, {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
   return buffer;
@@ -850,8 +850,8 @@ function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            ";
-  if (stack1 = helpers.defaultValue) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.defaultValue; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\n        ";
   return buffer;
@@ -898,8 +898,8 @@ function program1(depth0,data) {
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "'>";
-  if (stack1 = helpers.defaultValue) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.defaultValue; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "</textarea>\n    ";
   return buffer;
@@ -909,7 +909,7 @@ function program3(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n        ";
-  stack1 = helpers['if'].call(depth0, depth0.defaultValue, {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
   return buffer;
@@ -918,8 +918,8 @@ function program4(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n            ";
-  if (stack1 = helpers.defaultValue) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.defaultValue; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\n        ";
   return buffer;
@@ -961,110 +961,110 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		";
+  buffer += "\n   ";
   stack1 = helpers['if'].call(depth0, depth0.isFile, {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
+  buffer += "\n ";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			<input type=\"file\" name='";
+  buffer += "\n     <input type=\"file\" name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'/>\n		";
+    + "'/>\n    ";
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			";
-  stack1 = helpers['if'].call(depth0, depth0.defaultValue, {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  buffer += "\n     ";
+  stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\n   ";
   return buffer;
   }
 function program5(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<textarea class='body-textarea' placeholder='(required)' name='";
+  buffer += "\n       <textarea class='body-textarea' placeholder='(required)' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "'>";
-  if (stack1 = helpers.defaultValue) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.defaultValue; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</textarea>\n			";
+    + "</textarea>\n      ";
   return buffer;
   }
 
 function program7(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<textarea class='body-textarea' placeholder='(required)' name='";
+  buffer += "\n       <textarea class='body-textarea' placeholder='(required)' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'></textarea>\n				<br />\n				<div class=\"parameter-content-type\" />\n			";
+    + "'></textarea>\n        <br />\n        <div class=\"parameter-content-type\" />\n      ";
   return buffer;
   }
 
 function program9(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n		";
+  buffer += "\n   ";
   stack1 = helpers['if'].call(depth0, depth0.isFile, {hash:{},inverse:self.program(12, program12, data),fn:self.program(10, program10, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
+  buffer += "\n ";
   return buffer;
   }
 function program10(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			<input class='parameter' class='required' type='file' name='";
+  buffer += "\n     <input class='parameter' class='required' type='file' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'/>\n		";
+    + "'/>\n    ";
   return buffer;
   }
 
 function program12(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			";
-  stack1 = helpers['if'].call(depth0, depth0.defaultValue, {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  buffer += "\n     ";
+  stack1 = helpers['if'].call(depth0, depth0['default'], {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\n   ";
   return buffer;
   }
 function program13(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<input class='parameter required' minlength='1' name='";
+  buffer += "\n       <input class='parameter required' minlength='1' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "' placeholder='(required)' type='text' value='";
-  if (stack1 = helpers.defaultValue) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.defaultValue; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  if (stack1 = helpers['default']) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0['default']; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'/>\n			";
+    + "'/>\n      ";
   return buffer;
   }
 
 function program15(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n				<input class='parameter required' minlength='1' name='";
+  buffer += "\n       <input class='parameter required' minlength='1' name='";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "' placeholder='(required)' type='text' value=''/>\n			";
+    + "' placeholder='(required)' type='text' value=''/>\n      ";
   return buffer;
   }
 
@@ -1072,10 +1072,10 @@ function program15(depth0,data) {
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</td>\n<td>\n	";
+    + "</td>\n<td>\n  ";
   stack1 = helpers['if'].call(depth0, depth0.isBody, {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</td>\n<td>\n	<strong>";
+  buffer += "\n</td>\n<td>\n  <strong>";
   if (stack1 = helpers.description) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.description; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   if(stack1 || stack1 === 0) { buffer += stack1; }
@@ -1575,8 +1575,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       if (this.model.swaggerVersion === "2.0") {
         if ("validatorUrl" in opts.swaggerOptions) {
           return this.model.validatorUrl = opts.swaggerOptions.validatorUrl;
-        } else if (this.model.url.match(/https?:\/\/localhost/)) {
-          return this.model.validatorUrl = this.model.url;
+        } else if (this.model.url.indexOf("localhost") > 0) {
+          return this.model.validatorUrl = null;
         } else {
           return this.model.validatorUrl = "http://online.swagger.io/validator";
         }
@@ -1782,7 +1782,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.model.description = this.model.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
       }
       this.model.oauth = null;
-      log(this.model.authorizations);
       if (this.model.authorizations) {
         if (Array.isArray(this.model.authorizations)) {
           _ref5 = this.model.authorizations;
@@ -2211,7 +2210,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         url = response.request.url;
       }
       headers = response.headers;
-      contentType = headers && headers["Content-Type"] ? headers["Content-Type"].split(";")[0].trim() : null;
+      contentType = null;
+      if (headers) {
+        contentType = headers["Content-Type"] || headers["content-type"];
+        if (contentType) {
+          contentType = contentType.split(";")[0].trim();
+        }
+      }
       if (!content) {
         code = $('<code />').text("no content");
         pre = $('<pre class="json" />').append(code);
@@ -2349,6 +2354,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.model.isFile = true;
       }
       this.model["default"] = this.model["default"] || this.model.defaultValue;
+      if (this.model.allowableValues) {
+        this.model.isList = true;
+      }
       template = this.template();
       $(this.el).html(template(this.model));
       signatureModel = {
