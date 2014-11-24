@@ -26,7 +26,7 @@ exports.findById = {
     var pet = petData.getPetById(id);
 
     if(pet) res.send(JSON.stringify(pet));
-    else throw swe.notFound('pet',res);
+    else throw swe.notFound('pet', res);
   }
 };
 
@@ -49,7 +49,7 @@ exports.findByStatus = {
   'action': function (req,res) {
     var statusString = url.parse(req.url,true).query["status"];
     if (!statusString) {
-      throw swe.invalid('status'); }
+      throw swe.invalid('status', res); }
 
     var output = petData.findPetByStatus(statusString);
     res.send(JSON.stringify(output));
@@ -73,7 +73,7 @@ exports.findByTags = {
   'action': function (req,res) {
     var tagsString = url.parse(req.url,true).query["tags"];
     if (!tagsString) {
-      throw swe.invalid('tag'); }
+      throw swe.invalid('tag', res); }
     var output = petData.findPetByTags(tagsString);
     sw.setHeaders(res);
     res.send(JSON.stringify(output));
@@ -86,18 +86,19 @@ exports.addPet = {
     notes : "adds a pet to the store",
     summary : "Add a new pet to the store",
     method: "POST",
-    parameters : [paramTypes.body("Pet", "Pet object that needs to be added to the store", "Pet")],
+    parameters : [paramTypes.body("body", "Pet object that needs to be added to the store", "Pet")],
     responseMessages : [swe.invalid('input')],
     nickname : "addPet"
   },  
   'action': function(req, res) {
     var body = req.body;
-    if(!body || !body.id){
-      throw swe.invalid('pet');
+
+    if(typeof body === 'undefined' || typeof body.id === 'undefined'){
+      throw swe.invalid('pet', res);
     }
     else{
 	    petData.addPet(body);
-	    res.send(200);
+	    res.send(JSON.stringify(body));
 	  }  
   }
 };
@@ -108,18 +109,18 @@ exports.updatePet = {
     notes : "updates a pet in the store",
     method: "PUT",    
     summary : "Update an existing pet",
-    parameters : [paramTypes.body("Pet", "Pet object that needs to be updated in the store", "Pet")],
+    parameters : [paramTypes.body("body", "Pet object that needs to be updated in the store", "Pet")],
     responseMessages : [swe.invalid('id'), swe.notFound('pet'), swe.invalid('input')],
     nickname : "addPet"
   },  
   'action': function(req, res) {
     var body = req.body;
-    if(!body || !body.id){
-      throw swe.invalid('pet');
+    if(typeof body === 'undefined' || typeof body.id === 'undefined'){
+      throw swe.invalid('pet', res);
     }
     else {
 	    petData.addPet(body);
-	    res.send(200);
+	    res.send({'success': true});
 	  }
   }
 };
