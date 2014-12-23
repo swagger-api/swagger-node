@@ -25,7 +25,7 @@ var apiVersion = "1.0";
 var resources = {};
 var validators = [];
 var appHandler = null;
-var allowedMethods = ['get', 'post', 'put', 'patch', 'delete'];
+var allowedMethods = ['get', 'post', 'put', 'patch', 'del', 'head'];
 var allowedDataTypes = ['string', 'int', 'long', 'double', 'boolean', 'date', 'array'];
 var params = require(__dirname + '/paramTypes.js');
 var allModels = {};
@@ -73,7 +73,7 @@ function configure(bp, av) {
 
 function setHeaders(res) {
   res.header('Access-Control-Allow-Origin', "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, HEAD");
   res.header("Access-Control-Allow-Headers", "Content-Type, api_key");
   res.header("Content-Type", "application/json; charset=utf-8");
 }
@@ -385,6 +385,9 @@ function addMethod(app, callback, spec) {
   //  convert .{format} to .json, make path params happy
   var fullPath = spec.path.replace(formatString, jsonSuffix).replace(/\/{/g, "/:").replace(/\}/g, "");
   var currentMethod = spec.method.toLowerCase();
+  if (currentMethod === 'delete') {
+    currentMethod = 'del';
+  }
   if (allowedMethods.indexOf(currentMethod) > -1) {
     app[currentMethod](fullPath, function (req, res, next) {
       exports.setHeaders(res);
@@ -471,6 +474,13 @@ function addPost() {
 
 function addDelete() {
   addHandlers('DELETE', arguments);
+  return this;
+}
+
+// adds head handler
+
+function addHead() {
+  addHandlers('HEAD', arguments);
   return this;
 }
 
@@ -704,12 +714,15 @@ exports.resourceListing = resourceListing;
 exports.setHeaders = setHeaders;
 exports.addGet = addGet;
 exports.addPost = addPost;
+exports.addHead = addHead;
 exports.addPut = addPut;
 exports.addDelete = addDelete;
 exports.addGET = addGet;
 exports.addPOST = addPost;
+exports.addHEAD = addHead;
 exports.addPUT = addPut;
 exports.addDELETE = addDelete;
+exports.addDel = addDelete;
 exports.addModels = addModels;
 exports.setAppHandler = setAppHandler;
 exports.setErrorHandler = setErrorHandler;
