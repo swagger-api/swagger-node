@@ -34,8 +34,7 @@ Using NPM, include the `swagger-node-express` module in your `package.json` depe
 ```js
 // Load module dependencies.
 var express = require("express")
- , url = require("url")
- , swagger = require("swagger-node-express");
+ , url = require("url");
 
 // Create the application.
 var app = express();
@@ -43,7 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 // Couple the application to the Swagger module.
-swagger.setAppHandler(app);
+var swagger = require("swagger-node-express").createNew(app);
 ```
 
 You can optionally add a validator function, which is used to filter the swagger json and request operations:
