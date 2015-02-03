@@ -238,6 +238,8 @@ swagger.configureDeclaration('pet', {
 });
 ```
 
+Please note that `configureDeclaration` must come '''after''' the routes are defined (`addGet` etc) for the specified resource or it will not be applied.
+
 ## License
 
 Copyright 2014 Reverb Technologies, Inc.
