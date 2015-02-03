@@ -91,7 +91,7 @@ var findById = {
     "method": "GET",
     "parameters" : [swagger.paramTypes.path("petId", "ID of pet that needs to be fetched", "string")],
     "type" : "Pet",
-    "errorResponses" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
+    "responseMessages" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
     "nickname" : "getPetById"
   },
   'action': function (req,res) {
