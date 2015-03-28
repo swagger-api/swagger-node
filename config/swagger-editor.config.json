@@ -1,0 +1,22 @@
+{
+  "analytics": {
+    "google": {
+      "id": null
+    }
+  },
+  "disableCodeGen": true,
+  "disableNewUserIntro": true,
+  "examplesFolder": "/spec-files/",
+  "exampleFiles": [],
+  "autocompleteExtension": {},
+  "useBackendForStorage": true,
+  "backendEndpoint": "/editor/spec",
+  "backendHelathCheckTimeout": 5000,
+  "useYamlBackend": true,
+  "disableFileMenu": true,
+  "headerBranding": true,
+  "enableTryIt": true,
+  "brandingCssClass": "a127",
+  "schemaUrl": "/schema/swagger.json",
+  "importProxyUrl": "https://cors-it.herokuapp.com/?url="
+}
