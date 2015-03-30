@@ -214,7 +214,7 @@ describe('project', function() {
     var projPath;
     var stubs = _.omit(projectStubs, 'child_process');
     var project = proxyquire('../../../lib/commands/project/project', stubs);
-    this.timeout(30000);
+    this.timeout(60000);
 
     before(function(done) {
       projPath = path.resolve(tmpDir, name);
