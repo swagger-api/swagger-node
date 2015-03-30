@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/theganyo/swagger-node.svg?branch=master)](https://travis-ci.org/theganyo/swagger-node)
+
 # swagger-node reference
 
 This is the installation guide and command reference for `swagger`, the command-line interface for swagger-node. 
