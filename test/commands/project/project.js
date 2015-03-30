@@ -208,6 +208,29 @@ describe('project', function() {
     });
   });
 
+  describe('test', function() {
+
+    var name = 'test';
+    var projPath;
+    var stubs = _.omit(projectStubs, 'child_process');
+    var project = proxyquire('../../../lib/commands/project/project', stubs);
+    this.timeout(30000);
+
+    before(function(done) {
+      projPath = path.resolve(tmpDir, name);
+      process.chdir(tmpDir);
+      project.create(name, {}, done);
+    });
+
+    it('should run test', function(done) {
+      project.test(projPath, {}, function(err, failures) {
+        should.not.exist(err);
+        failures.should.eql(0);
+        done();
+      });
+    });
+  });
+
   describe('verify', function() {
 
     describe('no errors', function() {
