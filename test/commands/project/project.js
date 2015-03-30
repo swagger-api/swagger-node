@@ -197,6 +197,15 @@ describe('project', function() {
         done();
       });
     });
+
+    it('should start in mock mode', function(done) {
+      var options = { mock: true };
+      project.start(projPath, options, function(err) {
+        should.not.exist(err);
+        nodemonOpts.env.should.containEql({ swagger_mockMode: true });
+        done();
+      });
+    });
   });
 
   describe('verify', function() {
