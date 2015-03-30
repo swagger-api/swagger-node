@@ -25,7 +25,6 @@
 
 var should = require('should');
 var path = require('path');
-var tmp = require('tmp');
 var fs = require('fs');
 var _ = require('lodash');
 var http = require('http');
@@ -52,7 +51,7 @@ describe('net', function() {
     it('should recognize an unopened port', function(done) {
 
       server.close();
-      netutil.isPortOpen(port, function(err, open) {
+      netutil.isPortOpen(port, 10, function(err, open) {
         should.not.exist(err);
         should(open).be.false;
         done();
