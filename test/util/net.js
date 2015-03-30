@@ -60,38 +60,6 @@ describe('net', function() {
     });
   });
 
-  describe('download', function() {
-
-    it('should download a file', function(done) {
-
-      tmp.setGracefulCleanup();
-      tmp.dir({ unsafeCleanup: true }, function(err, tmpDir) {
-        should.not.exist(err);
-
-        var sourceFile = path.resolve(tmpDir, 'source');
-        var outputLines = '';
-        for (var i = 0; i < 20; i++) {
-          outputLines += 'line' + i + '\n';
-        }
-        fs.writeFileSync(sourceFile, outputLines);
-        var destFile = path.resolve(tmpDir, 'dest');
-
-        serve(sourceFile, function(port, server) {
-          var url = 'http://localhost:' + port;
-
-          netutil.download(url, destFile, function(err, size) {
-            server.close();
-            should.not.exist(err);
-
-            var destContent = fs.readFileSync(destFile, 'utf8');
-            size.should.eql(destContent.length);
-            destContent.should.eql(outputLines);
-            done();
-          });
-        });
-      });
-    });
-  });
 });
 
 // return port, server
