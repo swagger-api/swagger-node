@@ -141,11 +141,11 @@ describe('project', function() {
       });
     });
 
-    it('should create a new project', function(done) {
+    it('should create a new connect project', function(done) {
       var name = 'create';
       var projPath = path.resolve(tmpDir, name);
       process.chdir(tmpDir);
-      project.create(name, {}, function(err) {
+      project.create(name, {framework: 'connect'}, function(err) {
         should.not.exist(err);
         // check a couple of files
         var packageJson = path.resolve(projPath, 'package.json');

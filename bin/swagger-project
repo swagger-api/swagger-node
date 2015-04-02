@@ -30,8 +30,9 @@ var cli = require('../lib/util/cli');
 var execute = cli.execute;
 
 app
-  .command('create <name>')
+  .command('create [name]')
   .description('Create a folder containing a Swagger project')
+  .option('-f, --framework <framework>', 'one of: connect|express|restify')
   .action(execute(project.create));
 
 app

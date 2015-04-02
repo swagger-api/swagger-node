@@ -47,7 +47,7 @@ config.swagger = {
 
 config.project = {
   port: process.env.PORT || 10010,
-  skeletonDir: path.resolve(__dirname, '..', 'project-skeleton')
+  skeletonsDir: path.resolve(__dirname, '..', 'project-skeletons')
 };
 
 // load env vars //

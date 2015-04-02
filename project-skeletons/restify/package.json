@@ -1,0 +1,18 @@
+{
+  "name": "swagger-skeleton",
+  "version": "0.0.1",
+  "private": "true",
+  "description": "My New Swagger API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "restify": "^3.0.1",
+    "swagger-node-runner": "^0.0.1"
+  },
+  "devDependencies":  {
+    "should": "^5.2.0",
+    "supertest": "^0.15.0"
+  }
+}
