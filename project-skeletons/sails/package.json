@@ -1,8 +1,8 @@
 {
-  "name": "swagger-skeleton",
-  "private": true,
+  "name": "swagger-node-app",
   "version": "0.0.1",
-  "description": "My New Swagger API Project",
+  "private": true,
+  "description": "New Swagger-Node API Project",
   "keywords": [],
   "author": "",
   "license": "",
