@@ -11,7 +11,7 @@
   "autocompleteExtension": {},
   "useBackendForStorage": true,
   "backendEndpoint": "/editor/spec",
-  "backendHelathCheckTimeout": 5000,
+  "backendHealthCheckTimeout": 5000,
   "useYamlBackend": true,
   "disableFileMenu": true,
   "headerBranding": true,
