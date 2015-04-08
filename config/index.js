@@ -40,7 +40,25 @@ module.exports = config;
 
 config.swagger = {
   fileName: 'api/swagger/swagger.yaml',
-  editorDir: path.resolve(config.nodeModules, 'swagger-editor')
+  editorDir: path.resolve(config.nodeModules, 'swagger-editor'),
+  editorConfig: {
+    analytics: { google: { id: null } },
+    disableCodeGen: true,
+    disableNewUserIntro: true,
+    examplesFolder: '/spec-files/',
+    exampleFiles: [],
+    autocompleteExtension: {},
+    useBackendForStorage: true,
+    backendEndpoint: '/editor/spec',
+    backendHealthCheckTimeout: 5000,
+    useYamlBackend: true,
+    disableFileMenu: true,
+    enableTryIt: true,
+    headerBranding: false,
+    brandingCssClass: null,
+    schemaUrl: '/schema/swagger.json',
+    importProxyUrl: 'https://cors-it.herokuapp.com/?url='
+  }
 };
 
 // project //
@@ -68,4 +86,3 @@ _.each(process.env, function(value, key) {
     debug('loaded env var: %s = %s', split.slice(1).join('.'), value);
   }
 });
-
