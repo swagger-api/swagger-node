@@ -219,7 +219,7 @@ describe('project', function() {
     before(function(done) {
       projPath = path.resolve(tmpDir, name);
       process.chdir(tmpDir);
-      project.create(name, {}, done);
+      project.create(name, { framework: 'connect' }, done);
     });
 
     it('should run test', function(done) {
