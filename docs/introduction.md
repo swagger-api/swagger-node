@@ -24,14 +24,15 @@ paths:
     x-swagger-router-controller: "hello_world"  
 ```
 
-Controller files are written in Node.js and are located in `<project-root>/api/controllers`. For example: `<project-root>/api/controllers/hello_world.js`
+* Use the operationId property to specify which controller method to call for the given path:
 
-* Use the `operationId` property for your operations in the Swagger 2.0 Model
 ```yaml
     get:
       description: "Returns 'Hello' to the caller"
       operationId: "hello"
 ```
+
+* Implement your controller files in Node.js and place them in `<project-root>/api/controllers`. For example: `<project-root>/api/controllers/hello_world.js` 
 
 * Behind the scenes, swagger-node wires up your app, routing HTTP requests to specific Node.js controller files. 
 
