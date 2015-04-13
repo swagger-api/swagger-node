@@ -1,8 +1,10 @@
 
 ## swagger-node doc contents
 
+![alt text](./images/swagger-icon.png)
+
 * [Introduction](./introduction.md)
-* [Installation](./installation.md)
+* [Installation](./install.md)
 * [Quick start](./quick-start.md)
 * [CLI reference](./cli.md)
 * [About Swagger](./swagger-about.md)
