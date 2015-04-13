@@ -2,6 +2,7 @@
 ## About controllers
 
 * [Implementing a controller](#implementing)
+* [Using query parameters](#query)
 * [Weather API example](#weather)
 
 ### <a name="implementing"></a>Implementing a controller
@@ -40,7 +41,7 @@ Here is the `hello_world.js` implementation for the quick start example. It retr
     }
 ```
 
-### <a name="weather"></a>Using query parameters
+### <a name="query"></a>Using query parameters
 
 In the controller code, we obtained the value of a query parameter and echoed it back in the response. We used the `req.swagger` object to obtain access to the query parameters.
 
