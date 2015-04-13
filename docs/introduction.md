@@ -4,7 +4,7 @@ The swagger-node module provides tools for designing and building APIs entirely 
 
 
 * [The Model-first programming approach](#programming_model)
-* [Get help](#gethelp)
+* [Reporting issues](#gethelp)
 
 
 ### <a name="programming_model"></a>The Model-first programming approach
@@ -38,9 +38,9 @@ paths:
 
 * At runtime swagger-tools middleware validates the request before sending it to the `hello` operation of the `hello_world` controller. 
 
-* Finally, your controller logic will be invoked.
+* Finally, the controller logic associated with the requested path is executed.
 
 
-### <a name="gethelp"></a>Get help
+### <a name="gethelp"></a>Reporting issues
 
-Need help using swagger-node? Have an issue to report? See the [Reporting issues and getting help](./report-issues.md).
+Have an issue to report? See the [Reporting issues](./report-issues.md).
