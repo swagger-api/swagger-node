@@ -38,7 +38,7 @@ paths:
 
 * At runtime swagger-tools middleware validates the request before sending it to the `hello` operation of the `hello_world` controller. 
 
-* Finally, your controller logic will be invoked.
+* Finally, the controller logic associated with the requested path is executed.
 
 
 ### <a name="gethelp"></a>Get help
