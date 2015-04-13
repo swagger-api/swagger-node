@@ -48,10 +48,10 @@ In the controller code, we obtained the value of a query parameter and echoed it
 ```yaml
     parameters:
         - name: name
-        in: query
-        description: The name of the person to whom to say hello
-        required: false
-        type: string
+          in: query
+          description: The name of the person to whom to say hello
+          required: false
+          type: string
 ```
 
 The req.swagger object is populated by the swagger-tools middleware component of swagger-node. To read more about this object, see the [Swagger tools middleware documentation](https://github.com/apigee-127/swagger-tools/blob/master/docs/Middleware.md).
