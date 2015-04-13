@@ -1,4 +1,4 @@
-#Relevant swagger-node modules and dependencies
+#swagger-node modules and dependencies
 
 This topic briefly describes the relevant Node.js modules on which an swagger-node project depends. 
 
