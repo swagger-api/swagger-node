@@ -43,7 +43,16 @@ Here is the `hello_world.js` implementation for the quick start example. It retr
 
 ### <a name="query"></a>Using query parameters
 
-In the controller code, we obtained the value of a query parameter and echoed it back in the response. We used the `req.swagger` object to obtain access to the query parameters.
+In the controller code, we obtained the value of a query parameter and echoed it back in the response. We used the `req.swagger` object to obtain access to the query parameters. You declare query parameters in the paths section of the project's Swagger definition. For example:
+
+    ```yaml
+        parameters:
+            - name: name
+            in: query
+            description: The name of the person to whom to say hello
+            required: false
+            type: string
+    ```
 
 The req.swagger object is populated by the swagger-tools middleware component of swagger-node. To read more about this object, see the [Swagger tools middleware documentation](https://github.com/apigee-127/swagger-tools/blob/master/docs/Middleware.md).
 
