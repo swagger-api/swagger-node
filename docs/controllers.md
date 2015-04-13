@@ -40,6 +40,12 @@ Here is the `hello_world.js` implementation for the quick start example. It retr
     }
 ```
 
+### <a name="weather"></a>Using query parameters
+
+In the controller code, we obtained the value of a query parameter and echoed it back in the response. We used the `req.swagger` object to obtain access to the query parameters.
+
+The req.swagger object is populated by the swagger-tools middleware component of swagger-node. To read more about this object, see the [Swagger tools middleware documentation](https://github.com/apigee-127/swagger-tools/blob/master/docs/Middleware.md).
+
 ### <a name="weather"></a>Weather API example
 
 Let's look at an example controller for a simple weather API.

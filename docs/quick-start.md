@@ -3,6 +3,7 @@
 Let's see how easily and quickly you can get a simple API up and running using swagger-node.
 
 * [Get an API up and running](#upandrunning)
+* [Check out the main Node.js app file](#main)
 * [Open the Swagger editor](#openeditor)
 * [Windows users](#windows)
 
@@ -40,6 +41,35 @@ First, we create a new swagger-node project and test a simple "hello world" API.
     And, you'll get back the response `Hello, Scott`.
 
 That's it - You have now created, started and tested your first API project with swagger-node! 
+
+### <a name="main"></a>Check out the main Node.js app file
+
+The main `app.js` is a simple Node.js app that installs middleware and requires the API framework that you chose when you created your project.
+
+      'use strict';
+      
+      var SwaggerRunner = require('swagger-node-runner');
+      var app = require('express')();
+      module.exports = app; // for testing
+      
+      var config = {
+        appRoot: __dirname // required config
+      };
+      
+      SwaggerRunner.create(config, function(err, runner) {
+        if (err) { throw err; }
+      
+        // install swagger-node-runner middleware
+        var expressMiddleware = runner.expressMiddleware();
+        app.use(expressMiddleware.chain({ mapErrorsToJson: true }));
+      
+        var port = process.env.PORT || 10010;
+        app.listen(port);
+      
+        console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
+      });
+
+The swagger-node-runner module loads the relevant middleware modules. These modules perform tasks like Swagger specification validation and endpoint routing. For more information, see [swagger-node modules and dependencies](./modules.md).
 
 ### <a name="openeditor"></a>Open the Swagger editor
 
