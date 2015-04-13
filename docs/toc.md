@@ -12,4 +12,5 @@
 * [Adding paths](./adding-paths.md)
 * [Writing controllers](./controllers.md)
 * [Using mock mode](./mock-mode.md)
+* [Modules and dependencies](./modules.md)
 * [Reporting issues](./report-issues.md)

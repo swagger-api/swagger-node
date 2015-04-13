@@ -39,7 +39,7 @@ Many Node.js developers choose to use a different prefix such that they do not n
 
 ```bash
     npm set prefix ~/npm
-``` 
+```
 
 2. Edit your `.bash_profile` or the appropriate shell initialization script to add `~/npm` to your `PATH` by adding the following line (or placing the single line in the new file if it does not exist):
 
@@ -48,3 +48,19 @@ Many Node.js developers choose to use a different prefix such that they do not n
     ```
 
     This will enable you to easily use executable scripts installed using `-g` through npm - both for swagger-node and for other tools as well!
+
+###Configuring the default browser on Linux
+
+On Linux platforms, you need to specify your browser path before using the Swagger editor. 
+
+1. Create or open the following file in a text editor:
+
+    `~/.a127/config.js`
+
+2. Add the following contents to the file:
+
+    ```javascript
+        module.exports = {
+           browser: ’the/path/to/your/browser'
+        };
+    ```
