@@ -16,7 +16,6 @@ First, we create a new swagger-node project and test the default "hello world"AP
     `swagger project create hello-world`
 
 4. Pick the API framework you want to use. We're going to pick express:
-
     ```
     ? Framework? (Use arrow keys)
       connect
@@ -25,7 +24,6 @@ First, we create a new swagger-node project and test the default "hello world"AP
       restify
       sails
     ```
-
 5. swagger-node clones a skeleton project from GitHub that's pre-configured to use the Express framework. It then runs `npm install` to pick up the dependencies. 
 
 >Note: Windows users see the [note below](#windows-note) regarding npm. 
