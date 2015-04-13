@@ -20,8 +20,6 @@ The `/hello` path in the original Quick Start example looks like this:
         description: Returns 'Hello' to the caller
         # used as the method name of the controller
         operationId: hello
-        security:
-          - oauth2: []
         parameters:
           - name: name
             in: query
