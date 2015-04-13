@@ -1,10 +1,12 @@
+## About swagger-node
+
 * [What is Swagger?](#whatisswagger)
 * [How does swagger-node use Swagger?](#howdoes)
 * [Help me with YAML](#helpwith)
 * [Next step](#nextstep)
 
 
-## <a name="whatisswagger"></a>What is Swagger?
+### <a name="whatisswagger"></a>What is Swagger?
 
 [Swagger™ ](http://swagger.io) is a specification and framework implementation for describing, producing, consuming, and visualizing RESTful web services. 
 
@@ -14,7 +16,7 @@ To read more about Swagger, refer to:
 * [Swagger on GitHub](https://github.com/swagger-api)
 
 
-## <a name="howdoes"></a>How does swagger-node use Swagger?
+### <a name="howdoes"></a>How does swagger-node use Swagger?
 
 The Swagger Editor lets you design your API specification and preview its documentation for your swagger-node API. The editor is installed with swagger-node.
 
@@ -34,12 +36,12 @@ Behind the scenes, Swagger middleware validates and processes the Swagger config
 ![alt text](./images/swagger-editor.png)
 
 
-## <a name="helpwith"></a><a name="yaml"></a>Help me with YAML
+### <a name="helpwith"></a><a name="yaml"></a>Help me with YAML
 
 YAML is a data serialization/representation standard. If you're new to YAML, check out [www.yaml.org](http://www.yaml.org). Another excellent introduction is the [Wikipedia YAML entry](http://en.wikipedia.org/wiki/YAML).
 
 YAML is intended to be easy for humans to read. Every swagger-node project includes a Swagger 2.0 compliant configuration file that is written in YAML. 
 
-## <a name="nextstep"></a>Next step
+### <a name="nextstep"></a>Next step
 
 For a more detailed look the swagger-node Swagger configurations, see "[The Swagger specification file](./swagger-file.md)".

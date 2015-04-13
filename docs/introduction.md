@@ -1,13 +1,13 @@
-# What is swagger-node?
+## What is swagger-node?
 
-swagger-node provides tools to design and build APIs entirely in Node.js.  It integrates with popular Node.js API frameworks like express, connect, hapi, and sails.  With swagger-node, you can model, build, and test your API **first**. When your happy with the design, you can focus on writing custom controller code in Node.js for each of your API operations.
+The swagger-node module provides tools for designing and building APIs entirely in Node.js.  It integrates with popular Node.js API frameworks like express, connect, hapi, restify, and sails.  With swagger-node, you can model, build, and test your API **first**. When your happy with the design, you can focus on writing custom controller code in Node.js for each of your API operations.
 
 
 * [The Model-first programming approach](#programming_model)
 * [Get help](#gethelp)
 
 
-## <a name="programming_model"></a>The Model-first programming approach
+### <a name="programming_model"></a>The Model-first programming approach
 
 The focus of swagger-node is using a standard model for building APIs. The programming flow for an swagger-node project looks like this:
 
@@ -41,6 +41,6 @@ paths:
 * Finally, your controller logic will be invoked.
 
 
-## <a name="gethelp"></a>Get help
+### <a name="gethelp"></a>Get help
 
 Need help using swagger-node? Have an issue to report? See the [Reporting issues and getting help](./report-issues.md).

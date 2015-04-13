@@ -1,4 +1,4 @@
-#swagger-node modules and dependencies
+## swagger-node modules and dependencies
 
 This topic briefly describes the relevant Node.js modules on which an swagger-node project depends. 
 
@@ -8,7 +8,7 @@ This topic briefly describes the relevant Node.js modules on which an swagger-no
 * [swagger-editor](#swagger-editor)
 * [swagger-tools](#swagger-tools)
 
-##<a ref='swagger-node'></a>swagger-node
+###<a ref='swagger-node'></a>swagger-node
 
 The `swagger-node` npm module provides everything you need to create new  projects, including the Swagger editor, Swagger Tools middleware, sample project skeleton, and the `swagger` command-line tools. 
 
@@ -19,7 +19,7 @@ For installation instructions, see "[Installation](./install.md)".
 
 The main source of documentation for swagger-node and related components is in the swagger-node repository on GitHub. 
 
-## <a ref='swagger'></a>swagger
+### <a ref='swagger'></a>swagger
 
 The `swagger-node` module includes a set of command-line tools for creating and managing swagger-node projects. 
 
@@ -32,19 +32,19 @@ The swagger command-line tools are installed with swagger-node.
 [swagger-node command-line reference](./cli.md)
 
 
-## <a ref='skeleton'></a>skeleton
+### <a ref='skeleton'></a>skeleton
 
-A basic, "hello world" swagger-node project. This project automatically cloned when you create a new swagger-node project by executing `swagger project create`. 
+A basic, "hello world" swagger-node project. This project automatically cloned when you create a new swagger-node project by executing `swagger project create`. Skeleton projects are implemented for specific API frameworks, such as express, restify, or others. 
 
 #### Installation
 
-This project is [cloned from GitHub](https://github.com/swagger-node/<framework>project-skeleton) when you create a new swagger-node project. 
+This project is [cloned from GitHub](https://github.com/swagger-node/project-skeletons/<framework>) when you create a new swagger-node project. 
 
 #### Documentation
 
 See the swagger-node"[Quick start](./quick-start.md)" to see how easy it is to get a new swagger-node API project up and running. 
 
-## <a ref='swagger-editor'></a>swagger-editor
+### <a ref='swagger-editor'></a>swagger-editor
 
 The Swagger Editor lets you design your API specification and interactively preview its documentation for your swagger-node API project. 
 
@@ -56,7 +56,7 @@ Standard npm install. Installed with swagger-node.
 
 See "[Swagger Editor](https://github.com/swagger-api/swagger-editor)" on GitHub.
 
-## <a ref='swagger-tools'></a>swagger-tools
+### <a ref='swagger-tools'></a>swagger-tools
 
 Middleware for Node.js including Message Validation, Authorization and Routing. 
 

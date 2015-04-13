@@ -1,16 +1,16 @@
-# <a name="understandingthespec"></a>Understanding the Swagger specification file
+## <a name="understandingthespec"></a>Understanding the Swagger specification file
 
 * [Intro](#intro)
 * [Default swagger-node project file](#default)
 * [Swagger specification elements](#reference)
 
-## <a name="intro"></a>Intro
+### <a name="intro"></a>Intro
 
 When you execute `swagger project create myproject`, a default Swagger model is placed in `myproject/api/swagger/swagger.yaml`. This model conforms to the [Swagger 2.0 specification](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). 
 
 >Note: For a quick intro to swagger, see "[What is Swagger](./swagger-about)". 
 
-## <a name="default"></a>Default swagger-node project file
+### <a name="default"></a>Default swagger-node project file
 
 Here is the entire `swagger.yaml` file that is provisioned for a new swagger-node project: 
 
@@ -56,7 +56,7 @@ Here is the entire `swagger.yaml` file that is provisioned for a new swagger-nod
 ```
 
 
-##<a name="reference"></a>Swagger specification elements
+###<a name="reference"></a>Swagger specification elements
 
 The Swagger file includes a number of standard Swagger 2.0 specification elements. You can read about them in the [Swagger 2.0 specification](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). 
 

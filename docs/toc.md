@@ -1,5 +1,5 @@
 
-## swagger-node doc contents
+## Table of contents
 
 ![alt text](./images/swagger-icon.png)
 

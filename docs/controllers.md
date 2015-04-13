@@ -1,7 +1,10 @@
 
+## About controllers
 
+* [Implementing a controller](#implementing)
+* [Weather API example](#weather)
 
-##Implementing an API controller
+### <a name="implementing"></a>Implementing an controller
 
 This topic explains how to implement a controller. The `x-swagger-router-controller` Swagger extension element is used to specify the name of a controller file. The quick start example defines a `hello_world` controller file, which is by default in `api/controllers/hello_world.js`. 
 
@@ -37,7 +40,7 @@ Here is the `hello_world.js` implementation for the quick start example. It retr
     }
 ```
 
-## Weather API example
+### <a name="weather"></a>Weather API example
 
 Let's look at an example controller for a simple weather API.
 

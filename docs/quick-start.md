@@ -1,11 +1,14 @@
-The purpose of this Quick Start is to show you how easily and quickly you can get a simple API up and running using swagger-node.
+## Quick start
+
+Let's see how easily and quickly you can get a simple API up and running using swagger-node.
 
 * [Get an API up and running](#upandrunning)
 * [Open the Swagger editor](#openeditor)
+* [Windows users](#windows)
 
 ### <a name="upandrunning"></a>Get an API up and running
 
-First, we create a new swagger-node project and test the default "hello world"API.
+First, we create a new swagger-node project and test a simple "hello world" API.
 
 1. Install swagger-node, as described in the [installation guide](install.md).
 
@@ -52,7 +55,7 @@ Now that we've got our basic API running, let's open the Swagger editor.
 ![alt text](./images/swagger-editor.png)
 
 
-### <a name='windows-note'></a>Windows Users
+### <a name='windows'></a>Windows users
 For some versions of npm on Windows will have problems on the `npm install` step of `swagger project create`.  They are related to a `debug` module on npm not being managed properly.  The following steps should resolve this issue:
 
 1. In the project directory, execute the following commands:

@@ -1,6 +1,6 @@
 
 
-## <a name='apigee-127-help'></a> Reporting issues with swagger-node
+## Reporting issues with swagger-node
 
 swagger-node is an open source project and we use GitHub issues for tracking problems with the code:
 

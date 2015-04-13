@@ -1,20 +1,20 @@
 
 
  
-## Managing projects
+## Command-line interface reference
 
-Create, run, and manage projects with the `swagger project` command. 
+Create, run, and manage swagger-node projects from the command line.
 
-* swagger 
-* project create
-* project start
-* project verify
-* project edit
-* project open
-* project test
-* docs
+* [swagger](#swagger)
+* [project create](#create)
+* [project start](#start)
+* [project verify](#verify)
+* [project edit](#edit)
+* [project open](#open)
+* [project test](#test)
+* [docs](#docs)
 
-#### swagger
+#### <a name="swagger"></a>swagger
 
 Options:
 
@@ -27,7 +27,7 @@ Example:
     0.2.0
 
 
-#### swagger project create [options] [name]
+#### <a name="create"></a>swagger project create [options] [name]
 
 Creates a folder with the specified [name] containing a new swagger-node project. A project skeleton is downloaded from GitHub and installed in the new folder. 
 
@@ -43,7 +43,7 @@ Example:
     README.md  api   app.js    config    node_modules   package.json   test
 
 
-#### swagger project start [options] [directory]
+#### <a name="start"></a>swagger project start [options] [directory]
 
 Starts the swagger-node project in the current (or specified) directory. The server automatically restarts when you make changes to the project. You can also force a restart by typing `rs` on the server command line.
 
@@ -61,7 +61,7 @@ Example:
     swagger -m project start
 
 
-#### swagger project verify [options] [project root directory]
+#### <a name="verify"></a>swagger project verify [options] [project root directory]
 
 Verifies that the project in the current (or specified) directory is correct. Reports errors and warnings from the Swagger model, project configuration, etc. 
 
@@ -82,7 +82,7 @@ Example:
 
 
 
-#### swagger project edit [options] [directory]
+#### <a name="edit"></a>swagger project edit [options] [directory]
 
 Opens the project in the current (or specified) directory in the [Swagger Editor](https://github.com/swagger-api/swagger-editor). 
 
@@ -99,7 +99,7 @@ Example:
     swagger project edit
 
 
-#### swagger project open [directory]
+#### <a name="open"></a>swagger project open [directory]
 
 Opens the browser as a client to the current or specified project. 
 
@@ -113,7 +113,7 @@ Example:
 
 
 
-#### swagger project test [options] [directory-or-file]
+#### <a name="test"></a>swagger project test [options] [directory-or-file]
 
 Runs project tests. 
 
@@ -136,7 +136,7 @@ Example:
         2 passing (27ms)
 
 
-##### swagger docs
+##### <a name="docs"></a>swagger docs
 
 Opens the Swagger 2.0 specification in your browser. 
 

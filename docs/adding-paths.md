@@ -1,4 +1,6 @@
-# Anatomy of a path
+
+
+## Anatomy of a path
 
 This topic looks at how paths are constructed and wired to response objects in a swagger-node project's Swagger configuration file. 
 
@@ -7,7 +9,7 @@ This topic looks at how paths are constructed and wired to response objects in a
 * [Request and response models](#models)
 * [Next steps](#nextstep)
 
-## <a name="simple"></a>Simple path example
+### <a name="simple"></a>Simple path example
 
 The `/hello` path in the original Quick Start example looks like this:
 
@@ -51,7 +53,7 @@ The parts of the path definition include:
 
 * The other keys conform to the Swagger 2.0 [specifications](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). The parameters is a YAML array that defines all the parameters required for the call. The responses object defines the response specifications for response codes.
 
-## <a name="more"></a>More about route handling
+### <a name="more"></a>More about route handling
 
 As noted previously, `the x-swagger-router-controller` maps a path to a controller file. You can specify a router handler either at the path level or operation level in the Swagger file. For example, at the path level, like this:
 
@@ -89,7 +91,7 @@ When you call your API, the middleware attempts to match a route defined in the 
 
 * The requested route is not present in the Swagger file. In this case, a 404 code is returned. 
 
-## <a name="models"></a>Request and response models
+### <a name="models"></a>Request and response models
 
 The Swagger specification allows you to define both request and the response models (also called schemas). The `path` definition described in the previous section is an example of a request model. 
 
@@ -248,6 +250,6 @@ definitions:
             type: "number"
 ```
 
-## <a name="nextstep"></a>Next steps
+### <a name="nextstep"></a>Next steps
 
 Now that you know have added a path, its time to [implement the actual controller](./controllers.md) 
