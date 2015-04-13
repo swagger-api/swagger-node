@@ -25,9 +25,7 @@ First, we create a new swagger-node project and test the default "hello world"AP
       sails
     ```
 5. swagger-node clones a skeleton project from GitHub that's pre-configured to use the Express framework. It then runs `npm install` to pick up the dependencies. 
-
 >Note: Windows users see the [note below](#windows-note) regarding npm. 
-
 6. Change to the new project directory: `cd hello-world`
 
 7. Type `swagger project start` to start your API.  You now have an API running with swagger-node!
