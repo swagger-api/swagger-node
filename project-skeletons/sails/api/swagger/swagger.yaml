@@ -3,7 +3,7 @@ info:
   version: "0.0.1"
   title: Hello World App
 # during dev, should point to your local machine
-host: localhost
+host: localhost:10010
 # basePath prefixes all resource paths 
 basePath: /
 # 
