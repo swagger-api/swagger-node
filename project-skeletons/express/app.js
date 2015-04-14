@@ -13,7 +13,7 @@ SwaggerRunner.create(config, function(err, runner) {
 
   // install swagger-node-runner middleware
   var expressMiddleware = runner.expressMiddleware();
-  app.use(expressMiddleware.chain({ mapErrorsToJson: true }));
+  app.use(connectMiddleware.chain());
 
   var port = process.env.PORT || 10010;
   app.listen(port);
