@@ -18,12 +18,7 @@ SwaggerRunner.create(config, function(err, runner) {
 
   // install swagger-node-runner middleware
   var restifyMiddleware = runner.restifyMiddleware();
-  app.use(restifyMiddleware.chain({ mapErrorsToJson: true }));
-
-  // force Restify to route all requests - necessary to allow swagger-node-runner middleware to execute
-  function noOp(req, res, next) { next(); }
-  ['del', 'get', 'head', 'opts', 'post', 'put', 'patch']
-    .forEach(function(method) { app[method].call(app, '.*', noOp); });
+  restifyMiddleware.register(app);
 
   var port = process.env.PORT || 10010;
   app.listen(port);
