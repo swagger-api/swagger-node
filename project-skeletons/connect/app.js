@@ -12,7 +12,7 @@ SwaggerRunner.create(config, function(err, runner) {
   if (err) { throw err; }
 
   var connectMiddleware = runner.connectMiddleware();
-  app.use(connectMiddleware.chain({ mapErrorsToJson: true }));
+  app.use(connectMiddleware.chain());
 
   var port = process.env.PORT || 10010;
   app.listen(port);

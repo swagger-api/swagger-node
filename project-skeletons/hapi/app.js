@@ -17,12 +17,9 @@ SwaggerRunner.create(config, function(err, runner) {
   app.connection({ port: port });
 
   app.register(runner.hapiMiddleware().plugin, function(err) {
-    if (err) {
-      console.error('Failed to load plugin:', err);
-    }
-  });
-
-  app.start(function() {
-    console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
+    if (err) { return console.error('Failed to load plugin:', err); }
+    app.start(function() {
+      console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
+    });
   });
 });
