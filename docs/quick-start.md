@@ -28,7 +28,7 @@ First, we create a new swagger-node project and test a simple "hello world" API.
       restify
       sails
     ```
-5. swagger-node clones a skeleton project from GitHub that's pre-configured to use your selected framework (in this example, Express). It then runs `npm install` to pick up the dependencies. 
+5. swagger-node clones a skeleton project from GitHub that's pre-configured to use your selected framework (in this example, Express). It then runs `npm install` to pick up the dependencies.  
 
 >Note: Windows users see the [note below](#windows-note) regarding npm. 
 
