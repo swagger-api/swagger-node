@@ -3,6 +3,7 @@
 # values in the swaggerNode hash are system configuration for Swagger-Node
 swaggerNode:
   mapErrorsToJson: true
-  swaggerDocPath: /swagger
+  docEndpoints:
+    raw: /swagger
 
 # any other values in this file are just loaded into the config for application access...
