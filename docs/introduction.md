@@ -1,5 +1,5 @@
 ## What is swagger-node?
-The swagger-node module provides tools for designing and building APIs entirely in Node.js. It integrates with popular Node.js servers, including Express, Sails, Koa, hapi, restify, Sails, and any Connect-based middleware. With swagger-node, you can specify, build, and test your API from the very beginning, and it allows you to make changes to your design without rewriting the logic of your implementation. It explicitly isolates the design of your interfaces from writing your controller code, leading to a much better software development lifecycle. 
+The swagger-node module provides tools for designing and building APIs entirely in Node.js. It integrates with popular Node.js servers, including Express, hapi, restify, and Sails, as well as any Connect-based middleware. With swagger-node, you can specify, build, and test your API from the very beginning, and it allows you to make changes to your design without rewriting the logic of your implementation. It explicitly isolates the design of your interfaces from writing your controller code, leading to a much better software development lifecycle. 
 
 * [The API-First Development Process](#sdlc)
 * [Reporting issues](#gethelp)
