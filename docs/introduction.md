@@ -1,22 +1,24 @@
 ## What is swagger-node?
+The swagger-node module provides tools for designing and building APIs entirely in Node.js. It integrates with popular Node.js servers, including Express, Sails, Koa, hapi, restify, Sails, and any Connect-based middleware. With swagger-node, you can specify, build, and test your API from the very beginning, and it allows you to make changes to your design without rewriting the logic of your implementation. It explicitly isolates the design of your interfaces from writing your controller code, leading to a much better software development lifecycle. 
 
-The swagger-node module provides tools for designing and building APIs entirely in Node.js.  It integrates with popular Node.js API frameworks like express, connect, hapi, restify, and sails.  With swagger-node, you can model, build, and test your API **first**. When your happy with the design, you can focus on writing custom controller code in Node.js for each of your API operations.
-
-
-* [The Model-first programming approach](#programming_model)
+* [The API-First Development Process](#sdlc)
 * [Reporting issues](#gethelp)
 
+### <a name="sdlc"></a>The API-First Development Process
+API design is a discovery process. Swagger-node development begins with design tooling, and it expects that you will evolve your interface over time. It gracefully handles the routing of interfaces to controllers so that you can make changes to your interfaces without clobbering any of your implementation logic.
 
-### <a name="programming_model"></a>The Model-first programming approach
+Designing an API specification is like writing a contract. As you write the spec in YAML using [Swagger 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), your API documentation is generated in real-time, allowing the client and server teams to agree on how their systems will work together. 
 
-The focus of swagger-node is using a standard model for building APIs. The programming flow for an swagger-node project looks like this:
+Once you have defined your first operation, it drives a mock server, which enables  client development happen in parallel with server development. As you build the client, you will discover further changes you'll need to make to your APIs, meaning another iteration of the specification.
 
-* Define the Swagger Model using the Swagger 2.0 Editor included with swagger-node.
+* Defining your API specification using the Swagger Editor (included with swagger-node).
 
-*The Swagger editor*
+*The Swagger Editor*
 ![alt text](./images/swagger-editor.png)
 
-* Annotate your paths and operations in the Swagger 2.0 model with the `x-swagger-router-controller` extension. This extension specifies the name of the controller file that implements the logic behind the operation.  For example:
+Write your specification in YAML on the left, and see the API documentation in real-time on the right. Auto-completion makes it easy to learn the syntax, and validation helps you correct any syntactic or semantic errors you might make along the way.
+
+* Use the `x-swagger-router-controller` extension to annotating your paths and operations. This maps the interface onto the name of the controller file that implements the logic behind the operation. For example:
 
 ```yaml
 paths:
@@ -40,7 +42,5 @@ paths:
 
 * Finally, the controller logic associated with the requested path is executed.
 
-
 ### <a name="gethelp"></a>Reporting issues
-
 Have an issue to report? See the [Reporting issues](./report-issues.md).
