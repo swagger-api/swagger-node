@@ -19,7 +19,7 @@ First, we create a new swagger-node project and test a simple "hello world" API.
 
     `swagger project create hello-world`
 
-4. Pick the API framework you want to use. We're going to pick express:
+4. Pick the API framework you want to use. We're going to pick express, but you can pick any of the listed frameworks:
     ```
     ? Framework? (Use arrow keys)
       connect
@@ -28,8 +28,10 @@ First, we create a new swagger-node project and test a simple "hello world" API.
       restify
       sails
     ```
-5. swagger-node clones a skeleton project from GitHub that's pre-configured to use the Express framework. It then runs `npm install` to pick up the dependencies. 
->Note: Windows users see the [note below](#windows-note) regarding npm. 
+5. swagger-node clones a skeleton project from GitHub that's pre-configured to use your selected framework (in this example, Express). It then runs `npm install` to pick up the dependencies.  
+
+    Note: Windows users see the [note below](#windows-note) regarding npm. 
+
 6. Change to the new project directory: `cd hello-world`
 
 7. Type `swagger project start` to start your API.  You now have an API running with swagger-node!
@@ -44,32 +46,9 @@ That's it - You have now created, started and tested your first API project with
 
 ### <a name="main"></a>Check out the main Node.js app file
 
-The main `app.js` is a simple Node.js app that installs middleware and requires the API framework that you chose when you created your project.
+Open <project-root>/app.js in an editor. This is the main Node.js app that installs middleware and requires the API framework that you chose when you created your project.
 
-      'use strict';
-      
-      var SwaggerRunner = require('swagger-node-runner');
-      var app = require('express')();
-      module.exports = app; // for testing
-      
-      var config = {
-        appRoot: __dirname // required config
-      };
-      
-      SwaggerRunner.create(config, function(err, runner) {
-        if (err) { throw err; }
-      
-        // install swagger-node-runner middleware
-        var expressMiddleware = runner.expressMiddleware();
-        app.use(expressMiddleware.chain({ mapErrorsToJson: true }));
-      
-        var port = process.env.PORT || 10010;
-        app.listen(port);
-      
-        console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
-      });
-
-The swagger-node-runner module loads the relevant middleware modules. These modules perform tasks like Swagger specification validation and endpoint routing. For more information, see [swagger-node modules and dependencies](./modules.md).
+The middleware modules perform tasks like Swagger specification validation and endpoint routing. For more information, see [swagger-node modules and dependencies](./modules.md).
 
 ### <a name="openeditor"></a>Open the Swagger editor
 
