@@ -32,6 +32,7 @@
     "yamljs": "^0.2.1"
   },
   "devDependencies": {
+    "superagent": "^1.1.0",
     "supertest": "^0.15.0",
     "should": "^5.2.0",
     "proxyquire": "^1.4.0",
