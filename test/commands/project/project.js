@@ -27,7 +27,7 @@ var should = require('should');
 var util = require('util');
 var config = require('../../../config');
 var path = require('path');
-var proxyquire =  require('proxyquire');
+var proxyquire =  require('proxyquire').noPreserveCache();
 var tmp = require('tmp');
 var fs = require('fs');
 var yaml = require('yamljs');
@@ -207,30 +207,6 @@ describe('project', function() {
       });
     });
   });
-
-  // todo: figure out why this test is failing
-  //describe('test', function() {
-  //
-  //  var name = 'test';
-  //  var projPath;
-  //  var stubs = _.omit(projectStubs, 'child_process');
-  //  var project = proxyquire('../../../lib/commands/project/project', stubs);
-  //  this.timeout(60000);
-  //
-  //  before(function(done) {
-  //    projPath = path.resolve(tmpDir, name);
-  //    process.chdir(tmpDir);
-  //    project.create(name, { framework: 'connect' }, done);
-  //  });
-  //
-  //  it('should run test', function(done) {
-  //    project.test(projPath, {}, function(err, failures) {
-  //      should.not.exist(err);
-  //      failures.should.eql(0);
-  //      done();
-  //    });
-  //  });
-  //});
 
   describe('verify', function() {
 
