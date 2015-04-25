@@ -26,13 +26,34 @@
 var should = require('should');
 var util = require('util');
 var path = require('path');
-var proxyquire =  require('proxyquire');
+var proxyquire =  require('proxyquire').noPreserveCache();
 var tmp = require('tmp');
 var fs = require('fs');
 var config = require('../../../config/index');
-var project = require('../../../lib/commands/project/project');
 var request = require('superagent');
 var Url = require('url');
+
+var projectStubs = {
+  'child_process': {
+    spawn: function(command, args, options) {
+      var ret = {};
+      ret.stdout = {
+        on: function() {}
+      };
+      ret.stderr = {
+        on: function() {}
+      };
+      ret.on = function(name, cb) {
+        if (name === 'close') {
+          setTimeout(function() { cb(0); }, 0);
+        }
+        return ret;
+      };
+      return ret;
+    }
+  },
+};
+var project = proxyquire('../../../lib/commands/project/project', projectStubs);
 
 var SWAGGER_EDITOR_LOAD_PATH = '/editor/spec';                // swagger-editor expects to GET the file here
 var SWAGGER_EDITOR_SAVE_PATH = '/editor/spec';                // swagger-editor PUTs the file back here
@@ -54,7 +75,7 @@ describe('swagger editor', function() {
       projPath = path.resolve(tmpDir, name);
       swaggerFile = path.resolve(projPath, config.swagger.fileName);
       process.chdir(tmpDir);
-      project.create(name, {}, done);
+      project.create(name, { framework: 'connect' }, done);
     });
   });
 
