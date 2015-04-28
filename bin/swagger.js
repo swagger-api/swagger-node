@@ -62,7 +62,6 @@ if (!app.runningCommand) {
 function validate(file, options, cb) {
 
   var swaggerSpec = require('../lib/util/spec');
-  var YAML = require('yamljs');
 
   if (!file) { // check stream
     process.stdin.resume();
@@ -70,11 +69,24 @@ function validate(file, options, cb) {
     app.runningCommand = true;
     process.stdin.on('data', function(data) {
       if (!data) { process.exit(1); }
-      var swagger = YAML.parse(data);
-      swaggerSpec.validateSwagger(swagger, options, cb);
+      swaggerSpec.validateSwagger(parse(data), options, cb);
     });
   } else {
-    var swagger = YAML.load(file);
-    swaggerSpec.validateSwagger(swagger, options, cb);
+    var fs = require('fs');
+    var data = fs.readFileSync(file, 'utf8');
+    swaggerSpec.validateSwagger(parse(data), options, cb);
   }
+}
+
+function parse(data) {
+  if (isJSON(data)) {
+    return JSON.parse(data);
+  } else {
+    var YAML = require('yamljs');
+    return YAML.parse(data);
+  }
+}
+
+function isJSON(data) {
+  return data.match(/^\s*\{/);
 }
