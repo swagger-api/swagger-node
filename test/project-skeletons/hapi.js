@@ -37,7 +37,7 @@ var tmpDir, projPath, server;
 describe(framework + ' project', function() {
 
   before(function(done) {
-    this.timeout(20000);
+    this.timeout(30000);
 
     tmp.setGracefulCleanup();
 

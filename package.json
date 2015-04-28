@@ -43,7 +43,7 @@
     "coverage": "istanbul cover _mocha -- -u exports -R spec test/config.js test/util test/commands test/commands/project test/project-skeletons"
   },
   "bin": {
-    "swagger": "bin/swagger",
-    "swagger-project": "bin/swagger-project"
+    "swagger": "bin/swagger.js",
+    "swagger-project": "bin/swagger-project.js"
   }
 }

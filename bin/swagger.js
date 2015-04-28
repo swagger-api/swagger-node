@@ -26,6 +26,8 @@
 
 var app = require('commander');
 var browser = require('../lib/util/browser');
+var cli = require('../lib/util/cli');
+var execute = cli.execute;
 
 app.version(require('../lib/util/cli').version());
 
@@ -41,6 +43,12 @@ app
     });
   });
 
+app
+  .command('validate [swaggerFile]')
+  .description('validate a Swagger document (supports unix piping)')
+  .option('-j, --json', 'output as JSON')
+  .action(execute(validate));
+
 app.parse(process.argv);
 
 if (!app.runningCommand) {
@@ -49,4 +57,24 @@ if (!app.runningCommand) {
     console.log('error: invalid command: ' + app.args[0]);
   }
   app.help();
+}
+
+function validate(file, options, cb) {
+
+  var swaggerSpec = require('../lib/util/spec');
+  var YAML = require('yamljs');
+
+  if (!file) { // check stream
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
+    app.runningCommand = true;
+    process.stdin.on('data', function(data) {
+      if (!data) { process.exit(1); }
+      var swagger = YAML.parse(data);
+      swaggerSpec.validateSwagger(swagger, options, cb);
+    });
+  } else {
+    var swagger = YAML.load(file);
+    swaggerSpec.validateSwagger(swagger, options, cb);
+  }
 }

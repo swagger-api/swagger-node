@@ -28,7 +28,7 @@ var app = require('commander');
 var project = require('../lib/commands/project/project');
 var cli = require('../lib/util/cli');
 var execute = cli.execute;
-var frameworks = Object.keys(project.frameworks).join('|');;
+var frameworks = Object.keys(project.frameworks).join('|');
 
 app
   .command('create [name]')
