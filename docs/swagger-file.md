@@ -1,7 +1,7 @@
 ## <a name="understandingthespec"></a>Understanding the Swagger specification file
 
 * [Intro](#intro)
-* [Default swagger-node project file](#default)
+* [Default swagger project file](#default)
 * [Swagger specification elements](#reference)
 
 ### <a name="intro"></a>Intro
@@ -10,9 +10,9 @@ When you execute `swagger project create myproject`, a default Swagger model is 
 
 >Note: For a quick intro to swagger, see "[What is Swagger](./swagger-about)". 
 
-### <a name="default"></a>Default swagger-node project file
+### <a name="default"></a>Default swagger project file
 
-Here is the entire `swagger.yaml` file that is provisioned for a new swagger-node project: 
+Here is the entire `swagger.yaml` file that is provisioned for a new swagger project: 
 
 ```yaml
     swagger: "2.0"
@@ -36,7 +36,7 @@ Here is the entire `swagger.yaml` file that is provisioned for a new swagger-nod
       - application/json
     paths:
       /hello:
-        # binds swagger-node app logic to a route
+        # binds swagger app logic to a route
         x-swagger-router-controller: hello_world
         get:
           description: Returns 'Hello' to the caller
@@ -60,7 +60,7 @@ Here is the entire `swagger.yaml` file that is provisioned for a new swagger-nod
 
 The Swagger file includes a number of standard Swagger 2.0 specification elements. You can read about them in the [Swagger 2.0 specification](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). 
 
-Here's a brief description of the elements in a swagger-node project file:
+Here's a brief description of the elements in a swagger project file:
 
 *  **swagger: 2.0** - (Required) Identifies the version of the Swagger specification (2.0).
 
@@ -80,5 +80,5 @@ Here's a brief description of the elements in a swagger-node project file:
 
 * **definitions:** - (Optional) These represent the structure of complex objects such as request and response bodies. For example, you might have a collection of `/users` that returns an array of `user` objects. You would describe these with two definitions: 1) to describe the `User` object, and 2) the definition of the `Users` array. Swagger uses [JSON-schema](http://json-schema.org/).
 
-* **x-swagger-router-controller:** - (Optional) This extension specifies the name of the controller file (hello_world.js) that will execute when this API operation is called. Controller files reside in `apis/controllers` in your swagger-node project. This extension is provided through the [`swagger-tools`](https://github.com/apigee-127/swagger-tools) middleware module.
+* **x-swagger-router-controller:** - (Optional) This extension specifies the name of the controller file (hello_world.js) that will execute when this API operation is called. Controller files reside in `apis/controllers` in your swagger project. This extension is provided through the [`swagger-tools`](https://github.com/apigee-127/swagger-tools) middleware module.
 

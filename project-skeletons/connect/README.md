@@ -1,1 +1,1 @@
-# Skeleton project for Swagger-Node
+# Skeleton project for Swagger

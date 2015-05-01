@@ -1,6 +1,6 @@
 ## Quick start
 
-Let's see how easily and quickly you can get a simple API up and running using swagger-node.
+Let's see how easily and quickly you can get a simple API up and running using swagger.
 
 * [Get an API up and running](#upandrunning)
 * [Check out the main Node.js app file](#main)
@@ -9,11 +9,11 @@ Let's see how easily and quickly you can get a simple API up and running using s
 
 ### <a name="upandrunning"></a>Get an API up and running
 
-First, we create a new swagger-node project and test a simple "hello world" API.
+First, we create a new swagger project and test a simple "hello world" API.
 
-1. Install swagger-node, as described in the [installation guide](install.md).
+1. Install swagger, as described in the [installation guide](install.md).
 
-2. Create swagger-node project directory and cd to it. This is where you'll create your first project. 
+2. Create swagger project directory and cd to it. This is where you'll create your first project. 
 
 3. Execute the project create command: 
 
@@ -28,13 +28,13 @@ First, we create a new swagger-node project and test a simple "hello world" API.
       restify
       sails
     ```
-5. swagger-node clones a skeleton project from GitHub that's pre-configured to use your selected framework (in this example, Express). It then runs `npm install` to pick up the dependencies.  
+5. swagger creates a skeleton project that's pre-configured to use your selected framework (in this example, Express). It then runs `npm install` to pick up the dependencies.  
 
     Note: Windows users see the [note below](#windows-note) regarding npm. 
 
 6. Change to the new project directory: `cd hello-world`
 
-7. Type `swagger project start` to start your API.  You now have an API running with swagger-node!
+7. Type `swagger project start` to start your API.  You now have an API running with swagger!
 
 8. In another terminal, run this command: 
 
@@ -42,13 +42,13 @@ First, we create a new swagger-node project and test a simple "hello world" API.
 
     And, you'll get back the response `Hello, Scott`.
 
-That's it - You have now created, started and tested your first API project with swagger-node! 
+That's it - You have now created, started and tested your first API project with swagger! 
 
 ### <a name="main"></a>Check out the main Node.js app file
 
 Open <project-root>/app.js in an editor. This is the main Node.js app that installs middleware and requires the API framework that you chose when you created your project.
 
-The middleware modules perform tasks like Swagger specification validation and endpoint routing. For more information, see [swagger-node modules and dependencies](./modules.md).
+The middleware modules perform tasks like Swagger specification validation and endpoint routing. For more information, see [swagger modules and dependencies](./modules.md).
 
 ### <a name="openeditor"></a>Open the Swagger editor
 

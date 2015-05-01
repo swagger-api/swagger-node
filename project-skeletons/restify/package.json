@@ -1,8 +1,8 @@
 {
-  "name": "swagger-node-app",
+  "name": "swagger-app",
   "version": "0.0.1",
   "private": true,
-  "description": "New Swagger-Node API Project",
+  "description": "New Swagger API Project",
   "keywords": [],
   "author": "",
   "license": "",

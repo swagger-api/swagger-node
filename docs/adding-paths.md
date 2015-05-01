@@ -2,7 +2,7 @@
 
 ## Anatomy of a path
 
-This topic looks at how paths are constructed and wired to response objects in a swagger-node project's Swagger configuration file. 
+This topic looks at how paths are constructed and wired to response objects in a Swagger project's Swagger configuration file. 
 
 * [Simple path example](#simple)
 * [More about route handling](#more)
@@ -16,7 +16,7 @@ The `/hello` path in the original Quick Start example looks like this:
 ```yaml
   paths:
     /hello:
-      # binds swagger-node app logic to a route
+      # binds swagger app logic to a route
       x-swagger-router-controller: hello_world
       get:
         description: Returns 'Hello' to the caller

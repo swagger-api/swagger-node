@@ -1,5 +1,5 @@
 
-## Installing swagger-node
+## Installing swagger
 
 * [Prerequisites](#prereqs)
 * [Installing with npm](#install)
@@ -13,7 +13,7 @@
 
 ### <a name="install"></a>Installing with npm
 
-The `swagger-node` module is designed for Node.js and is available through npm.
+The `swagger` module is designed for Node.js and is available through npm.
 
 #### Installing on Linux / Mac
 
@@ -22,21 +22,21 @@ Here's how you install with `sudo`. If you do not wish to use `sudo`, see [Using
 1. Open a terminal. 
 2. Run the install:
 
-    `sudo npm install -g swagger-node`
+    `sudo npm install -g swagger`
 
-**Note**: `sudo` may or may not be required with the `-g` option depending on your configuration. If you do not use `-g`, you may need to add the `swagger-node/bin` directory to your PATH manually. On Unix-based machines 
-the bin directory will often be found here: `/usr/local/lib/node_modules/swagger-node/bin`.
+**Note**: `sudo` may or may not be required with the `-g` option depending on your configuration. If you do not use `-g`, you may need to add the `swagger/bin` directory to your PATH manually. On Unix-based machines 
+the bin directory will often be found here: `/usr/local/lib/node_modules/swagger/bin`.
 
 #### Installing on Windows
 
 1. Open a terminal.
 2. Run the install:
 
-    `npm install -g swagger-node`
+    `npm install -g swagger`
 
 ## <a name="nosudo"></a>Using npm without sudo
 
-If you don't want to use sudo to install swagger-node on your system, follow the instructions in this section.
+If you don't want to use sudo to install swagger on your system, follow the instructions in this section.
 
 #### Overview
 
@@ -58,7 +58,7 @@ Many Node.js developers choose to use a different prefix such that they do not n
     PATH=~/npm/bin:$PATH
     ```
 
-    This will enable you to easily use executable scripts installed using `-g` through npm - both for swagger-node and for other tools as well!
+    This will enable you to easily use executable scripts installed using `-g` through npm - both for swagger and for other tools as well!
 
 ###<a name="defaultbrowser"></a>Configuring the default browser on Linux
 

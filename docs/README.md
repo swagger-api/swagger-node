@@ -1,7 +1,7 @@
 
 
 
-## Welcome to swagger-node
+## Welcome to Swagger!
 
 ![alt text](./images/swagger-icon.png)
 

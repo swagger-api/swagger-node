@@ -12,7 +12,7 @@ This topic explains how to implement a controller. The `x-swagger-router-control
 ```yaml
 paths:
     /hello:
-      # binds swagger-node app logic to a route
+      # binds swagger app logic to a route
       x-swagger-router-controller: hello_world
 ```
 
@@ -54,7 +54,7 @@ In the controller code, we obtained the value of a query parameter and echoed it
           type: string
 ```
 
-The req.swagger object is populated by the swagger-tools middleware component of swagger-node. To read more about this object, see the [Swagger tools middleware documentation](https://github.com/apigee-127/swagger-tools/blob/master/docs/Middleware.md).
+The req.swagger object is populated by the swagger-tools middleware component of swagger. To read more about this object, see the [Swagger tools middleware documentation](https://github.com/apigee-127/swagger-tools/blob/master/docs/Middleware.md).
 
 ### <a name="weather"></a>Weather API example
 

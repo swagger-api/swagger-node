@@ -17,7 +17,7 @@ When you're happy with the overall API design, then you can implement your contr
 
 ### <a name="starting"></a>Starting a project in mock mode
 
-To start an swagger-node project in mock mode, use the `-m` flag:
+To start an swagger project in mock mode, use the `-m` flag:
 
 `swagger project start -m`
 
@@ -58,9 +58,9 @@ definitions:
 ```
 
 
-To test this API configuration in mock mode, start swagger-node with the mock mode "-m" flag:
+To test this API configuration in mock mode, start your swagger project with the mock mode "-m" flag:
 
-`swagger-node project start -m`
+`swagger project start -m`
 
 When you call the API, like this:
 

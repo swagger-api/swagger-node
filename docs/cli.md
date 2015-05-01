@@ -3,7 +3,7 @@
  
 ## Command-line interface reference
 
-Create, run, and manage swagger-node projects from the command line.
+Create, run, and manage Swagger projects from the command line.
 
 * [swagger](#swagger)
 * [project create](#create)
@@ -19,7 +19,7 @@ Create, run, and manage swagger-node projects from the command line.
 Options:
 
 * -h, --help: Outputs usage information.
-* -V, --version: Outputs the swagger-node version number.
+* -V, --version: Outputs the swagger cli version number.
 
 Example:
 
@@ -29,7 +29,7 @@ Example:
 
 #### <a name="create"></a>swagger project create [options] [name]
 
-Creates a folder with the specified [name] containing a new swagger-node project. A project skeleton is downloaded from GitHub and installed in the new folder. 
+Creates a folder with the specified [name] containing a new Swagger project. A project skeleton is downloaded from GitHub and installed in the new folder. 
 
 Options:
 
@@ -45,7 +45,7 @@ Example:
 
 #### <a name="start"></a>swagger project start [options] [directory]
 
-Starts the swagger-node project in the current (or specified) directory. The server automatically restarts when you make changes to the project. You can also force a restart by typing `rs` on the server command line.
+Starts the Swagger project in the current (or specified) directory. The server automatically restarts when you make changes to the project. You can also force a restart by typing `rs` on the server command line.
 
 Options:
 

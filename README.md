@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/theganyo/swagger-node.svg?branch=master)](https://travis-ci.org/theganyo/swagger-node)
+# swagger module reference
 
-# swagger-node reference
-
-This is the installation guide and command reference for `swagger`, the command-line interface for swagger-node. 
+This is the installation guide and command reference for `swagger`, the command-line interface for the Swagger module. 
 
 * Prerequisites
 * Installation
@@ -15,24 +13,24 @@ This is the installation guide and command reference for `swagger`, the command-
 
 # Installation
 
-You can install `swagger-node` either through npm or by cloning and linking the code from GitHub.  
+You can install `swagger` either through npm or by cloning and linking the code from GitHub.  
 This document covers the installation details for installing from npm.
 
 ## Installation from npm
 
-The `swagger-node` module and its dependencies are designed for Node.js and is available through npm.
+The `swagger` module and its dependencies are designed for Node.js and is available through npm.
 
 ### Linux / Mac from a Terminal Window:
 
-    sudo npm install -g swagger-node
+    sudo npm install -g swagger
 
 NOTE: `sudo` may or may not be required with the `-g` option depending on your configuration. If you do not 
-use `-g`, you may need to add the `swagger-node/bin` directory to your PATH manually. On unix-based machines 
-the bin directory will often be found here: `/usr/local/lib/node_modules/swagger-node/bin`.
+use `-g`, you may need to add the `swagger/bin` directory to your PATH manually. On unix-based machines 
+the bin directory will often be found here: `/usr/local/lib/node_modules/swagger/bin`.
 
 ### Windows, from a Command Prompt:
 
-    npm install -g swagger-node
+    npm install -g swagger
 
 # Command reference
 
@@ -61,7 +59,7 @@ docs links:
 
 ## project
 
-Create and manage swagger-node projects on your local machine.
+Create and manage Swagger projects on your local machine.
  
     $ swagger project -h
 
@@ -87,7 +85,7 @@ docs links:
 
 ### create 
 
-Create a new swagger-node project with the given name in a folder of the same name.
+Create a new Swagger project with the given name in a folder of the same name.
 
 ### start
 
