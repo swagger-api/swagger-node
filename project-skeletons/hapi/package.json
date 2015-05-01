@@ -1,0 +1,18 @@
+{
+  "name": "swagger-node-app",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger-Node API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "hapi": "^8.4.0",
+    "swagger-node-runner": "^0.3.0"
+  },
+  "devDependencies":  {
+    "should": "^5.2.0",
+    "supertest": "^0.15.0"
+  }
+}
