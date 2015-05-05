@@ -1,7 +1,7 @@
 # Swagger configuration file
 
-# values in the swaggerNode hash are system configuration for Swagger
-swaggerNode:
+# values in the swagger hash are system configuration for Swagger
+swagger:
   docEndpoints:
     raw: /swagger
 
