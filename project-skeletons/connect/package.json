@@ -9,7 +9,7 @@
   "main": "app.js",
   "dependencies": {
     "connect": "^3.3.5",
-    "swagger-node-runner": "^0.3.0"
+    "swagger-connect": "^0.0.1"
   },
   "devDependencies":  {
     "should": "^5.2.0",

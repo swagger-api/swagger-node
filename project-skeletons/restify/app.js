@@ -1,6 +1,6 @@
 'use strict';
 
-var SwaggerRunner = require('swagger-node-runner');
+var SwaggerRestify = require('swagger-restify-mw');
 var restify = require('restify');
 var app = restify.createServer();
 
@@ -10,15 +10,10 @@ var config = {
   appRoot: __dirname // required config
 };
 
-SwaggerRunner.create(config, function(err, runner) {
+SwaggerRestify.create(config, function(err, swaggerRestify) {
   if (err) { throw err; }
 
-  // temporary: swagger-tools currently requires ownership of request.query
-  app.use(function(req, res, next) { req.query = null; next(); });
-
-  // install swagger-node-runner middleware
-  var restifyMiddleware = runner.restifyMiddleware();
-  restifyMiddleware.register(app);
+  swaggerRestify.register(app);
 
   var port = process.env.PORT || 10010;
   app.listen(port);
