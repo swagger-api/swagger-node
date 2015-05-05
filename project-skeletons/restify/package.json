@@ -9,7 +9,7 @@
   "main": "app.js",
   "dependencies": {
     "restify": "^3.0.1",
-    "swagger-restify-mw": "^0.0.1"
+    "swagger-restify-mw": "0.0.x"
   },
   "devDependencies":  {
     "should": "^5.2.0",
