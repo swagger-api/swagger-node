@@ -30,7 +30,6 @@ var path = require('path');
 var proxyquire =  require('proxyquire').noPreserveCache();
 var tmp = require('tmp');
 var fs = require('fs');
-var yaml = require('yamljs');
 var helpers = require('../../helpers');
 var _ = require('lodash');
 
