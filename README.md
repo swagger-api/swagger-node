@@ -133,3 +133,7 @@ Run the tests for your project using mocha.
 ## docs
 
 Opens the Swagger 2.0 documentation web page in your default browser. 
+
+# About this project
+
+This initiative grew out of Apigee-127, an API design-first development framework using Swagger. Apigee donated the code to create the swagger-node project in 2015.
