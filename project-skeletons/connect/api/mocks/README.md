@@ -1,1 +1,1 @@
-Place controllers for a127 mock mode in this directory.
+Place controllers for mock mode in this directory.
