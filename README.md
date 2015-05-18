@@ -4,8 +4,8 @@ Swagger module provides a CLI  and set of tools for design first API development
 
 ## Documentation
 
-[Introduction](./docs/introduction.md)
-[Quick Start](./docs/quick-start.md)
+* [Introduction](./docs/introduction.md)
+* [Quick Start](./docs/quick-start.md)
 
 # swagger module reference
 
