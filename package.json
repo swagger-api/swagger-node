@@ -1,7 +1,7 @@
 {
   "name": "swagger",
   "version": "0.5.2",
-  "description": "The Swagger command-line. Provides Swagger utilities and project support.",
+  "description": "The Swagger command-line. Provides Swagger utilities and project lifecycle support.",
   "keywords": [
     "swagger",
     "api",
@@ -15,7 +15,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/swagger-api/swagger-node.git"
+    "url": "https://github.com/apigee-127/swagger-node.git"
   },
   "dependencies": {
     "commander": "^2.7.1",
