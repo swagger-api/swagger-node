@@ -1,6 +1,6 @@
 {
   "name": "swagger",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "The Swagger command-line. Provides Swagger utilities and project support.",
   "keywords": [
     "swagger",
