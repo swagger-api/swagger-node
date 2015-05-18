@@ -1,3 +1,12 @@
+
+# swagger-node
+Swagger module provides a CLI  and set of tools for design first API development workflow. 
+
+## Documentation
+
+[Introduction](./docs/introduction.md)
+[Quick Start](./docs/quick-start.md)
+
 # swagger module reference
 
 This is the installation guide and command reference for `swagger`, the command-line interface for the Swagger module. 
