@@ -82,8 +82,8 @@ function parse(data) {
   if (isJSON(data)) {
     return JSON.parse(data);
   } else {
-    var YAML = require('yamljs');
-    return YAML.parse(data);
+    var yaml = require('js-yaml');
+    return yaml.safeLoad(data);
   }
 }
 
