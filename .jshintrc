@@ -1,19 +1,24 @@
 {
-  "bitwise":false,
-  "camelcase":true,
-  "curly":false,
+  "bitwise":true,
+  "curly":true,
   "eqeqeq":true,
-  "freeze":true,
-  "immed":true,
-  "indent":2,
-  "latedef":"nofunc",
-  "laxbreak":true,
-  "laxcomma":true,
+  "forin":true,
   "newcap":true,
   "noarg":true,
+  "noempty":true,
+  "nonew":true,
+  "undef":true,
+  "strict":true,
   "node":true,
-  "quotmark":"single",
-  "strict": true,
-  "trailing":true,
-  "undef":true
+  "indent":2,
+  "expr":true,
+  "globals"   : {
+    /* MOCHA */
+    "describe"   : false,
+    "it"         : false,
+    "before"     : false,
+    "beforeEach" : false,
+    "after"      : false,
+    "afterEach"  : false
+  }
 }
