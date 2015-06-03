@@ -1,250 +1,148 @@
-# Swagger for Express and Node.js
-
-[![Build Status](https://travis-ci.org/swagger-api/swagger-node-express.png)](https://travis-ci.org/swagger-api/swagger-node-express)
-
-This is a [Swagger](https://github.com/swagger-api/swagger-spec) module for the [Express](http://expressjs.com) web application framework for Node.js.
-
-Try a sample!  The source for a [functional sample](https://github.com/swagger-api/swagger-node-express/blob/master/SAMPLE.md) is available on github.
-
-Check out [Swagger-Spec](https://github.com/swagger-api/swagger-spec) for additional information about the Swagger project, including additional libraries with support for other languages and more. 
-
-
-## Installation
 
-Using NPM, include the `swagger-node-express` module in your `package.json` dependencies.
+# swagger-node
+Swagger module provides a CLI  and set of tools for design first API development workflow. 
 
-```json
-{
-	...
-	"dependencies": {
-		"swagger-node-express": "~2.0",
-		...
-	}
-}
-```
+## Documentation
 
+* [Introduction](./docs/introduction.md)
+* [Quick Start](./docs/quick-start.md)
 
-## Adding Swagger to an Express Application
+# swagger module reference
 
-```js
-// Load module dependencies.
-var express = require("express")
- , url = require("url");
+This is the installation guide and command reference for `swagger`, the command-line interface for the Swagger module. 
 
-// Create the application.
-var app = express();
-app.use(express.json());
-app.use(express.urlencoded());
+* Prerequisites
+* Installation
+* Commands
 
-// Couple the application to the Swagger module.
-var swagger = require("swagger-node-express").createNew(app);
-```
+# Prerequisites
 
-You can optionally add a validator function, which is used to filter the swagger json and request operations:
+* [Node.js](http://nodejs.org/download/) (v0.10.24+)
+* [npm](https://docs.npmjs.com/getting-started/installing-node) (v1.3.0+)
 
-```js
-// This is a sample validator.  It simply says that for _all_ POST, DELETE, PUT  methods, 
-// the header api_key OR query param api_key must be equal to the string literal 
-// special-key.  All other HTTP ops are A-OK */
+# Installation
 
-swagger.addValidator(
-  function validate(req, path, httpMethod) {
-    //  example, only allow POST for api_key="special-key"
-    if ("POST" == httpMethod || "DELETE" == httpMethod || "PUT" == httpMethod) {
-      var apiKey = req.headers["api_key"];
-      if (!apiKey) {
-        apiKey = url.parse(req.url,true).query["api_key"];
-      }
-      if ("special-key" == apiKey) {
-        return true; 
-      }
-      return false;
-    }
-    return true;
-  }
-);
+You can install `swagger` either through npm or by cloning and linking the code from GitHub.  
+This document covers the installation details for installing from npm.
 
-```
+## Installation from npm
 
-You now add models to the swagger context.  Models are described in a JSON format, per the [swagger model specification](https://github.com/swagger-api/swagger-core/wiki/Datatypes).  Most folks keep them in a separate file (see [here](https://github.com/swagger-api/swagger-node-express/blob/master/sample-application/models.js) for an example), or you can add them as such:
+The `swagger` module and its dependencies are designed for Node.js and is available through npm.
 
-```js
-swagger.addModels(models);
+### Linux / Mac from a Terminal Window:
 
-```
+    sudo npm install -g swagger
 
-Next, add some resources.  Each resource contains a swagger spec as well as the action to execute when called.  The spec contains enough to describe the method, and adding the resource will do the rest.  For example:
+NOTE: `sudo` may or may not be required with the `-g` option depending on your configuration. If you do not 
+use `-g`, you may need to add the `swagger/bin` directory to your PATH manually. On unix-based machines 
+the bin directory will often be found here: `/usr/local/lib/node_modules/swagger/bin`.
 
+### Windows, from a Command Prompt:
 
-```js
-var findById = {
-  'spec': {
-    "description" : "Operations about pets",
-    "path" : "/pet.{format}/{petId}",
-    "notes" : "Returns a pet based on ID",
-    "summary" : "Find pet by ID",
-    "method": "GET",
-    "parameters" : [swagger.paramTypes.path("petId", "ID of pet that needs to be fetched", "string")],
-    "type" : "Pet",
-    "responseMessages" : [swagger.errors.invalid('id'), swagger.errors.notFound('pet')],
-    "nickname" : "getPetById"
-  },
-  'action': function (req,res) {
-    if (!req.params.petId) {
-      throw swagger.errors.invalid('id');
-    }
-    var id = parseInt(req.params.petId);
-    var pet = petData.getPetById(id);
+    npm install -g swagger
 
-    if (pet) {
-      res.send(JSON.stringify(pet));
-    } else {
-      throw swagger.errors.notFound('pet');
-    }
-  }
-};
+# Command reference
 
-swagger.addGet(findById);
+To print a list of valid commands, just run `swagger` with no options or -h:
 
-```
+    $ swagger -h
 
-Adds an API route to express and provides all the necessary information to swagger.
+    Usage: swagger [options] [command]
+  
+  
+    Commands:
+  
+      project <action>  project actions
+      docs              open Swagger documentation
+      help [cmd]        display help for [cmd]
+  
+    Options:
+  
+      -h, --help     output usage information
+      -V, --version  output the version number
 
-Finally, configure swagger with a `public` URL and version (note, this must be called after all the other swagger API calls):
+docs links:
 
-```js
-swagger.configure("http://petstore.swagger.wordnik.com", "0.1");
-```
+* [project](#project)
+* [docs](#docs)
 
-and the server can be started:
+## project
 
-```js
-app.listen(8002);
-```
+Create and manage Swagger projects on your local machine.
+ 
+    $ swagger project -h
 
-Now you can open up a [swagger-ui](https://github.com/swagger-api/swagger-ui) and browse your API, generate a client with [swagger-codegen](https://github.com/swagger-api/swagger-codegen), and be happy.
+    Usage: swagger-project [options] [command]
+  
+    Commands:
+  
+      create <name>                       Create a folder containing a Swagger project
+      start [options] [directory]         Start the project in this or the specified directory
+      verify [options] [directory]        Verify that the project is correct (swagger, config, etc.)
+      edit [options] [directory]          open Swagger editor for this project
+      open [directory]                    open browser as client to the project
+      test [options] [directory_or_file]  Run project tests
 
+docs links:
 
-## Additional Configurations
+* [create](#create)
+* [start](#start)
+* [verify](#verify)
+* [edit](#edit)
+* [open](#open)
+* [test](#test)
 
-### .{format} suffix removal
+### create 
 
-If you don't like the .{format} or .json suffix, you can override this before configuring swagger:
+Create a new Swagger project with the given name in a folder of the same name.
 
-```js
-swagger.configureSwaggerPaths("", "/api-docs", "");
-```
+### start
 
-That will put the resource listing under `/api-docs`, and ditch the `.{format}` on each of the apis you're adding to.  Make sure to set the paths correctly in your spec configuration though, like such:
+Start the API server in the directory you are in - or, optionally, another directory. The server 
+will automatically restart when you make changes to the project.
 
-```js
-// note the .{format} is removed from the path!
-var findById = {
-  'spec': {
-    "description" : "Operations about pets",
-    "path" : "/pet/{petId}",
-    "notes" : "Returns a pet based on ID",
-    ...
-```
+    $ swagger project start -h
+  
+    Usage: start [options] [directory]
+  
+    Start the project in this or the specified directory
+  
+    Options:
+  
+      -h, --help              output usage information
+      -d, --debug <port>      start in remote debug mode
+      -b, --debug-brk <port>  start in remote debug mode, wait for debugger connect
+      -m, --mock              start in mock mode
+      -o, --open              open browser as client to the project
 
-### Mapping swagger to subpaths
+`-debug` and `-debug-brk` will start the project in debug mode so that you can connect to it via a debugger.
 
-To add a subpath to the api (i.e. list your REST api under `/api` or `/v1`), you can configure express as follows:
+`-mock` will choose controllers from your mock directory instead of your controllers directory. If you have
+no controller defined in the mock directory, the system will generate an appropriate response for you based on
+the modules you have defined in your Swagger. 
 
-```js
-var app = express();
-var subpath = express();
+`-open` will start the app and then open a browser as a client to it.
 
-app.use(express.json());
-app.use(express.urlencoded());
-app.use("/v1", subpath);
+### verify
 
-swagger.setAppHandler(subpath);
-```
+Verify the project's swagger.
 
-Be sure to set your `basePath` correctly to reflect this subpath:
+### edit
 
-```
-swagger.configure("http://petstore.swagger.wordnik.com/v1", "0.1");
-```
+Open the project in the swagger-editor in your default browser. 
 
-Now swagger and all apis configured through it will live under the `/v1` path (i.e. `/v1/api-docs`).
+### open
 
-### Allows special headers
+Open your default browser as a client of the project. 
 
-If you want to modify the default headers sent with every swagger-managed method, you can do so as follows:
+### test
 
-```js
-swagger.setHeaders = function setHeaders(res) {
-  res.header("Access-Control-Allow-Headers", "Content-Type, X-API-KEY");
-  res.header("Content-Type", "application/json; charset=utf-8");
-};
-```
-If you have a special name for an api key (such as `X-API-KEY`, per above), this is where you can inject it.
+Run the tests for your project using mocha. 
 
-### Error handling
-As of 2.1.0, swagger no longer consumes errors.  The preferred way to handle errors
-is to use standard express middelware with an arity of 4 I.E.
+## docs
 
-```javascript
-var app = express();
-swagger.setAppHandler(app);
-app.use(function(err, req, res, next){
-  //do something with the error.
-});
-```
+Opens the Swagger 2.0 documentation web page in your default browser. 
 
-### Enabling cors support using cors library
+# About this project
 
-To enable cors support using cors express npm module (https://npmjs.org/package/cors) add the following to your app.
-
-```js
-var cors = require('cors');
-
-var corsOptions = {
-    credentials: true,
-    origin: function(origin,callback) {
-        if(origin===undefined) {
-            callback(null,false);
-        } else {
-            // change wordnik.com to your allowed domain.
-            var match = origin.match("^(.*)?.wordnik.com(\:[0-9]+)?");
-            var allowed = (match!==null && match.length > 0);
-            callback(null,allowed);
-        }
-    }
-};
-
-app.use(cors(corsOptions));
-
-```
-
-### Configuring the Resource Listing Information
-
-The Swagger `info` node of the resource listing can be configured using the `configureDeclaration` method:
-
-```js
-swagger.configureDeclaration('pet', {
-	description: 'Operations about Pets',
-	authorizations : ["oauth2"],
-	protocols : ["http"],
-	consumes: ['application/json'],
-	produces: ['application/json']
-});
-```
-
-Please note that `configureDeclaration` must come '''after''' the routes are defined (`addGet` etc) for the specified resource or it will not be applied.
-
-## License
-
-Copyright 2015 SmartBear Software, Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at [apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+This initiative grew out of Apigee-127, an API design-first development framework using Swagger. Apigee donated the code to create the swagger-node project in 2015.
