@@ -15,7 +15,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apigee-127/swagger-node.git"
+    "url": "https://github.com/swagger-api/swagger-node.git"
   },
   "dependencies": {
     "commander": "^2.7.1",
