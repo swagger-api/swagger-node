@@ -1,0 +1,18 @@
+{
+  "name": "swagger-app",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.12.3",
+    "swagger-express-mw": "0.0.x"
+  },
+  "devDependencies":  {
+    "should": "^5.2.0",
+    "supertest": "^0.15.0"
+  }
+}

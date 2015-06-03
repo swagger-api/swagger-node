@@ -1,0 +1,8 @@
+# Swagger configuration file
+
+# values in the swagger hash are system configuration for Swagger
+swagger:
+  docEndpoints:
+    raw: /swagger
+
+# any other values in this file are just loaded into the config for application access...
