@@ -237,7 +237,7 @@ Please note that `configureDeclaration` must come '''after''' the routes are def
 
 ## License
 
-Copyright 2014 Reverb Technologies, Inc.
+Copyright 2015 SmartBear Software, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
