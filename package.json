@@ -10,7 +10,7 @@
     "express"
   ],
   "author": "Scott Ganyo <sganyo@apigee.com>",
-  "license": "MIT",
+  "license": "Apache 2.0",
   "preferGlobal": true,
   "main": "index.js",
   "repository": {
