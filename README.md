@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/swagger-api/swagger-node.svg?branch=master)](https://travis-ci.org/swagger-api/swagger-node)
 
 # swagger-node
 Swagger module provides a CLI  and set of tools for design first API development workflow. 
@@ -31,7 +32,7 @@ The `swagger` module and its dependencies are designed for Node.js and is availa
 
 ### Linux / Mac from a Terminal Window:
 
-    sudo npm install -g swagger
+    npm install -g swagger
 
 NOTE: `sudo` may or may not be required with the `-g` option depending on your configuration. If you do not 
 use `-g`, you may need to add the `swagger/bin` directory to your PATH manually. On unix-based machines 
@@ -145,4 +146,21 @@ Opens the Swagger 2.0 documentation web page in your default browser.
 
 # About this project
 
-This initiative grew out of Apigee-127, an API design-first development framework using Swagger. Apigee donated the code to create the swagger-node project in 2015.
+This initiative grew out of Apigee-127, an API design-first development framework using Swagger. 
+Apigee donated the code to create the swagger-node project in 2015.
+
+/****************************************************************************
+ Copyright 2015 Apigee Corporation
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ****************************************************************************/
