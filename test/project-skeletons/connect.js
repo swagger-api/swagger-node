@@ -21,6 +21,7 @@ var tmp = require('tmp');
 var path = require('path');
 var project = require('../../lib/commands/project/project');
 var debug = require('debug')('swagger');
+var yaml = require('js-yaml');
 
 var framework = 'connect';
 var name = framework;
@@ -93,4 +94,38 @@ describe(framework + ' project', function() {
         });
     });
   });
+
+  describe.only('/swagger should respond', function() {
+
+    it('with json', function(done) {
+      request(server)
+        .get('/swagger')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          should.not.exist(err);
+
+          res.body.swagger.should.eql('2.0');
+
+          done();
+        });
+    });
+
+    it('with yaml', function(done) {
+      request(server)
+        .get('/swagger')
+        .expect(200)
+        .set('Accept', 'text/yaml')
+        .expect('Content-Type', /yaml/)
+        .end(function(err, res) {
+          should.not.exist(err);
+
+          var swagger = yaml.safeLoad(res.text);
+          swagger.swagger.should.eql('2.0');
+
+          done();
+        });
+    });
+  });
+
 });
