@@ -1,6 +1,9 @@
 
 # swagger-node
-Swagger module provides a CLI  and set of tools for design first API development workflow. 
+The swagger module provides tools for designing and building APIs entirely in Node.js. It integrates with popular Node.js servers including Express, hapi, restify, and Sails, as well as any Connect-based middleware.
+
+
+Swagger module provides a CLI  for project scaffolding and lifecycle management (create, edit, start, test) and bundles libraries for a design first API development workflow. 
 
 ## Documentation
 
