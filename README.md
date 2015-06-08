@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/swagger-api/swagger-node.svg?branch=master)](https://travis-ci.org/swagger-api/swagger-node)
 
 # swagger-node
 Swagger module provides a CLI  and set of tools for design first API development workflow. 
