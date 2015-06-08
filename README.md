@@ -31,7 +31,7 @@ The `swagger` module and its dependencies are designed for Node.js and is availa
 
 ### Linux / Mac from a Terminal Window:
 
-    sudo npm install -g swagger
+    npm install -g swagger
 
 NOTE: `sudo` may or may not be required with the `-g` option depending on your configuration. If you do not 
 use `-g`, you may need to add the `swagger/bin` directory to your PATH manually. On unix-based machines 
