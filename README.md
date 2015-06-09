@@ -32,7 +32,7 @@ Code your API's business logic in Node.js.
 
 ![alt text](./docs/images/project-controller.png)
 
-If you look at the Swagger file in the editor, the `x-swagger-router-controller` element (line 17 in the editor screenshot above) specifies the name of the controller file associated with the `/hello` path. For example:
+If you look at the Swagger file in the editor (shown in step 3 above), the `x-swagger-router-controller` element (line 17 in the editor screenshot) specifies the name of the controller file associated with the `/hello` path. For example:
 
 ```yaml
     paths:
