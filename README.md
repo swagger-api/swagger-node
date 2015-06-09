@@ -30,7 +30,7 @@ Code your API's business logic in Node.js, with pleasure. Learn [more](./docs/co
 
 ## Run the server
 
-Run your project's server locally, or deploy it to the cloud. 
+Run the project server.
 
 ![alt text](./docs/images/project-start.png)
 
