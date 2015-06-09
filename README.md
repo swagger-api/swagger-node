@@ -30,6 +30,8 @@ The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is bu
 
 Code your API's business logic in Node.js. 
 
+![alt text](./docs/images/project-controller.png)
+
 If you look at the Swagger file in the editor, the `x-swagger-router-controller` element (line 17 in the editor screenshot above) specifies the name of the controller file associated with the `/hello` path. For example:
 
 ```yaml
@@ -41,8 +43,6 @@ If you look at the Swagger file in the editor, the `x-swagger-router-controller`
 Controller source code is always placed in `./api/controllers`. So, the controller source file for this project is `./api/controllers/hello_world.js`. 
 
 The `operationId` element specifies which controller function to call. In this case (line 19), it is a function called `hello`. Learn [more](./docs/controller.md).
-
-![alt text](./docs/images/project-controller.png)
 
 ## 5. Run the server
 
