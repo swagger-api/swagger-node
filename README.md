@@ -1,29 +1,34 @@
 [![Build Status](https://travis-ci.org/swagger-api/swagger-node.svg?branch=master)](https://travis-ci.org/swagger-api/swagger-node)
 
-* [What is the swagger module?](#whatis)
 * [Installing](#installation)
 * [Using](#docs)
 * [About](#about)
 
+ The `swagger` module provides tools for designing and building APIs entirely in Node.js. It integrates with popular Node.js servers, including Express, hapi, restify, and Sails, as well as any Connect-based middleware. With `swagger`, you can specify, build, and test your API from the very beginning, on your laptop. It allows you to make change and iterate your design without rewriting the logic of your implementation.
 
+## Install swagger
+
+Install using npm. For complete instructions, see the [install](./docs/install.md) page. 
+
+![alt text](./docs/images/swagger-install.png)
 
 ## Create a new swagger project
 
-Use the CLI to create and manage projects. Choose from among several popular API server frameworks. 
+Use the CLI to create and manage projects. Choose from among several popular API server frameworks. Learn more on the [quick start](./docs/quick-start.md) page. 
 
 ![alt text](./docs/images/project-create.png)
 ![alt text](./docs/images/project-server.png)
 
 ## Develop your API in the Swagger Editor
 
-Interactive, browser-based, editor provides Swagger 2.0 validation, generates docs on the fly, and uses easy-to-read YAML.
+Interactive, browser-based, editor provides Swagger 2.0 validation and endpoint routing, generates docs on the fly, and uses easy-to-read YAML. Learn [more](http://editor.swagger.io/). 
 
 ![alt text](./docs/images/project-start-editor.png)
 ![alt text](./docs/images/project-editor.png)
 
 ## Write controller code in Node.js
 
-Code your API's business with pleasure, in Node.js.
+Code your API's business with pleasure, in Node.js. Learn [more](./docs/controllers.md). 
 
 ![alt text](./docs/images/project-controller.png)
 
