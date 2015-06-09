@@ -2,19 +2,23 @@
 
 The `swagger` module provides tools for designing and building Swagger-compliant APIs entirely in Node.js. It integrates with popular Node.js servers, including Express, hapi, restify, and Sails, as well as any Connect-based middleware. With `swagger`, you can specify, build, and test your API from the very beginning, on your laptop. It allows you to change and iterate your design without rewriting the logic of your implementation.
 
-## Install the swagger module
+One great thing about this approach is that all of the Swagger validation logic is handled for you, and all of the routing logic is managed through the Swagger configuration. You don't have to rewrite any of that yourself.  
+
+# Your swagger API in five steps
+
+## 1. Install the swagger module
 
 Install using npm. For complete instructions, see the [install](./docs/install.md) page. 
 
 ![alt text](./docs/images/swagger-install.png)
 
-## Create a new swagger project
+## 2. Create a new swagger project
 
 Use the [CLI](./docs/cli.md) to create and manage projects. Learn more on the [quick start](./docs/quick-start.md) page. 
 
 ![alt text](./docs/images/project-create.png)
 
-## Design your API in the Swagger Editor
+## 3. Design your API in the Swagger Editor
 
 The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is built in. It provides Swagger 2.0 validation and endpoint routing, generates docs on the fly, and consumes easy-to-read YAML. 
 
@@ -22,15 +26,25 @@ The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is bu
 
 ![alt text](./docs/images/project-editor.png)
 
-## Write controller code in Node.js
+## 4. Write controller code in Node.js
 
-Code your API's business logic in Node.js, with pleasure. Learn [more](./docs/controllers.md). 
+Code your API's business logic in Node.js. 
 
-`./api/controllers/hello-world.js`
+If you look at the Swagger file in the editor, the `x-swagger-router-controller` element (line 17 in the editor screenshot above) specifies the name of the controller file associated with the `/hello` path. For example:
+
+```yaml
+    paths:
+        /hello:
+            x-swagger-router-controller: hello_world
+```
+
+Controller source code is always placed in `./api/controllers`. So, the controller source file for this project is `./api/controllers/hello_world.js`. 
+
+The `operationId` element specifies which controller function to call. In this case (line 19), it is a function called `hello`. Learn [more](./docs/controller.md).
 
 ![alt text](./docs/images/project-controller.png)
 
-## Run the server
+## 5. Run the server
 
 Run the project server.
 
