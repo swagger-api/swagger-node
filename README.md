@@ -39,6 +39,7 @@ Run the project server.
 It just works!
 
 ![alt text](./docs/images/project-call.png)
+
 ![alt text](./docs/images/project-hello.png)
 
 # <a name="installation"></a>Installing the swagger module
