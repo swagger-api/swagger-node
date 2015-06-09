@@ -18,6 +18,8 @@ Use the [CLI](./docs/cli.md) to create and manage projects. Learn more on the [q
 
 The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is built in. It provides Swagger 2.0 validation and endpoint routing, generates docs on the fly, and consumes easy-to-read YAML. 
 
+`./api/swagger/swagger.yaml`
+
 ![alt text](./docs/images/project-start-editor.png)
 
 ![alt text](./docs/images/project-editor.png)
@@ -25,6 +27,8 @@ The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is bu
 ## Write controller code in Node.js
 
 Code your API's business logic in Node.js, with pleasure. Learn [more](./docs/controllers.md). 
+
+`./api/controllers/hello-world.js`
 
 ![alt text](./docs/images/project-controller.png)
 
