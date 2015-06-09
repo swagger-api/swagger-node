@@ -10,7 +10,7 @@ Install using npm. For complete instructions, see the [install](./docs/install.m
 
 ## Create a new swagger project
 
-Use the CLI to create and manage projects. Choose from among several popular API server frameworks. Learn more on the [quick start](./docs/quick-start.md) page. 
+Use the [CLI](./docs/cli.md) to create and manage projects. Choose from among several popular API server frameworks. Learn more on the [quick start](./docs/quick-start.md) page. 
 
 ![alt text](./docs/images/project-create.png)
 ![alt text](./docs/images/project-server.png)
@@ -24,7 +24,7 @@ Interactive, browser-based, editor provides Swagger 2.0 validation and endpoint 
 
 ## Write controller code in Node.js
 
-Code your API's business with pleasure, in Node.js. Learn [more](./docs/controllers.md). 
+Code your API's business logic in Node.js, with pleasure. Learn [more](./docs/controllers.md). 
 
 ![alt text](./docs/images/project-controller.png)
 
