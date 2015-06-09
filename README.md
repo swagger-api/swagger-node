@@ -50,7 +50,7 @@ Run the project server.
 
 ![alt text](./docs/images/project-start.png)
 
-## Call the API
+## Now, call the API!
 
 It just works!
 
