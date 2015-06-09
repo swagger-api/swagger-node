@@ -6,15 +6,14 @@
 
 
 
-# Create a new project
+# Create a new swagger project
 
 ![alt text](./docs/images/project-create.png)
-
 ![alt text](./docs/images/project-server.png)
 
 # Develop your API in the Swagger Editor
 
-![alt text](./docs/images/project-edit.png)
+![alt text](./docs/images/project-editor.png)
 
 # Write controller code in Node.js
 
