@@ -10,11 +10,9 @@ Install using npm. For complete instructions, see the [install](./docs/install.m
 
 ## Create a new swagger project
 
-Use the [CLI](./docs/cli.md) to create and manage projects. Choose from among several popular API server frameworks. Learn more on the [quick start](./docs/quick-start.md) page. 
+Use the [CLI](./docs/cli.md) to create and manage projects. Learn more on the [quick start](./docs/quick-start.md) page. 
 
 ![alt text](./docs/images/project-create.png)
-
-![alt text](./docs/images/project-server.png)
 
 ## Develop your API in the Swagger Editor
 
