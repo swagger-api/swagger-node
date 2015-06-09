@@ -14,7 +14,7 @@ Use the [CLI](./docs/cli.md) to create and manage projects. Learn more on the [q
 
 ![alt text](./docs/images/project-create.png)
 
-## Develop your API in the Swagger Editor
+## Design your API in the Swagger Editor
 
 The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is built in. It provides Swagger 2.0 validation and endpoint routing, generates docs on the fly, and uses easy-to-read YAML. 
 
