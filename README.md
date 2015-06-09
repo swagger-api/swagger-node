@@ -4,6 +4,30 @@
 * [Installation](#installation)
 * [Documentation](#docs)
 
+
+
+# Create a new project
+
+![alt text](./docs/images/project-create.png)
+
+![alt text](./docs/images/project-server.png)
+
+# Develop your API in the Swagger Editor
+
+![alt text](./docs/images/project-edit.png)
+
+# Write controller code in Node.js
+
+![alt text](./docs/images/project-controller.png)
+
+# Run the server
+
+![alt text](./docs/images/project-server.png)
+
+# Call the API
+
+![alt text](./docs/images/project-call.png)
+
 # <a name="whatis">What is the swagger module?
 
 The swagger module provides tools for designing and building APIs entirely in Node.js. It integrates with popular Node.js servers, including Express, hapi, restify, and Sails, as well as any Connect-based middleware. 
