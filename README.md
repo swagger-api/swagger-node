@@ -5,7 +5,7 @@ The `swagger` module provides tools for designing and building Swagger-compliant
 ![alt text](./docs/images/overview2.png)
 
 
-Remember, one great thing about this approach is that all of the Swagger validation logic is handled for you, and all of the routing logic is managed through the Swagger configuration. You don't have to code any of that stuff yourself.  
+Remember, one great thing about this approach is that all of the Swagger validation logic is handled for you, and all of the routing logic is managed through the Swagger configuration. You don't have to code (or recode!) any of that stuff yourself.  
 
 # Your swagger API in five steps
 
