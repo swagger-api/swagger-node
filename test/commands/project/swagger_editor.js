@@ -56,6 +56,8 @@ describe('swagger editor', function() {
   var projPath;
   var swaggerFile;
   var baseUrl;
+  var hostname;
+  var port;
 
   before(function(done) {
     tmp.setGracefulCleanup();
@@ -78,6 +80,8 @@ describe('swagger editor', function() {
         url.hash = null;
         url.query = null;
         baseUrl = Url.format(url);
+        hostname = url.hostname;
+        port = url.port;
         cb(new Error());
       }
     }
@@ -101,6 +105,22 @@ describe('swagger editor', function() {
             res.text.should.equal(fileContents);
             done();
           });
+      });
+    });
+  });
+
+  it('should be able to run on a custom host and port', function(done) {
+    var fileContents = fs.readFileSync(swaggerFile, 'utf8');
+
+    project.read(projPath, {}, function(err, project) {
+      if (err) {
+        cb(err);
+      }
+
+      editor.edit(project, { host: 'localhost', port: '1234' }, function () {
+        hostname.should.equal('localhost');
+        port.should.equal('1234');
+        done();
       });
     });
   });

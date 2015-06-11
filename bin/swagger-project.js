@@ -46,7 +46,9 @@ app
 app
   .command('edit [directory]')
   .description('open Swagger editor for this project or the specified project directory')
-  .option('-s --silent', 'do not open the browser')
+  .option('-s, --silent', 'do not open the browser')
+  .option('--host <host>', 'the hostname the editor is served from')
+  .option('-p, --port <port>', 'the port the editor is served from')
   .action(execute(project.edit));
 
 app

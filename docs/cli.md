@@ -92,6 +92,8 @@ Options:
 
 * -h, --help: Outputs usage information.
 * -s, --silent: Do not open the browser. 
+* --host <host>: The hostname the editor is served from (default: 127.0.0.1).
+* -p, --port <port>: The port the editor is served from (default: random port).
 
 Example:
 

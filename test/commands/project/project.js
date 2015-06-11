@@ -301,8 +301,24 @@ describe('project', function() {
       });
     });
 
-     it('edit should exec editor with --silent flag', function(done) {
+    it('edit should exec editor with --silent flag', function(done) {
       project.edit(projPath, {silent: true}, function(err) {
+        should.not.exist(err);
+        should(didEdit).true;
+        done();
+      });
+    });
+
+    it('edit should exec editor with --host parameter', function(done) {
+      project.edit(projPath, {host: 'somehost'}, function(err) {
+        should.not.exist(err);
+        should(didEdit).true;
+        done();
+      });
+    });
+
+    it('edit should exec editor with --port parameter', function(done) {
+      project.edit(projPath, {port: '8080'}, function(err) {
         should.not.exist(err);
         should(didEdit).true;
         done();
