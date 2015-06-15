@@ -62,7 +62,7 @@ See the `swagger-tools` [README](https://github.com/apigee-127/swagger-tools) on
 
 #### Swagger Tools middleware components
 
-Swagger tools provides these middleware comnponents. They provide services for message validation, authorization, and routing. 
+Swagger tools provides these middleware components. They provide services for message validation, authorization, and routing. 
 
 * swagger-metadata
 * swagger-router
