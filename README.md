@@ -78,11 +78,11 @@ $ curl http://127.0.0.1:10010/hello?name=Scott
 
 # <a name="installation"></a>Installing the swagger module
 
-See the [Installing swagger](./docs/install.md) for details.
+See the [Installing swagger](./docs/install.md) for details. 
 
 # <a name="using"></a>Using the swagger module
 
-Go to the [swagger module doc page](./docs/README.md). It includes all the information you need to get started.
+Go to the [swagger module doc page](./docs/README.md). It includes all the information you need to get started. 
 
 # <a name="about"></a>About this project
 
