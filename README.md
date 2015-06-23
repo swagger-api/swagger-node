@@ -82,7 +82,7 @@ See the [Installing swagger](./docs/install.md) for details.
 
 # <a name="using"></a>Using the swagger module
 
-Go to the [swagger module doc page](./docs/README.md). It includes all the information you need to get started. 
+Go to the [swagger module doc page](./docs/README.md). It includes all the information you need to get started.
 
 # <a name="about"></a>About this project
 
