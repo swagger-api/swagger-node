@@ -63,11 +63,11 @@ It just works!
 
 # <a name="installation"></a>Installing the swagger module
 
-See the [Installing swagger](https://github.com/apigee-127/swagger-node/blob/master/docs/install.md) for details. 
+See the [Installing swagger](./docs/install.md) for details. 
 
 # <a name="using"></a>Using the swagger module
 
-Go to the [swagger module doc page](https://github.com/apigee-127/swagger-node/blob/master/docs/README.md). It includes all the information you need to get started. 
+Go to the [swagger module doc page](./docs/README.md). It includes all the information you need to get started. 
 
 # <a name="about"></a>About this project
 
