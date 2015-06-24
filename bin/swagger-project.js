@@ -74,7 +74,7 @@ app
   .option('-f, --testmodule <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
   .option('-s, --asynchronous <boolen>', 'one of: ' + istrue)
-  .option('-o, --seperate <boolean>', 'one of: ' + istrue)
+  .option('-o, --separate <boolean>', 'one of: ' + istrue)
   .action(execute(project.generateTest));
 
 app.parse(process.argv);
