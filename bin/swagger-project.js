@@ -23,6 +23,7 @@ var execute = cli.execute;
 var frameworks = Object.keys(project.frameworks).join('|');
 var assertiontypes = Object.keys(project.assertiontypes).join('|');
 var testmodules = Object.keys(project.testframes).join('|');
+var istrue = Object.keys(project.istrue).join('|');
 
 app
   .command('create [name]')
@@ -34,7 +35,7 @@ app
   .command('start [directory]')
   .description('Start the project in this or the specified directory')
   .option('-d, --debug <port>', 'start in remote debug mode')
-  .option('-b, --debug-brk <port>', 'start in remote debug mode, wait for debugger connect')
+  .option('-b, --debug-brk <port>', 'tart in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'start in mock mode')
   .option('-o, --open', 'open browser as client to the project')
   .action(execute(project.start));
@@ -72,6 +73,8 @@ app
   .option('-p, --path-name [path]', 'a sepecific path of api')
   .option('-f, --testmodule <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
+  .option('-s, --asynchronous <boolen>', 'one of: ' + istrue)
+  .option('-o, --seperate <boolean>', 'one of: ' + istrue)
   .action(execute(project.generateTest));
 
 app.parse(process.argv);
