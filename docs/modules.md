@@ -33,7 +33,7 @@ A basic, "hello world" swagger project. This project automatically cloned when y
 
 #### Documentation
 
-See the swagger"[Quick start](./quick-start.md)" to see how easy it is to get a new swagger API project up and running. 
+See the swagger "[Quick start](./quick-start.md)" to see how easy it is to get a new swagger API project up and running. 
 
 ### <a ref='swagger-editor'></a>swagger-editor
 
