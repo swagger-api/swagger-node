@@ -22,7 +22,7 @@ var cli = require('../lib/util/cli');
 var execute = cli.execute;
 var frameworks = Object.keys(project.frameworks).join('|');
 var assertiontypes = Object.keys(project.assertiontypes).join('|');
-var testframes = Object.keys(project.testframes).join('|');
+var testmodules = Object.keys(project.testframes).join('|');
 
 app
   .command('create [name]')
@@ -70,7 +70,7 @@ app
   .command('generate-test')
   .description('Generate the test template')
   .option('-p, --path-name [path]', 'a sepecific path of api')
-  .option('-f, --framework <framework>', 'one of: ' + testframes)
+  .option('-f, --testmodule <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
   .action(execute(project.generateTest));
 
