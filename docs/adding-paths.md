@@ -51,7 +51,7 @@ The parts of the path definition include:
 
 * `parameters:` specifies any parameters used by the path. They can be passed as query or form parameters, or headers. 
 
-* The other keys conform to the Swagger 2.0 [specifications](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). The parameters is a YAML array that defines all the parameters required for the call. The responses object defines the response specifications for response codes.
+* The other keys conform to the Swagger 2.0 [specifications](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md). The parameters is a YAML array that defines all the parameters required for the call. The responses object defines the response specifications for response codes.
 
 ### <a name="more"></a>More about route handling
 
