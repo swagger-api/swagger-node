@@ -70,7 +70,7 @@ app
   .description('Generate the test template')
   .option('-p, --path-name [path]', 'a sepecific path of api')
   .option('-f, --assertion-format <type>', 'one of: ' + assertiontypes)
-  .action(execute(project.generate-test));
+  .action(execute(project.generateTest));
 
 app.parse(process.argv);
 cli.validate(app);
