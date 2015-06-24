@@ -38,7 +38,7 @@ The `/hello` path in the original Quick Start example looks like this:
           default:
             description: Error
             schema:
-              $ref: #/definitions/ErrorResponse
+              $ref: "#/definitions/ErrorResponse"
 ```
 
 The parts of the path definition include:
