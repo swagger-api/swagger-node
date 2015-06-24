@@ -6,7 +6,7 @@
 
 ### <a name="intro"></a>Intro
 
-When you execute `swagger project create myproject`, a default Swagger model is placed in `myproject/api/swagger/swagger.yaml`. This model conforms to the [Swagger 2.0 specification](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). 
+When you execute `swagger project create myproject`, a default Swagger model is placed in `myproject/api/swagger/swagger.yaml`. This model conforms to the [Swagger 2.0 specification](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md). 
 
 >Note: For a quick intro to swagger, see "[What is Swagger](./swagger-about)". 
 
@@ -58,7 +58,7 @@ Here is the entire `swagger.yaml` file that is provisioned for a new swagger pro
 
 ###<a name="reference"></a>Swagger specification elements
 
-The Swagger file includes a number of standard Swagger 2.0 specification elements. You can read about them in the [Swagger 2.0 specification](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). 
+The Swagger file includes a number of standard Swagger 2.0 specification elements. You can read about them in the [Swagger 2.0 specification](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md). 
 
 Here's a brief description of the elements in a swagger project file:
 
@@ -76,7 +76,7 @@ Here's a brief description of the elements in a swagger project file:
 
 *  **produces:** - (Optional) A list of MIME types the APIs can produce.
 
-*  **paths:** - (Required) Defines the available operations on the API. You'll spend most of your time configuring the paths part of the file. You can read about the path element in the [Swagger 2.0 specification](https://github.com/reverb/swagger-spec/blob/master/versions/2.0.md). In general, the paths section specifies an operation's verb (like `get`), the endpoint for an API operation (like `/hello`), query parameters, and responses. 
+*  **paths:** - (Required) Defines the available operations on the API. You'll spend most of your time configuring the paths part of the file. You can read about the path element in the [Swagger 2.0 specification](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md). In general, the paths section specifies an operation's verb (like `get`), the endpoint for an API operation (like `/hello`), query parameters, and responses. 
 
 * **definitions:** - (Optional) These represent the structure of complex objects such as request and response bodies. For example, you might have a collection of `/users` that returns an array of `user` objects. You would describe these with two definitions: 1) to describe the `User` object, and 2) the definition of the `Users` array. Swagger uses [JSON-schema](http://json-schema.org/).
 
