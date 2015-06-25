@@ -70,7 +70,7 @@ app
   .command('generate-test')
   .description('Generate the test template')
   .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
-  .option('-f, --testmodule <module>', 'one of: ' + testmodules)
+  .option('-f, --test-module <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
   .action(execute(project.generateTest));
 
