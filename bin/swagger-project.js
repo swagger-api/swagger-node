@@ -21,9 +21,8 @@ var project = require('../lib/commands/project/project');
 var cli = require('../lib/util/cli');
 var execute = cli.execute;
 var frameworks = Object.keys(project.frameworks).join('|');
-var assertiontypes = Object.keys(project.assertiontypes).join('|');
-var testmodules = Object.keys(project.testmodules).join('|');
-var istrue = Object.keys(project.istrue).join('|');
+var assertiontypes = project.assertiontypes.join('|');
+var testmodules = project.testmodules.join('|');
 
 app
   .command('create [name]')
@@ -70,11 +69,9 @@ app
 app 
   .command('generate-test')
   .description('Generate the test template')
-  .option('-p, --path-name [path]', 'a sepecific path of api, also suppport regular express')
+  .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
   .option('-f, --testmodule <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
-  .option('-s, --asynchronous <boolen>', 'one of: ' + istrue)
-  .option('-o, --separate <boolean>', 'one of: ' + istrue)
   .action(execute(project.generateTest));
 
 app.parse(process.argv);
