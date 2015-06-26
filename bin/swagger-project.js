@@ -67,11 +67,11 @@ app
   .action(execute(project.test));
   
 app 
-  .command('generate-test')
+  .command('generate-test [directory]')
   .description('Generate the test template')
   .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
-  .option('-f, --test-module <module>', 'one of: ' + testmodules)
-  .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
+  .option('-f, --test-module <module>', 'one of: ' + testmodules, 'supertest')
+  .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes, 'expect')
   .action(execute(project.generateTest));
 
 app.parse(process.argv);
