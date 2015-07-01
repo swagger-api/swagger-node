@@ -95,7 +95,7 @@ describe(framework + ' project', function() {
     });
   });
 
-  describe.only('/swagger should respond', function() {
+  describe('/swagger should respond', function() {
 
     it('with json', function(done) {
       request(server)
