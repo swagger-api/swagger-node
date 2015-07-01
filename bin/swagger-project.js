@@ -31,8 +31,8 @@ app
 app
   .command('start [directory]')
   .description('Start the project in this or the specified directory')
-  .option('-d, --debug <port>', 'start in remote debug mode')
-  .option('-b, --debug-brk <port>', 'start in remote debug mode, wait for debugger connect')
+  .option('-d, --debug [port]', 'start in remote debug mode')
+  .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'start in mock mode')
   .option('-o, --open', 'open browser as client to the project')
   .action(execute(project.start));
