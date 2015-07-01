@@ -175,7 +175,7 @@ describe('project', function() {
       var options = { debug: 'true,test' };
       project.start(projPath, options, function(err) {
         should.not.exist(err);
-        nodemonOpts.nodeArgs.should.containDeep('--debug=' + options.debug);
+        nodemonOpts.nodeArgs.should.containDeep(['--debug=' + options.debug]);
         done();
       });
     });
@@ -184,7 +184,7 @@ describe('project', function() {
       var options = { debugBrk: true };
       project.start(projPath, options, function(err) {
         should.not.exist(err);
-        nodemonOpts.nodeArgs.should.containDeep('--debug-brk');
+        nodemonOpts.nodeArgs.should.containDeep(['--debug-brk']);
         done();
       });
     });
