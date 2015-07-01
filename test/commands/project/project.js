@@ -189,6 +189,24 @@ describe('project', function() {
       });
     });
 
+    it('should pass extra arguments', function(done) {
+      var options = { nodeArgs: '--harmony' };
+      project.start(projPath, options, function(err) {
+        should.not.exist(err);
+        nodemonOpts.nodeArgs.should.containDeep(['--harmony']);
+        done();
+      });
+    });
+
+    it('should combine extra arguments with debug', function(done) {
+      var options = { debug: true, nodeArgs: '--harmony' };
+      project.start(projPath, options, function(err) {
+        should.not.exist(err);
+        nodemonOpts.nodeArgs.should.containDeep(['--debug', '--harmony']);
+        done();
+      });
+    });
+
     it('should start in mock mode', function(done) {
       var options = { mock: true };
       project.start(projPath, options, function(err) {

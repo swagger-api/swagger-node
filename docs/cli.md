@@ -54,6 +54,7 @@ Options:
 * -b, --debug-brk <port>: Start in remote debug mode, wait for debugger. 
 * -m, --mock: Start in mock mode. For more information, see [Running in mock mode](./mock-mode.md). 
 * -o, --open: Open the default browser as a client to the project. 
+* -n, --node-args <args>: Pass extra arguments to node. E.g. `swagger project start --node-args "--harmony"` will run node with [ES6 a.k.a harmony features](https://github.com/joyent/node/wiki/ES6-%28a.k.a.-Harmony%29-Features-Implemented-in-V8-and-Available-in-Node) enabled.
 
 Example:
 

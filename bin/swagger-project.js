@@ -35,6 +35,7 @@ app
   .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'start in mock mode')
   .option('-o, --open', 'open browser as client to the project')
+  .option('-n, --node-args <args>', 'run node with extra arguments (like --node-args \"--harmony\")')
   .action(execute(project.start));
 
 app
