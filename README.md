@@ -57,7 +57,7 @@ If you look at the Swagger file in the editor (shown in step 3 above), the `x-sw
 
 Controller source code is always placed in `./api/controllers`. So, the controller source file for this project is `./api/controllers/hello_world.js`.
 
-The `operationId` element specifies which controller function to call. In this case (line 19), it is a function called `hello`. Learn [more](./docs/controller.md).
+The `operationId` element specifies which controller function to call. In this case (line 19), it is a function called `hello`. Learn [more](./docs/controllers.md).
 
 ## 5. Run the server
 
