@@ -31,7 +31,7 @@
     "swagger-editor": "^2.9.2",
     "swagger-tools": "^0.8.6",
     "async": "^1.2.1",
-    "swagger-test-templates": "gi0.0.0-alpha"
+    "swagger-test-templates": "0.0.0-alpha"
   },
   "devDependencies": {
     "superagent": "^1.1.0",
