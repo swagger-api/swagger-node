@@ -38,7 +38,10 @@
     "supertest": "^0.15.0",
     "should": "^5.2.0",
     "proxyquire": "^1.4.0",
-    "tmp": "^0.0.25"
+    "tmp": "^0.0.25",
+    "z-schema": "^3.12.0",
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5"
   },
   "scripts": {
     "test": "mocha -u exports -R spec test/config.js test/util test/commands test/commands/project test/project-skeletons",

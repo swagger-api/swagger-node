@@ -346,16 +346,6 @@ describe('project', function() {
       project.create(name, { framework: 'connect' }, done);
     });
 
-
-    it('should pass test-module options', function(done) {
-      var options = { testModule: 'request' };
-      project.generateTest(projPath, options, function(err) {
-        should.not.exist(err);
-        fs.existsSync(path.resolve(projPath, 'test/helloStub.js')).should.be.ok;
-        done();
-      });
-    });
-
     it('should err when given invalid test-module options', function(done) {
       var options = { testModule: 'wrong'};
       project.generateTest(projPath, options, function(err) {
@@ -364,13 +354,40 @@ describe('project', function() {
       });
     });
 
-    it('should pass assertion-format options', function(done) {
-      var options = { assertionFormat: "expect" };
+    it('should pass test-module options', function(done) {
+      var options = { testModule: 'request'  };
+      var c = 0;
       project.generateTest(projPath, options, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/helloStub.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/hello_Stub.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        done(err);
+      });
+
+    });
+
+    it('should pass assertion fotmat options', function(done) {
+      var options = { assertionFormat: 'expect'  };
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello_Stub.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
         done();
       });
     });
+
 
     it('should err when given invalid assertion-format options', function(done) {
       var options = {assertionFormat: 'wrong'};
@@ -383,9 +400,17 @@ describe('project', function() {
     it('should generate testing stubs for the project successfully', function(done) {
       var options = {pathName: '.*'};
       project.generateTest(projPath, options, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/helloStub.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/hello_Stub.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
         done();
-      })
+      });
     });
   });
 
