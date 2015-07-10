@@ -21,6 +21,8 @@ var project = require('../lib/commands/project/project');
 var cli = require('../lib/util/cli');
 var execute = cli.execute;
 var frameworks = Object.keys(project.frameworks).join('|');
+var assertiontypes = project.assertiontypes.join('|');
+var testmodules = project.testmodules.join('|');
 
 app
   .command('create [name]')
@@ -63,6 +65,14 @@ app
   .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'run in mock mode')
   .action(execute(project.test));
+  
+app 
+  .command('generate-test [directory]')
+  .description('Generate the test template')
+  .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
+  .option('-f, --test-module <module>', 'one of: ' + testmodules)
+  .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
+  .action(execute(project.generateTest));
 
 app.parse(process.argv);
 cli.validate(app);
