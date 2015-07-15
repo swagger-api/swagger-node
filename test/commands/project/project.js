@@ -352,4 +352,86 @@ describe('project', function() {
     });
   });
 
+
+  describe('generate-test', function() {
+
+    var name = 'generate-test';
+    var projPath;
+
+    before(function(done) {
+      projPath = path.resolve(tmpDir, name);
+      process.chdir(tmpDir);
+      project.create(name, { framework: 'connect' }, done);
+    });
+
+    it('should err when given invalid test-module options', function(done) {
+      var options = { testModule: 'wrong'};
+      project.generateTest(projPath, options, function(err) {
+        should.exist(err);
+        done();
+      });
+    });
+
+    it('should pass test-module options', function(done) {
+      var options = { testModule: 'request'  };
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        packageJson.scripts.hasOwnProperty('test').should.be.ok;
+        done(err);
+      });
+
+    });
+
+    it('should pass assertion fotmat options', function(done) {
+      var options = { assertionFormat: 'expect'  };
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        packageJson.scripts.hasOwnProperty('test').should.be.ok;
+        done();
+      });
+    });
+
+
+    it('should err when given invalid assertion-format options', function(done) {
+      var options = {assertionFormat: 'wrong'};
+      project.generateTest(projPath, options, function(err) {
+        should.exist(err);
+        done();
+      });
+    });
+
+    it('should generate testing stubs for the project successfully', function(done) {
+      var options = {pathName: '.*'};
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        packageJson.scripts.hasOwnProperty('test').should.be.ok;
+        done();
+      });
+    });
+  });
+
 });
