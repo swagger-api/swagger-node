@@ -25,6 +25,7 @@ var fs = require('fs');
 var helpers = require('../../helpers');
 var _ = require('lodash');
 var stdin = require('mock-stdin').stdin();
+var yaml = require('js-yaml');
 
 /*
  create: create,
@@ -448,12 +449,27 @@ describe('project', function() {
 
         fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
           string.should.not.equal(prevFile);
-          done();
+          done(err);
         });
       });
     });
 
     it ('should not overwrite the existing file with prompt', function(done) {
+      var swagger = yaml.load(fs.readFileSync(path.join(projPath, 'api/swagger/swagger.yaml'),
+        'utf8'));
+
+      swagger.paths['/test'] = {
+        get: {
+          responses: {
+            '200': {
+              description: 'this is a test'
+            }
+          }
+        }
+      };
+
+      fs.writeFileSync(path.join(projPath, 'api/swagger/swagger.yaml'), yaml.dump(swagger));
+
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
@@ -462,17 +478,20 @@ describe('project', function() {
 
       project.generateTest(projPath, {}, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/test-test.js')).should.be.ok;
         fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
           string.should.equal(prevFile);
-          done();
+          done(err);
         });
       });
     });
 
     it ('should overwrite the current file and all following with prompt', function(done) {
       fs.appendFileSync(path.resolve(projPath, 'test/hello-test.js'), '/*should not be here*/');
+      fs.appendFileSync(path.resolve(projPath, 'test/test-test.js'), '/*should not be here*/');
 
-      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+      var prevHello = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+      var prevTest = fs.readFileSync(path.resolve(projPath, 'test/test-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
         stdin.send('a\n');
@@ -480,10 +499,15 @@ describe('project', function() {
 
       project.generateTest(projPath, {}, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/test-test.js')).should.be.ok;
 
         fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
-          string.should.not.equal(prevFile);
-          done();
+          string.should.not.equal(prevHello);
+
+          fs.readFile(path.resolve(projPath, 'test/test-test.js'), {encoding: 'utf8'}, function(err, string) {
+            string.should.not.equal(prevTest);
+            done(err);
+          });
         });
       });
     });
