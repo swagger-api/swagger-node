@@ -24,6 +24,7 @@ var tmp = require('tmp');
 var fs = require('fs');
 var helpers = require('../../helpers');
 var _ = require('lodash');
+var stdin = require('mock-stdin').stdin();
 
 /*
  create: create,
@@ -391,7 +392,7 @@ describe('project', function() {
     });
 
     it('should pass assertion fotmat options', function(done) {
-      var options = { assertionFormat: 'expect'  };
+      var options = { assertionFormat: 'expect', force: true};
       project.generateTest(projPath, options, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
         var packagePath = path.resolve(projPath, 'package.json');
@@ -417,7 +418,7 @@ describe('project', function() {
     });
 
     it('should generate testing stubs for the project successfully', function(done) {
-      var options = {pathName: '.*'};
+      var options = {pathName: '.*', force: true};
       project.generateTest(projPath, options, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
         var packagePath = path.resolve(projPath, 'package.json');
@@ -430,6 +431,60 @@ describe('project', function() {
         packageJson.hasOwnProperty('scripts').should.be.ok;
         packageJson.scripts.hasOwnProperty('test').should.be.ok;
         done();
+      });
+    });
+
+    it ('should overwrite the existing file with prompt', function(done) {
+      fs.appendFileSync(path.resolve(projPath, 'test/hello-test.js'), '/*should not be here*/');
+
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+
+      process.nextTick(function mockResponse() {
+        stdin.send('y\n');
+      });
+
+      project.generateTest(projPath, {}, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+
+        fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.should.not.equal(prevFile);
+          done();
+        });
+      });
+    });
+
+    it ('should not overwrite the existing file with prompt', function(done) {
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+
+      process.nextTick(function mockResponse() {
+        stdin.send('n\n');
+      });
+
+      project.generateTest(projPath, {}, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.should.equal(prevFile);
+          done();
+        });
+      });
+    });
+
+    it ('should overwrite the current file and all following with prompt', function(done) {
+      fs.appendFileSync(path.resolve(projPath, 'test/hello-test.js'), '/*should not be here*/');
+
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+
+      process.nextTick(function mockResponse() {
+        stdin.send('a\n');
+      });
+
+      project.generateTest(projPath, {}, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+
+        fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.should.not.equal(prevFile);
+          done();
+        });
       });
     });
   });
