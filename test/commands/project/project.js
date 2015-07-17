@@ -383,6 +383,7 @@ describe('project', function() {
         packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
         packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
         packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('dotenv').should.be.ok;
         packageJson.hasOwnProperty('scripts').should.be.ok;
         packageJson.scripts.hasOwnProperty('test').should.be.ok;
         done(err);
@@ -401,6 +402,7 @@ describe('project', function() {
         packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
         packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
         packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('dotenv').should.be.ok;
         packageJson.hasOwnProperty('scripts').should.be.ok;
         packageJson.scripts.hasOwnProperty('test').should.be.ok;
         done();
@@ -427,6 +429,7 @@ describe('project', function() {
         packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
         packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
         packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('dotenv').should.be.ok;
         packageJson.hasOwnProperty('scripts').should.be.ok;
         packageJson.scripts.hasOwnProperty('test').should.be.ok;
         done();
