@@ -66,14 +66,6 @@ app
   .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'run in mock mode')
   .action(execute(project.test));
-  
-app 
-  .command('generate-test [directory]')
-  .description('Generate the test template')
-  .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
-  .option('-f, --test-module <module>', 'one of: ' + testmodules)
-  .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
-  .action(execute(project.generateTest));
 
 app
   .command('generate-test [directory]')
@@ -81,7 +73,7 @@ app
   .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
   .option('-f, --test-module <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
-  .option('-o, --force', 'allow overwriting of all existing test files matching those generated', false)
+  .option('-o, --force', 'allow overwriting of all existing test files matching those generated')
   .action(execute(project.generateTest));
 
 app.parse(process.argv);
