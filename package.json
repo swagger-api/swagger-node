@@ -35,8 +35,6 @@
   },
   "devDependencies": {
     "chai": "^3.0.0",
-    "js-yaml": "^3.3.1",
-    "mocha": "^2.2.5",
     "mock-stdin": "^0.3.0",
     "proxyquire": "^1.4.0",
     "should": "^5.2.0",

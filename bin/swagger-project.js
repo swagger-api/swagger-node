@@ -70,7 +70,7 @@ app
 app
   .command('generate-test [directory]')
   .description('Generate the test template')
-  .option('-p, --path-name [path]', 'a sepecific path of the api, also suppport regular expression')
+  .option('-p, --path-name [path]', 'a specific path of the api, also supports regular expression')
   .option('-f, --test-module <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
   .option('-o, --force', 'allow overwriting of all existing test files matching those generated')
