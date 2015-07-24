@@ -377,7 +377,7 @@ describe('project', function() {
     it('should pass test-module options', function(done) {
       var options = { testModule: 'request'  };
       project.generateTest(projPath, options, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
         var packagePath = path.resolve(projPath, 'package.json');
         fs.existsSync(packagePath).should.be.ok;
         var packageJson = require(packagePath);
@@ -396,7 +396,7 @@ describe('project', function() {
     it('should pass assertion fotmat options', function(done) {
       var options = { assertionFormat: 'expect', force: true};
       project.generateTest(projPath, options, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
         var packagePath = path.resolve(projPath, 'package.json');
         fs.existsSync(packagePath).should.be.ok;
         var packageJson = require(packagePath);
@@ -423,7 +423,7 @@ describe('project', function() {
     it('should generate testing stubs for the project successfully', function(done) {
       var options = {pathName: '.*', force: true};
       project.generateTest(projPath, options, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
         var packagePath = path.resolve(projPath, 'package.json');
         fs.existsSync(packagePath).should.be.ok;
         var packageJson = require(packagePath);
@@ -439,18 +439,18 @@ describe('project', function() {
     });
 
     it ('should overwrite the existing file with prompt', function(done) {
-      fs.appendFileSync(path.resolve(projPath, 'test/hello-test.js'), '/*should not be here*/');
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), '/*should not be here*/');
 
-      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
         stdin.send('y\n');
       });
 
       project.generateTest(projPath, {}, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
 
-        fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
           string.should.not.equal(prevFile);
           done(err);
         });
@@ -473,16 +473,16 @@ describe('project', function() {
 
       fs.writeFileSync(path.join(projPath, 'api/swagger/swagger.yaml'), yaml.dump(swagger));
 
-      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
         stdin.send('n\n');
       });
 
       project.generateTest(projPath, {}, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
-        fs.existsSync(path.resolve(projPath, 'test/test-test.js')).should.be.ok;
-        fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/test-test.js')).should.be.ok;
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
           string.should.equal(prevFile);
           done(err);
         });
@@ -490,24 +490,24 @@ describe('project', function() {
     });
 
     it ('should overwrite the current file and all following with prompt', function(done) {
-      fs.appendFileSync(path.resolve(projPath, 'test/hello-test.js'), '/*should not be here*/');
-      fs.appendFileSync(path.resolve(projPath, 'test/test-test.js'), '/*should not be here*/');
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), '/*should not be here*/');
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/test-test.js'), '/*should not be here*/');
 
-      var prevHello = fs.readFileSync(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'});
-      var prevTest = fs.readFileSync(path.resolve(projPath, 'test/test-test.js'), {encoding: 'utf8'});
+      var prevHello = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
+      var prevTest = fs.readFileSync(path.resolve(projPath, 'test/api/client/test-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
         stdin.send('a\n');
       });
 
       project.generateTest(projPath, {}, function(err) {
-        fs.existsSync(path.resolve(projPath, 'test/hello-test.js')).should.be.ok;
-        fs.existsSync(path.resolve(projPath, 'test/test-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/test-test.js')).should.be.ok;
 
-        fs.readFile(path.resolve(projPath, 'test/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
           string.should.not.equal(prevHello);
 
-          fs.readFile(path.resolve(projPath, 'test/test-test.js'), {encoding: 'utf8'}, function(err, string) {
+          fs.readFile(path.resolve(projPath, 'test/api/client/test-test.js'), {encoding: 'utf8'}, function(err, string) {
             string.should.not.equal(prevTest);
             done(err);
           });
