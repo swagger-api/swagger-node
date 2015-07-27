@@ -24,6 +24,8 @@ var tmp = require('tmp');
 var fs = require('fs');
 var helpers = require('../../helpers');
 var _ = require('lodash');
+var stdin = require('mock-stdin').stdin();
+var yaml = require('js-yaml');
 
 /*
  create: create,
@@ -348,6 +350,168 @@ describe('project', function() {
         should.not.exist(err);
         should(didOpen).true;
         done();
+      });
+    });
+  });
+
+
+  describe('generate-test', function() {
+
+    var name = 'generate-test';
+    var projPath;
+
+    before(function(done) {
+      projPath = path.resolve(tmpDir, name);
+      process.chdir(tmpDir);
+      project.create(name, { framework: 'connect' }, done);
+    });
+
+    it('should err when given invalid test-module options', function(done) {
+      var options = { testModule: 'wrong'};
+      project.generateTest(projPath, options, function(err) {
+        should.exist(err);
+        done();
+      });
+    });
+
+    it('should pass test-module options', function(done) {
+      var options = { testModule: 'request'  };
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('dotenv').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        packageJson.scripts.hasOwnProperty('test').should.be.ok;
+        done(err);
+      });
+
+    });
+
+    it('should pass assertion fotmat options', function(done) {
+      var options = { assertionFormat: 'expect', force: true};
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('dotenv').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        packageJson.scripts.hasOwnProperty('test').should.be.ok;
+        done();
+      });
+    });
+
+
+    it('should err when given invalid assertion-format options', function(done) {
+      var options = {assertionFormat: 'wrong'};
+      project.generateTest(projPath, options, function(err) {
+        should.exist(err);
+        done();
+      });
+    });
+
+    it('should generate testing stubs for the project successfully', function(done) {
+      var options = {pathName: '.*', force: true};
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        var packagePath = path.resolve(projPath, 'package.json');
+        fs.existsSync(packagePath).should.be.ok;
+        var packageJson = require(packagePath);
+        packageJson.devDependencies.hasOwnProperty('z-schema').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('request').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('chai').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('mocha').should.be.ok;
+        packageJson.devDependencies.hasOwnProperty('dotenv').should.be.ok;
+        packageJson.hasOwnProperty('scripts').should.be.ok;
+        packageJson.scripts.hasOwnProperty('test').should.be.ok;
+        done();
+      });
+    });
+
+    it ('should overwrite the existing file with prompt', function(done) {
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), '/*should not be here*/');
+
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
+
+      process.nextTick(function mockResponse() {
+        stdin.send('y\n');
+      });
+
+      project.generateTest(projPath, {}, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.should.not.equal(prevFile);
+          done(err);
+        });
+      });
+    });
+
+    it ('should not overwrite the existing file with prompt', function(done) {
+      var swagger = yaml.load(fs.readFileSync(path.join(projPath, 'api/swagger/swagger.yaml'),
+        'utf8'));
+
+      swagger.paths['/test'] = {
+        get: {
+          responses: {
+            '200': {
+              description: 'this is a test'
+            }
+          }
+        }
+      };
+
+      fs.writeFileSync(path.join(projPath, 'api/swagger/swagger.yaml'), yaml.dump(swagger));
+
+      var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
+
+      process.nextTick(function mockResponse() {
+        stdin.send('n\n');
+      });
+
+      project.generateTest(projPath, {}, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/test-test.js')).should.be.ok;
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.should.equal(prevFile);
+          done(err);
+        });
+      });
+    });
+
+    it ('should overwrite the current file and all following with prompt', function(done) {
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), '/*should not be here*/');
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/test-test.js'), '/*should not be here*/');
+
+      var prevHello = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
+      var prevTest = fs.readFileSync(path.resolve(projPath, 'test/api/client/test-test.js'), {encoding: 'utf8'});
+
+      process.nextTick(function mockResponse() {
+        stdin.send('a\n');
+      });
+
+      project.generateTest(projPath, {}, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/test-test.js')).should.be.ok;
+
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.should.not.equal(prevHello);
+
+          fs.readFile(path.resolve(projPath, 'test/api/client/test-test.js'), {encoding: 'utf8'}, function(err, string) {
+            string.should.not.equal(prevTest);
+            done(err);
+          });
+        });
       });
     });
   });
