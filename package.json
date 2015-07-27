@@ -31,7 +31,7 @@
     "serve-static": "^1.9.2",
     "swagger-editor": "^2.9.2",
     "swagger-tools": "^0.9.0",
-    "swagger-test-templates": "^0.1.1"
+    "swagger-test-templates": "^1.1.0"
   },
   "devDependencies": {
     "chai": "^3.0.0",
