@@ -473,6 +473,7 @@ describe('project', function() {
 
       fs.writeFileSync(path.join(projPath, 'api/swagger/swagger.yaml'), yaml.dump(swagger));
 
+      fs.appendFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), '/*should not be here*/');
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
