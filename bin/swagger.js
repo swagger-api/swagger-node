@@ -18,10 +18,8 @@
 
 var app = require('commander');
 var browser = require('../lib/util/browser');
-var converter = require('swagger-converter');
+var rootCommands = require('../lib/commands/commands');
 var cli = require('../lib/util/cli');
-var yaml = require('js-yaml');
-var join = require('path').join;
 var execute = cli.execute;
 
 app.version(require('../lib/util/cli').version());
@@ -42,83 +40,13 @@ app
   .command('validate [swaggerFile]')
   .description('validate a Swagger document (supports unix piping)')
   .option('-j, --json', 'output as JSON')
-  .action(execute(validate));
+  .action(execute(rootCommands.validate));
 
 app
   .command('convert <swaggerFile> [apiDeclarations...]')
   .description('Converts Swagger 1.2 documents to a Swagger 2.0 document')
   .option('-o, --output-file <fileName>', 'specify an output-file to write to')
-  .action(execute(convert));
+  .action(execute(rootCommands.convert));
 
 app.parse(process.argv);
-
-if (!app.runningCommand) {
-  if (app.args.length > 0) {
-    console.log();
-    console.log('error: invalid command: ' + app.args[0]);
-  }
-  app.help();
-}
-
-function convert(file, apiDeclarations, options, cb) {
-  if (file) {
-    try {
-      var resource = require(join(process.cwd(), file));
-    } catch (error) {
-      return cb(error);
-    }
-
-    var declarations = [];
-
-    apiDeclarations.forEach(function(currentValue) {
-      try {
-        declarations.push(require(join(process.cwd(), currentValue)));
-      } catch (error) {
-        return cb(error);
-      }
-    });
-
-    app.runningCommand = true;
-    var swagger2 = yaml.safeDump(converter(resource, declarations));
-
-    if (options.outputFile) {
-      require('fs').writeFile(join(process.cwd(), options.outputFile), swagger2, function(err) {
-        if (err) {return cb(err);}
-      });
-    } else {
-      process.stdout.write(swagger2);
-    }
-  }
-}
-
-function validate(file, options, cb) {
-
-  var swaggerSpec = require('../lib/util/spec');
-
-  if (!file) { // check stream
-    process.stdin.resume();
-    process.stdin.setEncoding('utf8');
-    app.runningCommand = true;
-    process.stdin.on('data', function(data) {
-      if (!data) { process.exit(1); }
-      swaggerSpec.validateSwagger(parse(data), options, cb);
-    });
-  } else {
-    var fs = require('fs');
-    var data = fs.readFileSync(file, 'utf8');
-    swaggerSpec.validateSwagger(parse(data), options, cb);
-  }
-}
-
-function parse(data) {
-  if (isJSON(data)) {
-    return JSON.parse(data);
-  } else {
-    var yaml = require('js-yaml');
-    return yaml.safeLoad(data);
-  }
-}
-
-function isJSON(data) {
-  return data.match(/^\s*\{/);
-}
+cli.validate(app);

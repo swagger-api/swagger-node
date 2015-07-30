@@ -38,6 +38,7 @@
     "chai": "^3.0.0",
     "mock-stdin": "^0.3.0",
     "proxyquire": "^1.4.0",
+    "rewire": "^2.3.4",
     "should": "^5.2.0",
     "superagent": "^1.1.0",
     "supertest": "^0.15.0",
