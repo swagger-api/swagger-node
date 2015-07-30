@@ -18,7 +18,10 @@
 
 var app = require('commander');
 var browser = require('../lib/util/browser');
+var converter = require('swagger-converter');
 var cli = require('../lib/util/cli');
+var yaml = require('js-yaml');
+var join = require('path').join;
 var execute = cli.execute;
 
 app.version(require('../lib/util/cli').version());
@@ -41,6 +44,12 @@ app
   .option('-j, --json', 'output as JSON')
   .action(execute(validate));
 
+app
+  .command('convert <swaggerFile> [apiDeclarations...]')
+  .description('Converts Swagger 1.2 documents to a Swagger 2.0 document')
+  .option('-o, --output-file <fileName>', 'specify an output-file to write to')
+  .action(execute(convert));
+
 app.parse(process.argv);
 
 if (!app.runningCommand) {
@@ -49,6 +58,37 @@ if (!app.runningCommand) {
     console.log('error: invalid command: ' + app.args[0]);
   }
   app.help();
+}
+
+function convert(file, apiDeclarations, options, cb) {
+  if (file) {
+    try {
+      var resource = require(join(process.cwd(), file));
+    } catch (error) {
+      return cb(error);
+    }
+
+    var declarations = [];
+
+    apiDeclarations.forEach(function(currentValue) {
+      try {
+        declarations.push(require(join(process.cwd(), currentValue)));
+      } catch (error) {
+        return cb(error);
+      }
+    });
+
+    app.runningCommand = true;
+    var swagger2 = yaml.safeDump(converter(resource, declarations));
+
+    if (options.outputFile) {
+      require('fs').writeFile(join(process.cwd(), options.outputFile), swagger2, function(err) {
+        if (err) {return cb(err);}
+      });
+    } else {
+      process.stdout.write(swagger2);
+    }
+  }
 }
 
 function validate(file, options, cb) {
