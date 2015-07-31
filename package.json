@@ -40,6 +40,7 @@
     "proxyquire": "^1.4.0",
     "rewire": "^2.3.4",
     "should": "^5.2.0",
+    "sinon": "^1.15.4",
     "superagent": "^1.1.0",
     "supertest": "^0.15.0",
     "tmp": "^0.0.25",
