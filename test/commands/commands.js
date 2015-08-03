@@ -17,7 +17,7 @@
 
 var expect = require('chai').expect;
 var path = require('path');
-var rewire = require('rewire');
+var proxyquire =  require('proxyquire').noPreserveCache();
 var sinon = require('sinon');
 
 describe('commands', function() {
@@ -25,25 +25,22 @@ describe('commands', function() {
   var converterSpy = sinon.spy();
   var specSpy = sinon.stub().callsArg(2);
 
-  var specMock = {
-    validateSwagger: specSpy
-  };
-
-  var fsMock = {
-    existsSync: sinon.stub().returns(true),
-    readFileSync: sinon.stub().returns("{\"help\": true, \"test\": 4}")
-  }
-  var yamlMock = {
-    safeDump: sinon.stub().returns('')
+  var stubs = {
+    'swagger-converter': converterSpy,
+    'fs': {
+      existsSync: sinon.stub().returns(true),
+      readFileSync: sinon.stub().returns("{\"help\": true, \"test\": 4}")
+    },
+    'js-yaml': {
+      safeDump: sinon.stub().returns('')
+    },
+    '../util/spec': {
+      validateSwagger: specSpy
+    }
   }
 
   before(function() {
-    commands = rewire('../../lib/commands/commands.js');
-    commands.__set__('swaggerConverter', converterSpy);
-    commands.__set__('fs', fsMock);
-    commands.__set__('yaml', yamlMock);
-
-    commands.__set__('swaggerSpec', specMock);
+    commands = proxyquire('../../lib/commands/commands.js', stubs);
   });
 
   it ('should run validate with no issues', function(done) {
