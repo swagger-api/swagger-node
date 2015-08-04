@@ -8,7 +8,7 @@
 
 When you execute `swagger project create myproject`, a default Swagger model is placed in `myproject/api/swagger/swagger.yaml`. This model conforms to the [Swagger 2.0 specification](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md). 
 
->Note: For a quick intro to swagger, see "[What is Swagger](./swagger-about)". 
+>Note: For a quick intro to swagger, see "[What is Swagger](./swagger-about.md)". 
 
 ### <a name="default"></a>Default swagger project file
 
