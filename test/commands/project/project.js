@@ -515,6 +515,34 @@ describe('project', function() {
         });
       });
     });
+
+    it ('should create load tests without error', function(done) {
+      var loadTargets = {
+        "loadTargets": [
+          {
+            "pathName":"/hello",
+            "operation": "get",
+            "load": {
+              "requests": 1000,
+              "concurrent": 100
+            }
+          }
+        ]
+      };
+
+      fs.writeFileSync(path.join(projPath, 'load-config.json'), JSON.stringify(loadTargets));
+
+      var options = {loadTest: './load-config.json', force: true};
+
+      project.generateTest(projPath, options, function(err) {
+        fs.existsSync(path.resolve(projPath, 'test/api/client/test-test.js')).should.be.ok;
+        fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
+        fs.readFile(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'}, function(err, string) {
+          string.search('arete').should.be.ok;
+          done(err);
+        });
+      });
+    });
   });
 
 });
