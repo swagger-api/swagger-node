@@ -74,7 +74,7 @@ app
   .option('-f, --test-module <module>', 'one of: ' + testmodules)
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
   .option('-o, --force', 'allow overwriting of all existing test files matching those generated')
-  .option('-l, --load-test <path>', 'generate load-tests for specified operations')
+  .option('-l, --load-test [path]', 'generate load-tests for specified operations')
   .action(execute(project.generateTest));
 
 app.parse(process.argv);
