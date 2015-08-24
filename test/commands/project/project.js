@@ -200,6 +200,16 @@ describe('project', function() {
       });
     });
 
+    it('should pass multiple extra arguments separately', function(done) {
+      var options = { nodeArgs: '--harmony --harmony_destructuring' };
+      project.start(projPath, options, function(err) {
+        should.not.exist(err);
+        nodemonOpts.nodeArgs.should.containDeep(['--harmony', '--harmony_destructuring']);
+        done();
+      });
+    });
+
+
     it('should combine extra arguments with debug', function(done) {
       var options = { debug: true, nodeArgs: '--harmony' };
       project.start(projPath, options, function(err) {
