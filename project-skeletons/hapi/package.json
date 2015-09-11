@@ -9,7 +9,7 @@
   "main": "app.js",
   "dependencies": {
     "hapi": "^8.4.0",
-    "swagger-hapi": "0.0.x"
+    "swagger-hapi": "^0.1.0"
   },
   "devDependencies":  {
     "should": "^5.2.0",
