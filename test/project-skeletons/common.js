@@ -25,7 +25,7 @@ function testFramework(framework) {
     var tmpDir, projPath, server, sails;
 
     before(function(done) {
-      this.timeout(45000);
+      this.timeout(90000);
 
       tmp.setGracefulCleanup();
 
