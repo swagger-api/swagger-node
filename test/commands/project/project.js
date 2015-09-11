@@ -365,7 +365,7 @@ describe('project', function() {
   });
 
 
-  describe.only('generate-test', function() {
+  describe('generate-test', function() {
 
     var name = 'generate-test';
     var projPath;

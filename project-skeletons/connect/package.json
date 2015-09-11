@@ -12,7 +12,7 @@
     "swagger-connect": "^0.1.0"
   },
   "devDependencies":  {
-    "should": "^5.2.0",
-    "supertest": "^0.15.0"
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
   }
 }
