@@ -6,7 +6,7 @@
   
   * Request handing pipeline is now fully configurable
   * Application configuration is now driven by the [config module](https://github.com/lorenwest/node-config/wiki/Configuration-Files) to allow a ton of flexibility in setting up configurations and routes based on environment.
-  * [Security handlers]() can be declared in config in app.js. Example:
+  * Security handlers can be declared in config in app.js. Example:
   
   ```javascript
   config.swaggerSecurityHandlers = {
