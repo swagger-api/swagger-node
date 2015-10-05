@@ -15,6 +15,9 @@ SwaggerHapi.create(config, function(err, swaggerHapi) {
 
   var port = process.env.PORT || 10010;
   app.connection({ port: port });
+  app.address = function() {
+    return { port: port };
+  };
 
   app.register(swaggerHapi.plugin, function(err) {
     if (err) { return console.error('Failed to load plugin:', err); }

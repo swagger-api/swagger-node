@@ -8,6 +8,7 @@
 * [Introduction](./introduction.md)
 * [Installation](./install.md)
 * [Quick start](./quick-start.md)
+* [Configuration](./configuration.md)
 * [CLI reference](./cli.md)
 * [About Swagger](./swagger-about.md)
 * [About the swagger.yaml file](./swagger-file.md)
@@ -16,3 +17,4 @@
 * [Using mock mode](./mock-mode.md)
 * [Modules and dependencies](./modules.md)
 * [Reporting issues](./report-issues.md)
+* [Release Notes](./release-notes.md)

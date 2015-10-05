@@ -25,7 +25,7 @@
     "grunt-contrib-cssmin": "~0.9.0",
     "grunt-contrib-less": "0.11.1",
     "grunt-contrib-coffee": "~0.10.1",
-    "swagger-sails-hook": "0.0.x"
+    "swagger-sails-hook": "^0.1.0"
   },
   "devDependencies":  {
     "should": "^5.2.0",
@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "debug": "node debug app.js"
+    "debug": "node debug app.js",
+    "test": "swagger project test"
   }
 }

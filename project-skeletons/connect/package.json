@@ -9,10 +9,14 @@
   "main": "app.js",
   "dependencies": {
     "connect": "^3.3.5",
-    "swagger-connect": "0.0.x"
+    "swagger-connect": "^0.1.0"
   },
   "devDependencies":  {
-    "should": "^5.2.0",
-    "supertest": "^0.15.0"
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test"
   }
 }

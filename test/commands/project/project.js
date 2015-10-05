@@ -287,8 +287,8 @@ describe('project', function() {
         project.verify(projPath, {}, function(err, reply) {
           should.not.exist(err);
 
-          capture.output().should.containDeep('\nProject Errors\n--------------\n#/swagger:');
-          reply.should.containDeep('Results:');
+          capture.output().should.startWith('\nProject Errors\n--------------\n#/swagger:');
+          reply.should.startWith('Results:');
           done();
         })
       });
@@ -403,7 +403,7 @@ describe('project', function() {
 
     });
 
-    it('should pass assertion fotmat options', function(done) {
+    it('should pass assertion format options', function(done) {
       var options = { assertionFormat: 'expect', force: true};
       project.generateTest(projPath, options, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
@@ -455,6 +455,7 @@ describe('project', function() {
 
       process.nextTick(function mockResponse() {
         stdin.send('y\n');
+        stdin.send('y\n');
       });
 
       project.generateTest(projPath, {}, function(err) {
@@ -487,6 +488,7 @@ describe('project', function() {
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
       process.nextTick(function mockResponse() {
+        stdin.send('n\n');
         stdin.send('n\n');
       });
 
