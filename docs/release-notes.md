@@ -6,7 +6,8 @@
   
   * Request handing pipeline is now fully configurable
   * Application configuration is now driven by the [config module](https://github.com/lorenwest/node-config/wiki/Configuration-Files) to allow a ton of flexibility in setting up configurations and routes based on environment.
-  * Security handlers can be declared in config in app.js. Example:
+  * Supports plugins such as [volos-swagger-oauth](https://www.npmjs.com/package/volos-swagger-oauth) and [volos-swagger-apply](https://www.npmjs.com/package/volos-swagger-apply) 
+  * Custom security handlers can be declared in config in app.js. Example:
   
   ```javascript
   config.swaggerSecurityHandlers = {
@@ -28,6 +29,6 @@
 
 #### Converting From Previous Version
 
-  1. Update your package.json to use the new middleware versions: "^0.1.0". (eg. "swagger-connect": "^0.1.0")
-  2. Update your application dependencies: npm update.
-  3. Existing config should generally work, but you should update your config to the [new format](./configuration.md).
+  1. Update your package.json to use the new middleware versions: "^0.1.0". (eg. `"swagger-express-mw": "^0.1.0"`)
+  2. Update your application dependencies: `npm update`.
+  3. Existing config should generally work, but you should update your config to the [new format](https://github.com/swagger-api/swagger-node/blob/master/docs/cli.md/configuration.md).
