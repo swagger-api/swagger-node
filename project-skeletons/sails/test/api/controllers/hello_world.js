@@ -1,8 +1,6 @@
 var should = require('should');
 var request = require('supertest');
 
-process.env.A127_ENV = 'test';
-
 describe('controllers', function() {
 
   describe('hello_world', function() {
