@@ -47,7 +47,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: #/definitions/WeatherResponse
+            $ref: "#/definitions/WeatherResponse"
 definitions:
   WeatherResponse:
     required:
