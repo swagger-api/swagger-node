@@ -28,6 +28,8 @@ First, we create a new swagger project and test a simple "hello world" API.
       restify
       sails
     ```
+    Note: You must enter the number of the option.
+    
 5. swagger creates a skeleton project that's pre-configured to use your selected framework (in this example, Express). It then runs `npm install` to pick up the dependencies.  
 
     Note: Windows users see the [note below](#windows-note) regarding npm. 
