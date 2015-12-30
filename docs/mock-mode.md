@@ -252,7 +252,7 @@ Here's an example that returns some data whenever the `search()` handler method 
 
 After you're happy with your API design, you're ready to implement wire up the controller for the `/weather` path. 
 
-You simply specify in the Swagger spec the route handler (controller) file, which method to call in the controller (operationId), and any query parameters you wish to pass: 
+You simply specify in the OpenAPI spec the route handler (controller) file, which method to call in the controller (operationId), and any query parameters you wish to pass: 
 
 In weather sample's `swagger.yaml` file, it looks like this:
 

@@ -50,7 +50,7 @@ That's it - You have now created, started and tested your first API project with
 
 Open <project-root>/app.js in an editor. This is the main Node.js app that installs middleware and requires the API framework that you chose when you created your project.
 
-The middleware modules perform tasks like Swagger specification validation and endpoint routing. For more information, see [swagger modules and dependencies](./modules.md).
+The middleware modules perform tasks like OpenAPI Specification validation and endpoint routing. For more information, see [swagger modules and dependencies](./modules.md).
 
 ### <a name="openeditor"></a>Open the Swagger editor
 

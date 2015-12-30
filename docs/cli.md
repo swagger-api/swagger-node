@@ -141,7 +141,7 @@ Example:
 
 ##### <a name="docs"></a>swagger docs
 
-Opens the Swagger 2.0 specification in your browser. 
+Opens the OpenAPI 2.0 Specification in your browser. 
 
 Example:
 

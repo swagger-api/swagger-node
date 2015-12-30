@@ -20,7 +20,7 @@ To read more about Swagger, refer to:
 
 The Swagger Editor lets you design your API specification and preview its documentation for your swagger API. The editor is installed with swagger.
 
-A swagger.yaml file is installed into  every new swagger project, and lives in `<project_root>/api/swagger/swagger.yaml`. It conforms to the [Swagger 2.0 specification](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md).  
+A swagger.yaml file is installed into  every new swagger project, and lives in `<project_root>/api/swagger/swagger.yaml`. It conforms to the [OpenAPI 2.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md).  
 
 Behind the scenes, Swagger middleware validates and processes the Swagger configuration file, and routes API operation endpoints to controller files. All **you** need to do is implement your custom API controller logic. 
 
@@ -44,4 +44,4 @@ YAML is intended to be easy for humans to read. Every swagger project includes a
 
 ### <a name="nextstep"></a>Next step
 
-For a more detailed look the Swagger configurations, see "[The Swagger specification file](./swagger-file.md)".
+For a more detailed look the Swagger configurations, see "[The OpenAPI Specification file](./swagger-file.md)".

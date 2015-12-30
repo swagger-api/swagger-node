@@ -7,7 +7,7 @@ The swagger module provides tools for designing and building APIs entirely in No
 ### <a name="sdlc"></a>The API-First Development Process
 API design is a discovery process. Swagger development begins with design tooling, and it expects that you will evolve your interface over time. It gracefully handles the routing of interfaces to controllers so that you can make changes to your interfaces without clobbering any of your implementation logic.
 
-Designing an API specification is like writing a contract. As you write the spec in YAML using [Swagger 2.0](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md), your API documentation is generated in real-time, allowing the client and server teams to agree on how their systems will work together. 
+Designing an API specification is like writing a contract. As you write the spec in YAML using [Swagger 2.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md), your API documentation is generated in real-time, allowing the client and server teams to agree on how their systems will work together. 
 
 Once you have defined your first operation, it drives a mock server, which enables  client development happen in parallel with server development. As you build the client, you will discover further changes you'll need to make to your APIs, meaning another iteration of the specification.
 
