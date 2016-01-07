@@ -89,7 +89,7 @@ Go to the [swagger module doc page](./docs/README.md). It includes all the infor
 This initiative grew out of Apigee-127, an API design-first development framework using Swagger.
 Apigee donated the code to create the swagger-node project in 2015.
 
- >Copyright 2015 Apigee Corporation
+ >Copyright 2016 Apigee Corporation
 
  >Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
