@@ -487,10 +487,10 @@ describe('project', function() {
       fs.appendFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), '/*should not be here*/');
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
-      process.nextTick(function mockResponse() {
+      setTimeout(function () {
         stdin.send('n\n');
         stdin.send('n\n');
-      });
+      }, 250);
 
       project.generateTest(projPath, {}, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
