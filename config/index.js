@@ -32,7 +32,7 @@ module.exports = config;
 
 config.swagger = {
   fileName: 'api/swagger/swagger.yaml',
-  editorDir: path.resolve(config.nodeModules, 'swagger-editor'),
+  editorDir: path.dirname(require.resolve('swagger-editor')),
   editorConfig: {
     analytics: { google: { id: null } },
     disableCodeGen: true,
