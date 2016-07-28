@@ -65,6 +65,9 @@ Now that we've got our basic API running, let's open the Swagger editor.
 *The Swagger editor*
 ![alt text](./images/swagger-editor.png)
 
+### <a name='production'></a>Running Swagger Node in a Deployment
+
+When you run a swagger-node based application in a proper deployment, you should use `node <entrypoint>` (typically, `node app.js`) as opposed to using the swagger cli tooling.
 
 ### <a name='windows'></a>Windows users
 For some versions of npm on Windows will have problems on the `npm install` step of `swagger project create`.  They are related to a `debug` module on npm not being managed properly.  The following steps should resolve this issue:
