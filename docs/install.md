@@ -72,6 +72,6 @@ On Linux platforms, you need to specify your browser path before using the Swagg
 
     ```javascript
         module.exports = {
-           browser: ’the/path/to/your/browser'
+           browser: 'the/path/to/your/browser'
         };
     ```
