@@ -453,10 +453,10 @@ describe('project', function() {
 
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
-      setTimeout(function () {
+      setTimeout(function mockResponse() {
         stdin.send('y\n');
         stdin.send('y\n');
-      });
+      }, 250);
 
       project.generateTest(projPath, {}, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
