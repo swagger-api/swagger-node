@@ -41,7 +41,7 @@
     "should": "^11.1.1",
     "sinon": "^1.15.4",
     "superagent": "^1.1.0",
-    "supertest": "^1.1.0",
+    "supertest": "^3.1.0",
     "tmp": "^0.0.28",
     "z-schema": "^3.14.0"
   },
