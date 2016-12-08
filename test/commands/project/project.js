@@ -453,7 +453,7 @@ describe('project', function() {
 
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
-      process.nextTick(function mockResponse() {
+      setTimeout(function () {
         stdin.send('y\n');
         stdin.send('y\n');
       });
