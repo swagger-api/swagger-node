@@ -490,7 +490,7 @@ describe('project', function() {
       setTimeout(function () {
         stdin.send('n\n');
         stdin.send('n\n');
-      }, 5000);
+      }, 250);
 
       project.generateTest(projPath, {}, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
