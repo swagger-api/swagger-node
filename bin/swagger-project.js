@@ -55,6 +55,19 @@ app
   .action(execute(project.edit));
 
 app
+    .command('ui [directory]')
+    .description('open Swagger UI for this project')
+    .option('-s, --silent', 'do not open the browser')
+    .option('--host <host>', 'the hostname the editor is served from')
+    .option('-p, --port <port>', 'the port the editor is served from')
+    .option('-d, --debug [port]', 'start in remote debug mode')
+    .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
+    .option('-m, --mock', 'start in mock mode')
+    .option('-o, --open', 'open browser as client to the project')
+    .option('-n, --node-args <args>', 'run node with extra arguments (like --node-args \"--harmony\")')
+    .action(execute(project.ui));
+
+app
   .command('open [directory]')
   .description('open browser as client to the project')
   .action(execute(project.open));
