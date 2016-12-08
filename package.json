@@ -18,7 +18,7 @@
     "url": "https://github.com/swagger-api/swagger-node.git"
   },
   "dependencies": {
-    "async": "^1.2.1",
+    "async": "^2.1.4",
     "commander": "^2.7.1",
     "connect": "^3.3.5",
     "debug": "^2.1.3",
