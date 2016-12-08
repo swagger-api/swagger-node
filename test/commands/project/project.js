@@ -456,6 +456,7 @@ describe('project', function() {
       setTimeout(function mockResponse() {
         stdin.send('y\n');
         stdin.send('y\n');
+        done();
       }, 250);
 
       project.generateTest(projPath, {}, function(err) {
@@ -490,6 +491,7 @@ describe('project', function() {
       setTimeout(function () {
         stdin.send('n\n');
         stdin.send('n\n');
+        done();
       }, 250);
 
       project.generateTest(projPath, {}, function(err) {
@@ -511,6 +513,7 @@ describe('project', function() {
 
       process.nextTick(function mockResponse() {
         stdin.send('a\n');
+        done();
       });
 
       project.generateTest(projPath, {}, function(err) {
