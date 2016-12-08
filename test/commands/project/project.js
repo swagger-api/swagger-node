@@ -453,10 +453,11 @@ describe('project', function() {
 
       var prevFile = fs.readFileSync(path.resolve(projPath, 'test/api/client/hello-test.js'), {encoding: 'utf8'});
 
-      process.nextTick(function mockResponse() {
+      setTimeout(function mockResponse() {
         stdin.send('y\n');
         stdin.send('y\n');
-      });
+        done();
+      }, 250);
 
       project.generateTest(projPath, {}, function(err) {
         fs.existsSync(path.resolve(projPath, 'test/api/client/hello-test.js')).should.be.ok;
@@ -490,6 +491,7 @@ describe('project', function() {
       setTimeout(function () {
         stdin.send('n\n');
         stdin.send('n\n');
+        done();
       }, 250);
 
       project.generateTest(projPath, {}, function(err) {
@@ -511,6 +513,7 @@ describe('project', function() {
 
       process.nextTick(function mockResponse() {
         stdin.send('a\n');
+        done();
       });
 
       project.generateTest(projPath, {}, function(err) {
