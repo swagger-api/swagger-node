@@ -42,7 +42,7 @@
     "sinon": "^1.15.4",
     "superagent": "^3.1.0",
     "supertest": "^2.0.1",
-    "tmp": "^0.0.28",
+    "tmp": "^0.0.31",
     "z-schema": "^3.14.0"
   },
   "scripts": {
