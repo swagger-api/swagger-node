@@ -42,7 +42,7 @@ First, we create a new swagger project and test a simple "hello world" API.
 
     `curl http://127.0.0.1:10010/hello?name=Scott`  
 
-    And, you'll get back the response `Hello, Scott`.
+    And, you'll get back the response `{ "message": "Hello, Scott" }`.
 
 That's it - You have now created, started and tested your first API project with swagger! 
 

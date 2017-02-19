@@ -46,7 +46,7 @@ Code your API's business logic in Node.js.
 ```js
 function hello(req, res) {
     var name = req.swagger.params.name.value || 'stranger';
-    var hello = util.format('Hello, %s', name);
+    var hello = util.format('{ "message": "Hello, %s" }', name);
     res.json(hello);
 }
 ```
@@ -77,7 +77,7 @@ It just works!
 
 ```bash
 $ curl http://127.0.0.1:10010/hello?name=Scott
-"Hello, Scott!"
+{ "message": "Hello, Scott!" }
 ```
 
 # <a name="installation"></a>Installing the swagger module
