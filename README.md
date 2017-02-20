@@ -46,8 +46,8 @@ Code your API's business logic in Node.js.
 ```js
 function hello(req, res) {
     var name = req.swagger.params.name.value || 'stranger';
-    var hello = util.format('{ "message": "Hello, %s" }', name);
-    res.json(hello);
+    var hello = util.format('Hello, %s!', name);
+    res.json({ "message": hello });
 }
 ```
 
