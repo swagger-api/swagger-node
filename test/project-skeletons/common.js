@@ -89,7 +89,7 @@ function testFramework(framework) {
             debug('Result: %s %j', res.text, res.headers);
 
             res.status.should.eql(200);
-            res.body.should.eql('Hello, stranger!');
+            res.body.should.eql({ "message": "Hello, stranger!" });
 
             done();
           });
@@ -104,7 +104,7 @@ function testFramework(framework) {
             debug('Result: %s %j', res.text, res.headers);
 
             res.status.should.eql(200);
-            res.body.should.eql('Hello, Scott!');
+            res.body.should.eql({ "message": "Hello, Scott!" });
 
             done();
           });

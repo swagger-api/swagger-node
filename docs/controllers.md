@@ -35,9 +35,9 @@ Here is the `hello_world.js` implementation for the quick start example. It retr
     };
 
     function hello(req, res) {
-      var name = req.swagger.params.name.value;
-      var hello = name ? util.format('Hello, %s', name) : 'Hello, stranger!';
-      res.json(hello);
+      var name = req.swagger.params.name.value || 'stranger';
+      var hello = util.format('Hello, %s!', name);
+      res.json({ "message": hello });
     }
 ```
 
