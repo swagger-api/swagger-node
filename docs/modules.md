@@ -7,18 +7,18 @@ This topic briefly describes the relevant Node.js modules on which a swagger pro
 * [swagger-editor](#swagger-editor)
 * [swagger-tools](#swagger-tools)
 
-###<a ref='swagger'></a>swagger
+### <a ref='swagger'></a>swagger
 
 The `swagger` npm module provides everything you need to create new  projects, including the Swagger editor, Swagger Tools middleware, sample project skeletons, and the `swagger` command-line tools. 
 
-####Installation
+#### Installation
 For installation instructions, see "[Installation](./install.md)". 
 
-####Documentation
+#### Documentation
 
 The main source of documentation for the swagger module and related components is in the swagger-node repository on GitHub. 
 
-####Installation
+#### Installation
 
 The swagger command-line tools are installed with swagger. 
 
@@ -39,11 +39,11 @@ See the swagger "[Quick start](./quick-start.md)" to see how easy it is to get a
 
 The Swagger Editor lets you design your API specification and interactively preview its documentation for your swagger API project. 
 
-####Installation
+#### Installation
 
 Standard npm install. Installed with swagger.
 
-####Documentation
+#### Documentation
 
 See "[Swagger Editor](https://github.com/swagger-api/swagger-editor)" on GitHub.
 
@@ -51,11 +51,11 @@ See "[Swagger Editor](https://github.com/swagger-api/swagger-editor)" on GitHub.
 
 Middleware for Node.js including Message Validation, Authorization and Routing. 
 
-####Installation
+#### Installation
 
 Standard npm install. Installed with swagger. 
 
-####Documentation
+#### Documentation
 
 See the `swagger-tools` [README](https://github.com/apigee-127/swagger-tools) on GitHub. 
 
