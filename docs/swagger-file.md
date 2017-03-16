@@ -56,7 +56,7 @@ Here is the entire `swagger.yaml` file that is provisioned for a new swagger pro
 ```
 
 
-###<a name="reference"></a>OpenAPI Specification elements
+### <a name="reference"></a>OpenAPI Specification elements
 
 The Swagger file includes a number of standard OpenAPI 2.0 Specification elements. You can read about them in the [OpenAPI 2.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md). 
 
