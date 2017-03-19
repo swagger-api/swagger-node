@@ -2,7 +2,7 @@
 
 ** NOTE: The following applies to swagger-node apps replying on swagger-node-runner 0.5.x and better. (ie. Any app using swagger-connect 0.1.0, swagger-express-wm 0.1.0, swagger-hapi 0.1.0, swagger-restify 0.1.0, or swagger-sails 0.1.0 - or higher versions of the same.) **
 
-Swagger-Node application configuration is driven by the file `default.yaml` (by default) in the application's config directory. Configuration is driven by the [config](https://github.com/lorenwest/node-config/wiki/Configuration-Files) module, so reference its documentation to understand how you may set up configuration per environment and perform configuration overrides. By default, the configuration file looks something like this: 
+Swagger-Node application configuration is driven by the file `default.yaml` (by default) in the application's config directory. Configuration is driven by the [config](https://github.com/lorenwest/node-config/wiki/Configuration-Files) module, so reference its documentation to understand how you may set up configuration per environment and perform configuration overrides. By default, the configuration file looks something like this:
 
 ```yaml
 # swagger configuration file
@@ -63,7 +63,7 @@ If no pipe is explicitly declared for a path or operation, this pipe will be pla
 
 ### swaggerControllerPipe
 
-This names the standard pipe that plays for the swagger-node controllers (declared in the swagger.yaml with the 
+This names the standard pipe that plays for the swagger-node controllers (declared in the swagger.yaml with the
 extension `x-swagger-router-controller`). We'll look at how that's defined in a second.
 
 ### bagpipes
@@ -80,7 +80,7 @@ This configures the swagger validator (currently swagger-tools). You can turn re
 
 #### swagger_controllers
 
-Because this is specified as your controller pipe (in the `swaggerControllerPipe` setting above), this pipe plays for all paths and operations where you'veare specified a controller extension (`x-swagger-router-controller`).
+Because this is specified as your controller pipe (in the `swaggerControllerPipe` setting above), this pipe plays for all paths and operations where you've specified a controller extension (`x-swagger-router-controller`).
 
 The default pipe is as follows:
 
@@ -88,7 +88,7 @@ The default pipe is as follows:
 2. run the [cors](https://www.npmjs.com/package/cors) module
 3. execute swagger security (currently swagger-tools)
 4. run swagger validator (currently swagger-tools)
-5. add a few commonly used Express functions (if not already present) to request (path, query, get) and response (json, 
+5. add a few commonly used Express functions (if not already present) to request (path, query, get) and response (json,
  get, set, status).
 6. run the router (currently swagger-tools)
 
