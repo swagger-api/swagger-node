@@ -8,12 +8,12 @@
   "license": "",
   "main": "app.js",
   "dependencies": {
-    "hapi": "^10.0.0",
-    "swagger-hapi": "^0.1.0"
+    "hapi": "^16.1.1",
+    "swagger-hapi": "^0.7.0"
   },
   "devDependencies":  {
-    "should": "^7.1.0",
-    "supertest": "^1.0.0"
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
   },
   "scripts": {
     "start": "node app.js",

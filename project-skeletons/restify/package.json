@@ -8,12 +8,12 @@
   "license": "",
   "main": "app.js",
   "dependencies": {
-    "restify": "^4.0.2",
-    "swagger-restify-mw": "^0.1.0"
+    "restify": "^4.3.0",
+    "swagger-restify-mw": "^0.7.0"
   },
   "devDependencies":  {
-    "should": "^7.1.0",
-    "supertest": "^1.0.0"
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
   },
   "scripts": {
     "start": "node app.js",
