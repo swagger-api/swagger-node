@@ -1,5 +1,6 @@
 # IDE files
 .idea
+.vscode
 
 # Logs
 logs
