@@ -1,38 +1,44 @@
 /**
- * Copy files and folders.
+ * `copy`
  *
  * ---------------------------------------------------------------
  *
- * # dev task config
- * Copies all directories and files, exept coffescript and less fiels, from the sails
- * assets folder into the .tmp/public directory.
+ * Copy files and/or folders from your `assets/` directory into
+ * the web root (`.tmp/public`) so they can be served via HTTP,
+ * and also for further pre-processing by other Grunt tasks.
  *
- * # build task config
- * Copies all directories nd files from the .tmp/public directory into a www directory.
+ * #### Normal usage (`sails lift`)
+ * Copies all directories and files (except CoffeeScript and LESS)
+ * from the `assets/` folder into the web root -- conventionally a
+ * hidden directory located `.tmp/public`.
+ *
+ * #### Via the `build` tasklist (`sails www`)
+ * Copies all directories and files from the .tmp/public directory into a www directory.
  *
  * For usage docs see:
- * 		https://github.com/gruntjs/grunt-contrib-copy
+ *   https://github.com/gruntjs/grunt-contrib-copy
+ *
  */
 module.exports = function(grunt) {
 
-	grunt.config.set('copy', {
-		dev: {
-			files: [{
-				expand: true,
-				cwd: './assets',
-				src: ['**/*.!(coffee|less)'],
-				dest: '.tmp/public'
-			}]
-		},
-		build: {
-			files: [{
-				expand: true,
-				cwd: '.tmp/public',
-				src: ['**/*'],
-				dest: 'www'
-			}]
-		}
-	});
+  grunt.config.set('copy', {
+    dev: {
+      files: [{
+        expand: true,
+        cwd: './assets',
+        src: ['**/*.!(coffee|less)'],
+        dest: '.tmp/public'
+      }]
+    },
+    build: {
+      files: [{
+        expand: true,
+        cwd: '.tmp/public',
+        src: ['**/*'],
+        dest: 'www'
+      }]
+    }
+  });
 
-	grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 };

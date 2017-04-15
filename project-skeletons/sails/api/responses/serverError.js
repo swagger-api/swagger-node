@@ -31,12 +31,13 @@ module.exports = function serverError (data, options) {
   // Only include errors in response if application environment
   // is not set to 'production'.  In production, we shouldn't
   // send back any identifying information about errors.
-  if (sails.config.environment === 'production') {
+  if (sails.config.environment === 'production' && sails.config.keepResponseErrors !== true) {
     data = undefined;
   }
 
   // If the user-agent wants JSON, always respond with JSON
-  if (req.wantsJSON) {
+  // If views are disabled, revert to json
+  if (req.wantsJSON || sails.config.hooks.views === false) {
     return res.jsonx(data);
   }
 
@@ -44,16 +45,27 @@ module.exports = function serverError (data, options) {
   // If it was omitted, use an empty object (`{}`)
   options = (typeof options === 'string') ? { view: options } : options || {};
 
+  // Attempt to prettify data for views, if it's a non-error object
+  var viewData = data;
+  if (!(viewData instanceof Error) && 'object' == typeof viewData) {
+    try {
+      viewData = require('util').inspect(data, {depth: null});
+    }
+    catch(e) {
+      viewData = undefined;
+    }
+  }
+
   // If a view was provided in options, serve it.
   // Otherwise try to guess an appropriate view, or if that doesn't
   // work, just send JSON.
   if (options.view) {
-    return res.view(options.view, { data: data });
+    return res.view(options.view, { data: viewData, title: 'Server Error' });
   }
 
   // If no second argument provided, try to serve the default view,
   // but fall back to sending JSON(P) if any errors occur.
-  else return res.view('500', { data: data }, function (err, html) {
+  else return res.view('500', { data: viewData, title: 'Server Error' }, function (err, html) {
 
     // If a view error occured, fall back to JSON(P).
     if (err) {

@@ -17,7 +17,7 @@
  * CoffeeScript for the front-end.
  *
  * For more information on configuring custom routes, check out:
- * http://sailsjs.org/#/documentation/concepts/Routes/RouteTargetSyntax.html
+ * http://sailsjs.org/#!/documentation/concepts/Routes/RouteTargetSyntax.html
  */
 
 module.exports.routes = {
@@ -40,7 +40,7 @@ module.exports.routes = {
   *                                                                          *
   * Custom routes here...                                                    *
   *                                                                          *
-  *  If a request to a URL doesn't match any of the custom routes above, it  *
+  * If a request to a URL doesn't match any of the custom routes above, it   *
   * is matched against Sails route blueprints. See `config/blueprints.js`    *
   * for configuration options and examples.                                  *
   *                                                                          *
