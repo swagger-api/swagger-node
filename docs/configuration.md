@@ -2,7 +2,7 @@
 
 ** NOTE: The following applies to swagger-node apps replying on swagger-node-runner 0.5.x and better. (ie. Any app using swagger-connect 0.1.0, swagger-express-mw 0.1.0, swagger-hapi 0.1.0, swagger-restify 0.1.0, or swagger-sails 0.1.0 - or higher versions of the same.) **
 
-Swagger-Node application configuration is driven by the file `default.yaml` (by default) in the application's config directory. Configuration is driven by the [config](https://github.com/lorenwest/node-config/wiki/Configuration-Files) module, so reference its documentation to understand how you may set up configuration per environment and perform configuration overrides. By default, the configuration file looks something like this:
+Swagger-Node application configuration is driven by the file `default.yaml` (by default) in the application's `config` directory. Configuration is driven by the [config](https://github.com/lorenwest/node-config/wiki/Configuration-Files) module, so reference its documentation to understand how you may set up configuration per environment and perform configuration overrides. By default, the configuration file looks something like this:
 
 ```yaml
 # swagger configuration file

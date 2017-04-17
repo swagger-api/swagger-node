@@ -248,11 +248,11 @@ Here's an example that returns some data whenever the `search()` handler method 
     }
 ```
 
-###<a name="wireup"></a>Wiring up and implementing the API controller
+### <a name="wireup"></a>Wiring up and implementing the API controller
 
 After you're happy with your API design, you're ready to implement wire up the controller for the `/weather` path. 
 
-You simply specify in the OpenAPI spec the route handler (controller) file, which method to call in the controller (operationId), and any query parameters you wish to pass: 
+You simply specify in the OpenAPI spec the route handler (`x-swagger-router-controller`) file, which method to call in the controller (`operationId`), and any query parameters you wish to pass: 
 
 In weather sample's `swagger.yaml` file, it looks like this:
 
@@ -271,7 +271,7 @@ In weather sample's `swagger.yaml` file, it looks like this:
                   type: "string"
 ```
 
-Finally, implement the route's operation -- the getWeatherByCity() method in  `api/controllers/weather.js` --  which calls the back-end service and returns the response. 
+Finally, implement the route's operation -- the `getWeatherByCity()` method in  `api/controllers/weather.js` --  which calls the back-end service and returns the response. 
 
 Here is the sample controller implementation for a weather API:
 
