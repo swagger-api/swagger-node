@@ -64,17 +64,15 @@ The Weather API requires a controller function that takes in request and respons
 
 Note that Open Weather returns a JSON object. Also, we'll need to export the controller function so that it is available to the outside world. 
 
-We will use the `request` library to make the request. So, add it to `package.json`:
+We will use the `request` library to make the request. So, ensure it is installed and added to `package.json`:
 
-  ```javascript
-    "dependencies": {
-      "request": ""
-    },
+  ```
+npm install request --save
   ```
 
->Note: If a controller requires additional Node.js modules, be sure to add them to your package.json file and execute `npm install`. 
+>Note: If a controller requires additional Node.js modules, be sure to add them to your `package.json` file and execute `npm install`. 
 
-In the Swagger file, you can see that when a GET is performed on `/weather`, the target controller file is `api/controllers/weather.js`, and the target method to call is getWeatherByCity():
+In the Swagger file, you can see that when a GET is performed on `/weather`, the target controller file is `api/controllers/weather.js`, and the target method to call is `getWeatherByCity()`:
 
 ```yaml
     paths:
