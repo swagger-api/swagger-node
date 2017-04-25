@@ -5,7 +5,7 @@
  * CSRF tokens are like a tracking chip.  While a session tells the server that a user
  * "is who they say they are", a csrf token tells the server "you are where you say you are".
  *
- * When enabled, all non-GET requests to the Sails server must be accompanied by
+ * When enabled, all non-GET requests to the Sails server must be accompanied by
  * a special token, identified as the '_csrf' parameter.
  *
  * This option protects your Sails app against cross-site request forgery (or CSRF) attacks.
@@ -38,7 +38,7 @@
  * http://en.wikipedia.org/wiki/Cross-site_request_forgery
  *
  * For more information on this configuration file, including info on CSRF + CORS, see:
- * http://beta.sailsjs.org/#/documentation/reference/sails.config/sails.config.csrf.html
+ * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.csrf.html
  *
  */
 

@@ -25,7 +25,7 @@ function testFramework(framework) {
     var tmpDir, projPath, server, sails;
 
     before(function(done) {
-      this.timeout(90000);
+      this.timeout(180000);
 
       tmp.setGracefulCleanup();
 
@@ -54,8 +54,13 @@ function testFramework(framework) {
                 done(err);
               });
             } else {
-              server = require(projPath + '/app.js');
-              done();
+              // promis that resolves when the app is stated
+              require(projPath + '/app.js')
+                .then(function(app) {
+                  server = app;
+                  done();
+                })
+                .catch(done);
             }
           });
         });

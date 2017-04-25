@@ -6,7 +6,7 @@
  * request options (which impact the behavior of blueprint actions).
  *
  * You may also override any of these settings on a per-controller basis
- * by defining a '_config' key in your controller defintion, and assigning it
+ * by defining a '_config' key in your controller definition, and assigning it
  * a configuration object with overrides for the settings in this file.
  * A lot of the configuration options below affect so-called "CRUD methods",
  * or your controllers' `find`, `create`, `update`, and `destroy` actions.
@@ -16,10 +16,10 @@
  * logic in the form of a JSON API, including support for sort, pagination, and filtering.
  *
  * For more information on the blueprint API, check out:
- * http://sailsjs.org/#/documentation/reference/blueprint-api
+ * http://sailsjs.org/#!/documentation/reference/blueprint-api
  *
  * For more information on the settings in this file, see:
- * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.blueprints.html
+ * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.blueprints.html
  *
  */
 
@@ -98,6 +98,17 @@ module.exports.blueprints = {
   ***************************************************************************/
 
   // prefix: '',
+
+  /***************************************************************************
+   *                                                                          *
+   * An optional mount path for all REST blueprint routes on a controller.    *
+   * And it do not include `actions` and `shortcuts` routes.                  *
+   * This allows you to take advantage of REST blueprint routing,             *
+   * even if you need to namespace your RESTful API methods                   *
+   *                                                                          *
+   ***************************************************************************/
+
+  // restPrefix: '',
 
   /***************************************************************************
   *                                                                          *

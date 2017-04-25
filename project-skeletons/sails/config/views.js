@@ -8,7 +8,7 @@
  * Sails' layout support.
  *
  * For more information on views and layouts, check out:
- * http://sailsjs.org/#/documentation/concepts/Views
+ * http://sailsjs.org/#!/documentation/concepts/Views
  */
 
 module.exports.views = {
