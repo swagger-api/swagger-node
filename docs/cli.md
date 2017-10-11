@@ -59,7 +59,7 @@ Options:
 Example:
 
     cd ./myproject
-    swagger -m project start
+    swagger project start -m
 
 
 #### <a name="verify"></a>swagger project verify [options] [project root directory]
