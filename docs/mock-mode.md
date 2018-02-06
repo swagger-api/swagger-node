@@ -230,7 +230,7 @@ By default, mock mode returns programmed responses, like "Sample text" for a str
 
 But you can also create mock controllers with handler methods that return custom responses. 
 
-Place these custom "mock" controllers in the `/api/mock` directory. 
+Place these custom "mock" controllers in the `/api/mocks` directory. 
 
 Here's an example that returns some data whenever the `search()` handler method is called:
 
