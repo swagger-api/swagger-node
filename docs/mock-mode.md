@@ -42,6 +42,7 @@ produces:
   - application/json
 paths:
   /weather:
+    x-swagger-router-controller: weather
     get:
       responses:
         "200":
