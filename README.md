@@ -13,7 +13,7 @@ Remember, one great thing about this approach is that all of the Swagger validat
 
 # Your swagger API in five steps
 
-## 1. Install the swagger module
+## 1. Install the swagger module - Hello
 
 Install using npm. For complete instructions, see the [install](./docs/install.md) page.
 
