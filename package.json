@@ -15,7 +15,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/swagger-api/swagger-node.git"
+    "url": "https://github.com/HarishRaj11/swagger-node.git"
   },
   "dependencies": {
     "async": "^2.1.4",
