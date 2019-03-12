@@ -66,6 +66,7 @@ app
   .option('-d, --debug [port]', 'start in remote debug mode')
   .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'run in mock mode')
+  .option('-o, --host <server>', 'test server')
   .action(execute(project.test));
 
 app
