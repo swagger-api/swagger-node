@@ -230,14 +230,14 @@ describe('cli', function() {
 
       it('should print the result of the command', function() {
 
-        cli.execute(executeNoError)(1);
+        cli.execute(executeNoError)('1');
         exitCode.should.equal(0);
         capture.output().should.equal('1\n');
       });
 
       it('should print the result with header', function() {
 
-        cli.execute(executeNoError, 'whatever')(1);
+        cli.execute(executeNoError, 'whatever')('1');
         exitCode.should.equal(0);
         capture.output().should.equal('whatever\n========\n1\n');
       });

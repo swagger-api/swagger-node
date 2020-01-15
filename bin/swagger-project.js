@@ -23,6 +23,7 @@ var execute = cli.execute;
 var frameworks = Object.keys(project.frameworks).join('|');
 var assertiontypes = project.assertiontypes.join('|');
 var testmodules = project.testmodules.join('|');
+var lang = project.lang.join('|');
 
 app
   .command('create [name]')
@@ -65,6 +66,7 @@ app
   .option('-d, --debug [port]', 'start in remote debug mode')
   .option('-b, --debug-brk [port]', 'start in remote debug mode, wait for debugger connect')
   .option('-m, --mock', 'run in mock mode')
+  .option('-o, --host <server>', 'test server')
   .action(execute(project.test));
 
 app
@@ -75,6 +77,7 @@ app
   .option('-t, --assertion-format <type>', 'one of: ' + assertiontypes)
   .option('-o, --force', 'allow overwriting of all existing test files matching those generated')
   .option('-l, --load-test [path]', 'generate load-tests for specified operations')
+  .option('-n, --lang <language>', 'one of: ' + lang)
   .action(execute(project.generateTest));
 
 app.parse(process.argv);

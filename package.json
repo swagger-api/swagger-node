@@ -28,10 +28,11 @@
     "lodash": "^4.17.2",
     "mocha": "^3.2.0",
     "nodemon": "^1.3.7",
+    "sails": "1.1.0",
     "serve-static": "^1.9.2",
     "swagger-converter": "^1.4.1",
     "swagger-editor": "^2.9.2",
-    "swagger-test-templates": "^1.2.0",
+    "swagger-test-templates": "git+https://github.com/HarishRaj11/swagger-test-templates.git#freshworks-bdd-spec-generation",
     "swagger-tools": "^0.10.1"
   },
   "devDependencies": {
