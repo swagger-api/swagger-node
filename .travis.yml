@@ -1,5 +1,10 @@
 language: node_js
+
 node_js:
-  - "stable"
-  - "4"
+- stable
+- '4'
 sudo: false
+
+notifications:
+  slack:
+    secure: kvBuJ0E6l41msc3bSALPl61PhJ249/viu++9yayS/9C8+ginK+ZsCfZPDr9Pss8LcL+JOnFsdQgbHczAdg2SLCaLnIePVWVQwGVijDjbDD7cj/L802M5pC/zn8PNrEJycMdyaXo5ksdI/hO0xKeqvY0atEfYvQZs3WOQJXwqb+VZLAObW9aFLgC7ALgeFQnUWZQyzfvthhNIv/UjSEmuJpipBWEoh2CXRvTCICwttnYy1igKXTihChAQ/uRSrlTFtJhPJE02kgQJbuLxS+SK4L8RrOk5WEVUDMN0UVRXTXRzwkihQkWTJNgQCg7D8lP7Ua6rv3v9vCPwkoNYjhEHXV+ft47DJ+xIOtKV93zIzSBbrGmuiz5pMztL+b/y1vN34LURCXV8uq8TxCCaHj2VXD5rR2NiOlanpbTA2GEe3Q9IXjCANYrW1u5aA2DkXT1KddOpN7Y08O4rkVclYnemiOQR6/PiaH+dMy7zYg0lrzdaL0igFnJ2SAc+Cp2an58QNMZV2JG/MSE8NrOOWNWOuqgwQH39QFf/+E7k8J62dBfH74u0D0oZYGRfDUJYL2KsJnabQDIZCciLI68/zVseZqXg8JivjUfOeJuzjwtjt74MtQzpDp742UDPgn1gwvGirm+zaP9OYIwxIakp8o6wfFWNgQmfpgGS2+rlUX0xLPE=
