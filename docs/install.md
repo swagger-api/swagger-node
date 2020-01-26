@@ -60,7 +60,7 @@ Many Node.js developers choose to use a different prefix such that they do not n
 
     This will enable you to easily use executable scripts installed using `-g` through npm - both for swagger and for other tools as well!
 
-###<a name="defaultbrowser"></a>Configuring the default browser on Linux
+### <a name="defaultbrowser"></a>Configuring the default browser on Linux
 
 On Linux platforms, you need to specify your browser path before using the Swagger editor. 
 
