@@ -27,7 +27,8 @@ module.exports = new Promise(function (resolve, reject) {
       }
       app.start(function () {
         if (swaggerHapi.runner.swagger.paths['/hello']) {
-          console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
+          var basePath = swaggerHapi.runner.swagger.basePath || '';
+          console.log('try this:\ncurl http://127.0.0.1:' + port + basePath + '/hello?name=Scott');
         }
         resolve(app);
       });

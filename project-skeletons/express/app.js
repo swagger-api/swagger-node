@@ -18,7 +18,8 @@ module.exports = new Promise(function (resolve, reject) {
     var port = process.env.PORT || 10010;
     app.listen(port, function() {
       if (swaggerExpress.runner.swagger.paths['/hello']) {
-        console.log('try this:\ncurl http://127.0.0.1:' + port + '/hello?name=Scott');
+        let basePath = swaggerExpress.runner.swagger.basePath || '';
+        console.log('try this:\ncurl http://127.0.0.1:' + port + basePath + '/hello?name=Scott');
       }
       resolve(app);
     });
