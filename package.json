@@ -13,10 +13,11 @@
   "license": "Apache 2.0",
   "preferGlobal": true,
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/swagger-api/swagger-node.git"
+  "repository": "swagger-api/swagger-node.git",
+  "bugs": {
+    "url": "https://github.com/swagger-api/swagger-node/issues"
   },
+  "homepage": "https://github.com/swagger-api/swagger-node#readme",
   "dependencies": {
     "async": "^2.1.4",
     "commander": "^2.7.1",
