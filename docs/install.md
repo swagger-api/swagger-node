@@ -48,9 +48,9 @@ Many Node.js developers choose to use a different prefix such that they do not n
 
 1. Set the 'prefix' for npm by using the following command (documented here: [npm-config](https://www.npmjs.org/doc/misc/npm-config.html).  This will create a file `~/.npmrc` that contains configuration information for npm.
 
-```bash
+    ```bash
     npm set prefix ~/npm
-```
+    ```
 
 2. Edit your `.bash_profile` or the appropriate shell initialization script to add `~/npm` to your `PATH` by adding the following line (or placing the single line in the new file if it does not exist):
 
