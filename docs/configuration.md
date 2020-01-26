@@ -26,7 +26,6 @@ swagger:
 
     _swagger_validate:
       name: swagger_validator
-      validateResponse: true
 
     # pipe for all swagger-node controllers
     swagger_controllers:
@@ -76,7 +75,7 @@ This configures the standard swagger-node router (currently swagger-tools). It t
 
 #### _swagger_validate
 
-This configures the swagger validator (currently swagger-tools). You can turn response validation on and off here.
+This configures the swagger validator (currently swagger-tools). For information on enabling response validation, read the [release tag for v0.6.4.](https://github.com/theganyo/swagger-node-runner/releases/tag/v0.6.4)
 
 #### swagger_controllers
 
