@@ -1,3 +1,10 @@
+# Archived
+
+This GitHub repository has been archived. 
+The npmjs package `swagger` may be re-used at a later date for a different project.
+https://swagger.io/ may have similar or alternative functionality if you depend(ed) on this project.
+
+
 [![Build Status](https://travis-ci.org/swagger-api/swagger-node.svg?branch=master)](https://travis-ci.org/swagger-api/swagger-node) 
 [![NPM version](https://badge.fury.io/js/swagger.png)](http://badge.fury.io/js/swagger)
 [![Dependency Status](https://david-dm.org/swagger-api/swagger-node/status.svg)](https://david-dm.org/swagger-api/swagger-node)
