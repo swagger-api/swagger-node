@@ -41,7 +41,7 @@ $ swagger project create hello-world
 The interactive, browser-based [Swagger Editor](http://editor.swagger.io/) is built in. It provides Swagger 2.0 validation and endpoint routing, generates docs on the fly, and consumes easy-to-read YAML.
 
 ```bash
-$ swagger project edit
+$ swagger project edit hello-world
 ```
 
 ![screenshot of project editor](./docs/images/project-editor.png)
@@ -75,7 +75,7 @@ The `operationId` element specifies which controller function to call. In this c
 Run the project server.
 
 ```bash
-$ swagger project start
+$ swagger project start hello-world
 ```
 
 ## Now, call the API!
