@@ -72,7 +72,11 @@ _.each(process.env, function(value, key) {
         if (!configItem[subKey]) { configItem[subKey] = {}; }
         configItem = configItem[subKey];
       } else {
-        configItem[subKey] = value;
+        try {
+            configItem[subKey] = JSON.parse(value);
+          } catch (err) {
+            configItem[subKey] = value;
+          }
       }
     }
     debug('loaded env var: %s = %s', split.slice(1).join('.'), value);
