@@ -84,7 +84,7 @@ If you change the response object to return an integer...
                 - message
             properties:
                 message:
-                type: integer
+                    type: integer
 ```
 
 The mock response is an integer:
