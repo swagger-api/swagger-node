@@ -20,7 +20,7 @@ var _ = require('lodash');
 var debug = require('debug')('swagger');
 
 var config = {
-  rootDir: path.resolve(__dirname, '..'),
+  rootDir: process.cwd(),
   userHome: process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'],
   debug: !!process.env.DEBUG
 };
