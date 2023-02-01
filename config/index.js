@@ -22,7 +22,8 @@ var debug = require('debug')('swagger');
 var config = {
   rootDir: path.resolve(__dirname, '..'),
   userHome: process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'],
-  debug: !!process.env.DEBUG
+  debug: !!process.env.DEBUG,
+  language: 'js'
 };
 config.nodeModules = path.resolve(config.rootDir, 'node_modules');
 
